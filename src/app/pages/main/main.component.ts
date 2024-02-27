@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { JourneyResult } from '../../models/journey-result';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })
@@ -13,11 +15,17 @@ export class MainComponent implements OnInit {
   foundStopsOrigin: string[] | undefined;
   originStop: string = 'Amsterdam Centraal';
   destinationStop: string = 'Eindhoven Centraal';
-  possibility: string | undefined;
+  possibility: JourneyResult | undefined;
 
   constructor(private apiService: ApiService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.originStop = localStorage.getItem('originStop') as string;
+    this.destinationStop = localStorage.getItem('destinationStop') as string;
+    if (this.originStop && this.destinationStop) {
+      this.checkPossibility();
+    }
+  }
 
   async onSearchInputChange(event: any) {
     var searchText = event.target.value;
@@ -46,9 +54,13 @@ export class MainComponent implements OnInit {
   }
 
   checkPossibility() {
+    localStorage.setItem('originStop', this.originStop);
+    localStorage.setItem('destinationStop', this.destinationStop);
     console.log(this.originStop + ' > ' + this.destinationStop);
-    this.apiService.GetPossibility(this.originStop, this.destinationStop).subscribe({
-      next: (data) => (this.possibility = data),
-    });
+    this.apiService
+      .GetPossibility(this.originStop, this.destinationStop)
+      .subscribe({
+        next: (data) => (this.possibility = data),
+      });
   }
 }

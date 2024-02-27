@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { JourneyResult } from '../models/journey-result';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +20,8 @@ export class ApiService {
     );
   }
 
-  GetPossibility(origin: string, destination: string): Observable<string> {
-    return this.http.get<string>(
+  GetPossibility(origin: string, destination: string): Observable<JourneyResult> {
+    return this.http.get<JourneyResult>(
       environment.apiServer + '/Disruption/' + origin + '/' + destination
     );
   }

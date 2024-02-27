@@ -1,5 +1,5 @@
 <form class="form-inline my-2 my-lg-0">
-    <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search"
+    <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search" [value]="originStop"
         (input)="onSearchInputChangeOrigin($event)">
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
 </form>
@@ -9,13 +9,16 @@
         @for (stop of foundStopsOrigin; track stop) {
         <button class="dropdown-item" (click)="selectStopOrigin(stop)">{{ stop }}</button>
         } @empty {
-        No relevant stops found
+  
+            @if (foundStopsOrigin !== undefined){
+                No relevant stops found
+            }
         }
     </ul>
 </div>
 
 <form class="form-inline my-2 my-lg-0">
-    <input class="form-control mr-sm-2" type="search" placeholder="Naar" aria-label="Search"
+    <input class="form-control mr-sm-2" type="search" placeholder="Naar" aria-label="Search" [value]="destinationStop"
         (input)="onSearchInputChange($event)">
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
 </form>
@@ -23,8 +26,10 @@
     <ul>
         @for (stop of foundStops; track stop) {
         <button class="dropdown-item" (click)="selectStopDestination(stop)">{{ stop }}</button>
-        } @empty {
-        No relevant stops found
+        } @empty {    
+            @if (foundStops !== undefined){
+                No relevant stops found
+            }
         }
     </ul>
 </div>
@@ -37,6 +42,70 @@
 
 } @else {
 <div>
-    {{possibility}}
+    Gaan we het halen? {{possibility.journeyExpectation}}.
+
+</div>
+<h1>Problemen onderweg</h1>
+<div class="list-group">
+
+    @for (disruption of possibility.disruptions; track disruption) {
+    <div class="list-group-item list-group-item-action" aria-current="true">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{disruption.title}}</h5>
+            <small>{{disruption.expectedEnd | date:'medium'}}</small>
+        </div>
+
+        @for (description of disruption.descriptions; track description) {
+        <p class="mb-1">{{description}}</p>
+        } @empty {
+        <small>Geen beschrijving</small>
+        }
+
+
+        @for (advice of disruption.advices; track advice) {
+        <small class="text-body-secondary">{{advice}}</small>
+        } @empty {
+        <small>Geen NS advies</small>
+        }
+    </div>
+
+    } @empty {
+    No problems!
+    }
 </div>
 }
+
+<h1>Reis advies</h1>
+
+<div class="list-group">
+    @for (travelAdvice of possibility?.travelAdvice; track travelAdvice) {
+    <div class="list-group-item list-group-item-action" aria-current="true">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">
+                @for (routePart of travelAdvice.route; track routePart; let index = $index) {
+              
+                    @if (routePart.cancelled){
+                        <del style="color: red">{{routePart.name}}</del>
+                    }@else {
+                        {{routePart.name}}
+                    }
+                    @if(!(index == travelAdvice.route.length - 1)){
+                        >
+                    }
+                    (
+                    @if (routePart.actualDeparture != routePart.plannedDeparture){
+                        <del style="color: red">{{routePart.plannedDeparture | date: "H:mm"}}</del> {{routePart.actualDeparture | date: "H:mm"}}
+                    }@else {
+                        {{routePart.actualDeparture | date: "H:mm"}}
+                    }
+                    )  
+                }
+            </h5>
+            <small>{{travelAdvice.plannedDurationInMinutes}}m ({{travelAdvice.actualDurationInMinutes}}m)</small>
+        </div>
+    </div>
+    } @empty {
+    Geen reisadvies op het moment.
+    }
+
+</div>
