@@ -1,0 +1,19 @@
+<form class="form-inline my-2 my-lg-0">
+    <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search"
+        (input)="onSearchInputChange($event)">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+</form>
+
+<form class="form-inline my-2 my-lg-0">
+    <input class="form-control mr-sm-2" type="search" placeholder="Naar" aria-label="Search"
+        (input)="onSearchInputChange($event)">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+</form>
+
+<div>
+    @for (stop of foundStops; track stop) {
+    <div><a> {{ stop }}</a></div>
+    } @empty {
+    No relevant stops found
+    }
+</div>
