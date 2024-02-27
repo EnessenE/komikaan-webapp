@@ -60,7 +60,23 @@ export class MainComponent implements OnInit {
     this.apiService
       .GetPossibility(this.originStop, this.destinationStop)
       .subscribe({
-        next: (data) => (this.possibility = data),
+        next: (data) => this.setPossibility(data),
       });
+  }
+
+  setPossibility(journeyResult: JourneyResult) {
+    this.possibility = journeyResult;
+    this.possibility.travelAdvice.forEach((travelAdvice) => {
+      var impossibility = travelAdvice.route.find(
+        (item) => item.realisticTransfer === false
+      );
+      if (impossibility !== undefined) {
+        console.log(JSON.stringify(impossibility));
+        travelAdvice.realistic = false;
+      }
+      else{
+        travelAdvice.realistic = true;
+      }
+    });
   }
 }

@@ -1,111 +1,130 @@
-<form class="form-inline my-2 my-lg-0">
-    <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search" [value]="originStop"
-        (input)="onSearchInputChangeOrigin($event)">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-</form>
+<div class="container">
+    <div class="row">
 
-<div>
-    <ul>
-        @for (stop of foundStopsOrigin; track stop) {
-        <button class="dropdown-item" (click)="selectStopOrigin(stop)">{{ stop }}</button>
-        } @empty {
-  
-            @if (foundStopsOrigin !== undefined){
-                No relevant stops found
-            }
-        }
-    </ul>
-</div>
-
-<form class="form-inline my-2 my-lg-0">
-    <input class="form-control mr-sm-2" type="search" placeholder="Naar" aria-label="Search" [value]="destinationStop"
-        (input)="onSearchInputChange($event)">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-</form>
-<div>
-    <ul>
-        @for (stop of foundStops; track stop) {
-        <button class="dropdown-item" (click)="selectStopDestination(stop)">{{ stop }}</button>
-        } @empty {    
-            @if (foundStops !== undefined){
-                No relevant stops found
-            }
-        }
-    </ul>
-</div>
-@if(!possibility){
-<div>
-    <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-</div>
-
-} @else {
-<div>
-    Gaan we het halen? {{possibility.journeyExpectation}}.
-
-</div>
-<h1>Problemen onderweg</h1>
-<div class="list-group">
-
-    @for (disruption of possibility.disruptions; track disruption) {
-    <div class="list-group-item list-group-item-action" aria-current="true">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{disruption.title}}</h5>
-            <small>{{disruption.expectedEnd | date:'medium'}}</small>
+        <div class="col-6">
+            <form class="form-inline my-2 my-lg-0">
+                <p>Vanaf</p>
+                <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search" [value]="originStop"
+                    (input)="onSearchInputChangeOrigin($event)">
+                <div>
+                    <ul>
+                        @for (stop of foundStopsOrigin; track stop) {
+                        <button class="dropdown-item" (click)="selectStopOrigin(stop)">{{ stop }}</button>
+                        } @empty {
+                
+                            @if (foundStopsOrigin !== undefined){
+                                No relevant stops found
+                            }
+                        }
+                    </ul>
+                </div>
+                <p>Naar</p>
+                <input class="form-control mr-sm-2" type="search" placeholder="Naar" aria-label="Search" [value]="destinationStop"
+                    (input)="onSearchInputChange($event)">
+                <div>
+                    <ul>
+                        @for (stop of foundStops; track stop) {
+                        <button class="dropdown-item" (click)="selectStopDestination(stop)">{{ stop }}</button>
+                        } @empty {    
+                            @if (foundStops !== undefined){
+                                No relevant stops found
+                            }
+                        }
+                    </ul>
+                </div>
+            </form>
         </div>
+        <div class="col-6">
+            @if(!possibility){
+            <div>
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
 
-        @for (description of disruption.descriptions; track description) {
-        <p class="mb-1">{{description}}</p>
-        } @empty {
-        <small>Geen beschrijving</small>
-        }
+            } @else {
+            <div>
+                Gaan we het halen? {{possibility.journeyExpectation}}.
 
+            </div>
+            <h1>Problemen onderweg</h1>
+            <div class="list-group">
 
-        @for (advice of disruption.advices; track advice) {
-        <small class="text-body-secondary">{{advice}}</small>
-        } @empty {
-        <small>Geen NS advies</small>
-        }
-    </div>
+                @for (disruption of possibility.disruptions; track disruption) {
+                <div class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{disruption.title}}</h5>
+                        <small>{{disruption.expectedEnd | date:'medium'}}</small>
+                    </div>
 
-    } @empty {
-    No problems!
-    }
-</div>
-}
-
-<h1>Reis advies</h1>
-
-<div class="list-group">
-    @for (travelAdvice of possibility?.travelAdvice; track travelAdvice) {
-    <div class="list-group-item list-group-item-action" aria-current="true">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">
-                @for (routePart of travelAdvice.route; track routePart; let index = $index) {
-              
-                    @if (routePart.cancelled){
-                        <del style="color: red">{{routePart.name}}</del>
-                    }@else {
-                        {{routePart.name}}
+                    @for (description of disruption.descriptions; track description) {
+                    <p class="mb-1">{{description}}</p>
+                    } @empty {
+                    <small>Geen beschrijving</small>
                     }
-                    @if(!(index == travelAdvice.route.length - 1)){
-                        >
+
+
+                    @for (advice of disruption.advices; track advice) {
+                    <small class="text-body-secondary">{{advice}}</small>
+                    } @empty {
+                    <small>Geen NS advies</small>
                     }
-                    (
-                    @if (routePart.actualDeparture != routePart.plannedDeparture){
-                        <del style="color: red">{{routePart.plannedDeparture | date: "H:mm"}}</del> {{routePart.actualDeparture | date: "H:mm"}}
-                    }@else {
-                        {{routePart.actualDeparture | date: "H:mm"}}
-                    }
-                    )  
+                </div>
+
+                } @empty {
+                No problems!
                 }
-            </h5>
-            <small>{{travelAdvice.plannedDurationInMinutes}}m ({{travelAdvice.actualDurationInMinutes}}m)</small>
+            </div>
+            }
+        </div>
+        
+        <div class="col-12">
+            <h1>Reis advies</h1>
+
+            <div class="list-group">
+                @for (travelAdvice of possibility?.travelAdvice; track travelAdvice) {
+                <div class="list-group-item list-group-item-action" aria-current="true">
+                    @if (!travelAdvice.realistic){
+                        <div class="alert alert-danger" role="alert">
+                            {{travelAdvice.source}} denkt dat er een onrealistische overstap is.
+                        </div>
+                    }
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            @for (routePart of travelAdvice.route; track routePart; let index = $index) {
+                                @if (routePart.actualArrival && routePart.actualArrival != routePart.plannedArrival){
+                                    <del style="color: red">{{routePart.plannedArrival | date: "H:mm"}}</del>({{routePart.actualArrival | date: "H:mm"}})
+                                }@else if (routePart.cancelled)  {
+                                    <del style="color: red">{{routePart.actualArrival ?? routePart.plannedArrival | date: "H:mm"}}</del>
+                                }@else  {
+                                    {{routePart.actualArrival ?? routePart.plannedArrival | date: "H:mm"}}
+                                }
+                                @if (routePart.cancelled){
+                                    <del style="color: red">{{routePart.name}}</del>
+                                }@else {
+                                    {{routePart.name}}
+                                }
+                                @if (!(index == travelAdvice.route.length - 1)){
+                                    @if (routePart.actualDeparture && routePart.actualDeparture != routePart.plannedDeparture){
+                                        <del style="color: red">{{routePart.plannedDeparture | date: "H:mm"}}</del>({{routePart.actualDeparture | date: "H:mm"}})
+                                    }@else if(routePart.actualDeparture) {
+                                        {{routePart.actualDeparture | date: "H:mm"}}
+                                    }@else {
+                                        {{routePart.plannedDeparture | date: "H:mm"}}
+                                    }
+                                }
+                                @if(!(index == travelAdvice.route.length - 1)){
+                                    >
+                                }
+                            }
+                        </h5>
+                        <small>{{travelAdvice.plannedDurationInMinutes}}m ({{travelAdvice.actualDurationInMinutes}}m)</small>
+                    </div>
+                </div>
+                } @empty {
+                Geen reisadvies op het moment.
+                }
+            </div>
         </div>
     </div>
-    } @empty {
-    Geen reisadvies op het moment.
-    }
-
 </div>

@@ -15,6 +15,7 @@ export interface JourneyResult {
   
   export interface TravelAdvice {
     source: string
+    realistic: boolean
     route: Route[]
     plannedDurationInMinutes: number
     actualDurationInMinutes: number
@@ -23,7 +24,11 @@ export interface JourneyResult {
   export interface Route {
     name: string
     cancelled: boolean
+    alternativeTransfer: boolean
+    realisticTransfer: boolean
     plannedDeparture: Date;
     actualDeparture: Date;
+    actualArrival: Date;
+    plannedArrival: Date;
   }
   
