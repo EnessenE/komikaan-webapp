@@ -1,3 +1,3 @@
 export const environment = {
-    apiServer: "https://api.komikaan.reasulus.nl"
+    apiServer: "https://api.komikaan.nl"
 };
