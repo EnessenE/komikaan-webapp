@@ -81,7 +81,6 @@ export class MainComponent implements OnInit {
         (item) => item.realisticTransfer === false && item.cancelled == false
       );
       if (impossibility !== undefined) {
-        console.log(JSON.stringify(impossibility));
         travelAdvice.realistic = false;
       } else {
         travelAdvice.realistic = true;
