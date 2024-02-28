@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
 
-        <div class="col-6">
+        <div class="col-6 col-sm-12">
             <form class="form-inline my-2 my-lg-0">
                 <p>Vanaf</p>
                 <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search" [value]="originStop"
@@ -34,7 +34,7 @@
                 </div>
             </form>
         </div>
-        <div class="col-6">
+        <div class="col-6 col-sm-12">
             @if(!possibility){
             <div>
                 <div class="spinner-border" role="status">
@@ -43,10 +43,19 @@
             </div>
 
             } @else {
-            <div>
-                Gaan we het halen? {{possibility.journeyExpectation}}.
+                <h1>Kom ik aan? </h1>
+            @switch (possibility.journeyExpectation) {
+                @case("Full"){
+                  <h1 style="color: green">Ja!</h1>
+                }
+                @case ("Maybe") {
+                    <h1 style="color: yellow">Waarschijnlijk</h1>
+                }
+                @case ("Nope") {
+                    <h1 style="color: red">Lijkt er niet op</h1>
+                }
+            }
 
-            </div>
             <h1>Problemen onderweg</h1>
             <div class="list-group">
 
@@ -65,7 +74,7 @@
 
 
                     @for (advice of disruption.advices; track advice) {
-                    <small class="text-body-secondary">{{advice}}</small>
+                    <small class="text-body-secondary">{{advice}}</small><br>
                     } @empty {
                     <small>Geen NS advies</small>
                     }
@@ -90,7 +99,7 @@
                         </div>
                     }
                     <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">
+                        <h6 class="mb-1">
                             @for (routePart of travelAdvice.route; track routePart; let index = $index) {
                                 @if (routePart.actualArrival && routePart.actualArrival != routePart.plannedArrival){
                                     <del style="color: red">{{routePart.plannedArrival | date: "H:mm"}}</del>({{routePart.actualArrival | date: "H:mm"}})
@@ -117,7 +126,7 @@
                                     >
                                 }
                             }
-                        </h5>
+                        </h6>
                         <small>{{travelAdvice.plannedDurationInMinutes}}m ({{travelAdvice.actualDurationInMinutes}}m)</small>
                     </div>
                 </div>

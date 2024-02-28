@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { JourneyResult } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
+import { JourneyExpectation } from '../../enums/journey-expectation';
 
 @Component({
   selector: 'app-main',
@@ -68,7 +69,7 @@ export class MainComponent implements OnInit {
     this.possibility = journeyResult;
     this.possibility.travelAdvice.forEach((travelAdvice) => {
       var impossibility = travelAdvice.route.find(
-        (item) => item.realisticTransfer === false
+        (item) => item.realisticTransfer === false && item.cancelled == false
       );
       if (impossibility !== undefined) {
         console.log(JSON.stringify(impossibility));

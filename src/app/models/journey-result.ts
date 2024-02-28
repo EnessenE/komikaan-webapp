@@ -1,5 +1,7 @@
+import { JourneyExpectation } from "../enums/journey-expectation"
+
 export interface JourneyResult {
-    journeyExpectation: string
+    journeyExpectation: JourneyExpectation
     disruptions: Disruption[]
     travelAdvice: TravelAdvice[]
   }
