@@ -17,6 +17,7 @@ export class MainComponent implements OnInit {
   originStop: string = 'Amsterdam Centraal';
   destinationStop: string = 'Eindhoven Centraal';
   possibility: JourneyResult | undefined;
+  loadingPossibility: boolean = false;
 
   constructor(private apiService: ApiService) {}
 
@@ -58,14 +59,18 @@ export class MainComponent implements OnInit {
     localStorage.setItem('originStop', this.originStop);
     localStorage.setItem('destinationStop', this.destinationStop);
     console.log(this.originStop + ' > ' + this.destinationStop);
-    this.apiService
-      .GetPossibility(this.originStop, this.destinationStop)
-      .subscribe({
-        next: (data) => this.setPossibility(data),
-      });
+    if (this.originStop && this.destinationStop) {
+      this.loadingPossibility = true;
+      this.apiService
+        .GetPossibility(this.originStop, this.destinationStop)
+        .subscribe({
+          next: (data) => this.setPossibility(data),
+        });
+    }
   }
 
   setPossibility(journeyResult: JourneyResult) {
+    this.loadingPossibility = false
     this.possibility = journeyResult;
     this.possibility.travelAdvice.forEach((travelAdvice) => {
       var impossibility = travelAdvice.route.find(
@@ -74,8 +79,7 @@ export class MainComponent implements OnInit {
       if (impossibility !== undefined) {
         console.log(JSON.stringify(impossibility));
         travelAdvice.realistic = false;
-      }
-      else{
+      } else {
         travelAdvice.realistic = true;
       }
     });

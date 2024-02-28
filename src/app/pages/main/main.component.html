@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
 
-        <div class="col-6 col-sm-12">
+        <div class="col-lg-6 col-sm-12">
             <form class="form-inline my-2 my-lg-0">
                 <p>Vanaf</p>
                 <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search" [value]="originStop"
@@ -34,62 +34,72 @@
                 </div>
             </form>
         </div>
-        <div class="col-6 col-sm-12">
-            @if(!possibility){
+        <div class="col-lg-6 col-sm-12">
+            @if(loadingPossibility){
             <div>
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
 
-            } @else {
+            } @else if (possibility){
                 <h1>Kom ik aan? </h1>
-            @switch (possibility.journeyExpectation) {
-                @case("Full"){
-                  <h1 style="color: green">Ja!</h1>
+                @switch (possibility.journeyExpectation) {
+                    @case("Full"){
+                    <h1 style="color: green">Ja!</h1>
+                    }
+                    @case ("Maybe") {
+                        <h1 style="color: orange">Waarschijnlijk</h1>
+                    }
+                    @case ("Nope") {
+                        <h1 style="color: red">Lijkt er niet op</h1>
+                    }
                 }
-                @case ("Maybe") {
-                    <h1 style="color: orange">Waarschijnlijk</h1>
-                }
-                @case ("Nope") {
-                    <h1 style="color: red">Lijkt er niet op</h1>
-                }
+
             }
 
+        </div>
+        <div class="col-12">
             <h1>Problemen onderweg</h1>
             <div class="list-group">
-
+            @if (possibility){
                 @for (disruption of possibility.disruptions; track disruption) {
-                <div class="list-group-item list-group-item-action" aria-current="true">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">{{disruption.title}}</h5>
-                        <small>{{disruption.expectedEnd | date:'medium'}}</small>
+                    <div class="list-group-item list-group-item-action" aria-current="true">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{disruption.title}}</h5>
+                            <small>{{disruption.expectedEnd | date:'medium'}}</small>
+                        </div>
+
+                        @for (description of disruption.descriptions; track description) {
+                        <p class="mb-1">{{description}}</p>
+                        } @empty {
+                        <small>Geen beschrijving</small>
+                        }
+
+
+                        @for (advice of disruption.advices; track advice) {
+                        <small class="text-body-secondary">{{advice}}</small><br>
+                        } @empty {
+                        <small>Geen NS advies</small>
+                        }
                     </div>
 
-                    @for (description of disruption.descriptions; track description) {
-                    <p class="mb-1">{{description}}</p>
-                    } @empty {
-                    <small>Geen beschrijving</small>
-                    }
-
-
-                    @for (advice of disruption.advices; track advice) {
-                    <small class="text-body-secondary">{{advice}}</small><br>
-                    } @empty {
-                    <small>Geen NS advies</small>
-                    }
-                </div>
-
                 } @empty {
-                No problems!
+                Geen problemen op dit traject volgens onze data.
                 }
-            </div>
+            
+            } @else if (loadingPossibility){
+                <p>Zoekende voor data over storing op dit traject...</p>
+            } 
+            @else {
+                <p>Selecteer een traject om problemen onderweg in te zien</p>
             }
+            </div>
         </div>
-        
         <div class="col-12">
             <h1>Reis advies</h1>
 
+            @if (possibility){
             <div class="list-group">
                 @for (travelAdvice of possibility?.travelAdvice; track travelAdvice) {
                 <div class="list-group-item list-group-item-action" aria-current="true">
@@ -134,6 +144,11 @@
                 Geen reisadvies op het moment.
                 }
             </div>
+            } @else if (loadingPossibility){
+                <p>Zoekende voor data voor jou reis...</p>
+            } @else {
+                <p>Selecteer een route voor reisadvies.</p>
+            }
         </div>
     </div>
 </div>
