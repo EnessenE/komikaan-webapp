@@ -56,10 +56,14 @@ export class MainComponent implements OnInit {
   }
 
   checkPossibility() {
-    localStorage.setItem('originStop', this.originStop);
-    localStorage.setItem('destinationStop', this.destinationStop);
     console.log(this.originStop + ' > ' + this.destinationStop);
-    if (this.originStop && this.destinationStop) {
+    if (this.originStop != null) {
+      localStorage.setItem('originStop', this.originStop);
+    }
+    if (this.destinationStop != null) {
+      localStorage.setItem('destinationStop', this.destinationStop);
+    }
+    if (this.originStop !== null && this.destinationStop !== null) {
       this.loadingPossibility = true;
       this.apiService
         .GetPossibility(this.originStop, this.destinationStop)
@@ -70,7 +74,7 @@ export class MainComponent implements OnInit {
   }
 
   setPossibility(journeyResult: JourneyResult) {
-    this.loadingPossibility = false
+    this.loadingPossibility = false;
     this.possibility = journeyResult;
     this.possibility.travelAdvice.forEach((travelAdvice) => {
       var impossibility = travelAdvice.route.find(
