@@ -20,9 +20,10 @@ RUN npm run build --prod
 # Use official nginx image as the base image
 FROM nginx:latest
 
+RUN rm -rvf /usr/share/nginx/html
 RUN dir -s
 # Copy the build output to replace the default nginx contents.
-COPY --from=build /usr/local/app/dist/komikthuis /usr/share/nginx/html
+COPY --from=build /usr/local/app/dist/komikthuis/browser /usr/share/nginx/html
 COPY /nginx.docker.conf  /etc/nginx/conf.d/default.conf
 
 # Expose port 80
