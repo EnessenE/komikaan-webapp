@@ -16,13 +16,13 @@ export class ApiService {
     }
 
     return this.http.get<Array<string>>(
-      environment.apiServer + '/stops/search?filter=' + text
+      environment.apiServer + '/v1/stops/search?filter=' + text
     );
   }
 
   GetPossibility(origin: string, destination: string): Observable<JourneyResult> {
     return this.http.get<JourneyResult>(
-      environment.apiServer + '/Disruption/' + origin + '/' + destination
+      environment.apiServer + '/v1/Disruption/' + origin + '/' + destination
     );
   }
 }

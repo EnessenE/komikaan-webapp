@@ -18,6 +18,7 @@ export class MainComponent implements OnInit {
   destinationStop: string = 'Eindhoven Centraal';
   possibility: JourneyResult | undefined;
   loadingPossibility: boolean = false;
+  searchFailed = false;
 
   constructor(private apiService: ApiService) {}
 

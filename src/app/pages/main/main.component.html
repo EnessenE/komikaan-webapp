@@ -3,7 +3,8 @@
 
         <div class="col-lg-6 col-sm-12">
             <form class="form-inline my-2 my-lg-0">
-                <p>Vanaf</p>
+                <p>Vanaf welke plek start je?</p>
+                
                 <input class="form-control mr-sm-2" type="search" placeholder="Vanaf" aria-label="Search" [value]="originStop"
                     (input)="onSearchInputChangeOrigin($event)">
                 <div>
@@ -16,9 +17,9 @@
                                 No relevant stops found
                             }
                         }
-                    </ul>
                 </div>
-                <p>Naar</p>
+                </div>
+                <p>Waar ga je naar toe?</p>
                 <input class="form-control mr-sm-2" type="search" placeholder="Naar" aria-label="Search" [value]="destinationStop"
                     (input)="onSearchInputChange($event)">
                 <div>
@@ -55,6 +56,7 @@
                         <h1 style="color: red">Lijkt er niet op</h1>
                     }
                 }
+                <p><small>Op basis van wat wij weten.</small></p>
 
             }
 
@@ -132,7 +134,22 @@
                                 @if (routePart.cancelled){
                                     &nbsp;<del style="color: red">{{routePart.name}}</del>&nbsp;
                                 }@else {
+                                    @if (routePart.plannedArrivalTrack){
+                                        @if (routePart.actualArrivalTrack && routePart.actualArrivalTrack != routePart.plannedArrivalTrack){
+                                            <del style="color: red">{{routePart.plannedArrivalTrack}}</del>({{routePart.actualArrivalTrack}})
+                                        }
+                                        @else {
+                                            {{routePart.plannedArrivalTrack}}
+                                        }
+                                    }
                                     {{routePart.name}}
+                                    @if (routePart.plannedDepartureTrack){
+                                        @if (routePart.actualDepartureTrack && routePart.actualDepartureTrack != routePart.plannedDepartureTrack){
+                                            <del style="color: red">{{routePart.plannedDepartureTrack}}</del>({{routePart.actualDepartureTrack}})
+                                        }
+                                        @else {
+                                            {{routePart.plannedDepartureTrack}}
+                                        }                                    }
                                 }
                                 @if (!(index == travelAdvice.route.length - 1)){
                                     @if (routePart.actualDeparture && routePart.actualDeparture != routePart.plannedDeparture){
@@ -156,9 +173,9 @@
                                 }
                             }
                         </h6>
-                        <small>{{travelAdvice.plannedDurationInMinutes * 1000 * 60 | date:'HH:mm'}}
+                        <small>{{travelAdvice.plannedDurationInMinutes * 1000 * 60 | date:'HH:mm':'+0000'}}
                             @if (travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes){
-                                ({{travelAdvice.actualDurationInMinutes * 1000 * 60 | date:'HH:mm'}})
+                                <span style="color: orange">({{travelAdvice.actualDurationInMinutes * 1000 * 60 | date:'HH:mm':'+0000'}})</span>
                             }
                             </small>
                     </div>
