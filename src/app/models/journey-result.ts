@@ -28,9 +28,17 @@ export interface JourneyResult {
     cancelled: boolean
     alternativeTransfer: boolean
     realisticTransfer: boolean
+
     plannedDeparture: Date;
+    plannedArrival: Date;
+
     actualDeparture: Date;
     actualArrival: Date;
-    plannedArrival: Date;
+
+    plannedArrivalTrack: string;
+    plannedDepartureTrack: string;
+
+    actualArrivalTrack: string;
+    actualDepartureTrack: string;
   }
   
