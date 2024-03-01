@@ -1,3 +1,12 @@
+@if (error) {
+    <app-error></app-error>
+    <div style="background-color: red">
+        <h1>Iets ging fout!</h1>
+        <p>{{ error.message }}</p>
+        <small>We hebben nog geen mooie error pagina gebouwd</small>
+    </div>
+}
+
 <div class="container">
     <div class="row">
         <div class="col-lg-6 col-sm-12">
@@ -41,7 +50,7 @@
                     type="search"
                     placeholder="Utrecht Centraal"
                     aria-label="Search"
-                    [value]="destinationStop" 
+                    [value]="destinationStop"
                     (input)="onSearchInputChange($event)"
                 />
                 <div>
@@ -64,17 +73,19 @@
             </form>
         </div>
         <div class="col-lg-6 col-sm-12">
+            <h1>Kom ik aan?</h1>
             @if (loadingPossibility) {
                 <div>
                     <div
                         class="spinner-border"
                         role="status"
                     >
+                        ❓
                         <span class="visually-hidden">Loading...</span>
                     </div>
+                    <p>Even kijken...</p>
                 </div>
             } @else if (possibility) {
-                <h1>Kom ik aan?</h1>
                 @switch (possibility.journeyExpectation) {
                     @case ('Full') {
                         <h1 style="color: green">Ja!</h1>
@@ -119,7 +130,16 @@
                         Geen problemen op dit traject volgens onze data.
                     }
                 } @else if (loadingPossibility) {
-                    <p>Zoekende voor data over storing op dit traject...</p>
+                    <div>
+                        <div
+                            class="spinner-border"
+                            role="status"
+                        >
+                            🚉
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Zoekende voor data over problemen op dit traject...</p>
+                    </div>
                 } @else {
                     <p>Selecteer een traject om problemen onderweg in te zien</p>
                 }
@@ -249,7 +269,16 @@
                     }
                 </div>
             } @else if (loadingPossibility) {
-                <p>Zoekende voor data voor jou reis...</p>
+                <div>
+                    <div
+                        class="spinner-border"
+                        role="status"
+                    >
+                        🚅
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <p>Zoekende voor advies voor jou reis...</p>
             } @else {
                 <p>Selecteer een route voor reisadvies.</p>
             }
