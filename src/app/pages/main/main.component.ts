@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, inject } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { JourneyResult } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
-import { JourneyExpectation } from '../../enums/journey-expectation';
+import { ErrorComponent } from '../../comps/error/error.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'app-main',
     standalone: true,
-    imports: [DatePipe],
+    imports: [DatePipe, ErrorComponent],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
 })
@@ -19,6 +20,7 @@ export class MainComponent implements OnInit {
     possibility: JourneyResult | undefined;
     loadingPossibility: boolean = false;
     searchFailed = false;
+    error: HttpErrorResponse | undefined;
 
     constructor(private apiService: ApiService) {}
 
@@ -79,6 +81,7 @@ export class MainComponent implements OnInit {
             this.loadingPossibility = true;
             this.apiService.GetPossibility(this.originStop, this.destinationStop).subscribe({
                 next: (data) => this.setPossibility(data),
+                error: (error) => this.handleError(error),
             });
         }
     }
@@ -96,5 +99,10 @@ export class MainComponent implements OnInit {
                 travelAdvice.realistic = true;
             }
         });
+    }
+
+    handleError(error: HttpErrorResponse) {
+        this.error = error;
+        console.log(error);
     }
 }
