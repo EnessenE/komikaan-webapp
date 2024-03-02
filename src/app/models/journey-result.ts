@@ -10,6 +10,7 @@ export interface JourneyResult {
   export interface Disruption {
     source: DataSource
     title: string
+    start: Date
     expectedEnd: Date
     descriptions: string[]
     type: string

@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-lg-6 col-12">
             <form class="form-inline my-2 my-lg-0">
-                <p>Vanaf welke plek start je?</p>
+                <p>Vanaf welk station start je?</p>
 
                 <input
                     class="form-control mr-sm-2"
@@ -44,7 +44,7 @@
                 >
                     ⇔
                 </button>
-                <p>Waar ga je naar toe?</p>
+                <p>Naar welk station ga je toe?</p>
                 <input
                     class="form-control mr-sm-2"
                     type="search"
@@ -110,15 +110,20 @@
                             aria-current="true"
                         >
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{ disruption.title }}</h5>
-                                <small>{{ disruption.expectedEnd | date: 'medium' }}</small>
+                                <h5 class="mb-1">{{disruption.type}} | {{ disruption.title }}</h5>
+                                <small>{{ disruption.start | date: 'EEEE, MMMM d, y, HH:mm' }} </small>
+                            </div>
+                            <div class="d-flex w-100 justify-content-between">
+                                <p class="mb-1">
+                                    @for (description of disruption.descriptions; track description) {
+                                        {{ description }} <br>
+                                    } @empty {
+                                        <small>Geen beschrijving</small>
+                                    }
+                                </p>
+                                <small>{{ disruption.expectedEnd | date: 'EEEE, MMMM d, y, HH:mm' }}</small>
                             </div>
 
-                            @for (description of disruption.descriptions; track description) {
-                                <p class="mb-1">{{ description }}</p>
-                            } @empty {
-                                <small>Geen beschrijving</small>
-                            }
                             @for (advice of disruption.advices; track advice) {
                                 <small class="text-body-secondary">{{ advice }}</small
                                 ><br />
@@ -170,25 +175,27 @@
                                             routePart.actualArrival &&
                                             routePart.actualArrival != routePart.plannedArrival
                                         ) {
-                                            <del style="color: red">{{ routePart.plannedArrival | date: 'H:mm' }}</del>
+                                            <del style="color: red">{{ routePart.plannedArrival | date: 'HH:mm' }}</del>
                                             @if (!routePart.realisticTransfer) {
                                                 <span style="color: orange"
-                                                    >({{ routePart.actualArrival | date: 'H:mm' }})</span
+                                                    >({{ routePart.actualArrival | date: 'HH:mm' }})</span
                                                 >
                                             } @else {
-                                                ({{ routePart.actualArrival | date: 'H:mm' }})
+                                                ({{ routePart.actualArrival | date: 'HH:mm' }})
                                             }
                                         } @else if (routePart.cancelled) {
                                             <del style="color: red">{{
-                                                routePart.actualArrival ?? routePart.plannedArrival | date: 'H:mm'
+                                                routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
                                             }}</del>
                                         } @else {
                                             @if (!routePart.realisticTransfer) {
                                                 <span style="color: orange">{{
-                                                    routePart.actualArrival ?? routePart.plannedArrival | date: 'H:mm'
+                                                    routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
                                                 }}</span>
                                             } @else {
-                                                {{ routePart.actualArrival ?? routePart.plannedArrival | date: 'H:mm' }}
+                                                {{
+                                                    routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
+                                                }}
                                             }
                                         }
                                         @if (routePart.cancelled) {
@@ -227,22 +234,22 @@
                                                 <del style="color: red">{{
                                                     routePart.plannedDeparture | date: 'H:mm'
                                                 }}</del
-                                                >({{ routePart.actualDeparture | date: 'H:mm' }})
+                                                >({{ routePart.actualDeparture | date: 'HH:mm' }})
                                             } @else if (routePart.actualDeparture) {
                                                 @if (!routePart.realisticTransfer) {
                                                     <span style="color: orange">{{
-                                                        routePart.actualDeparture | date: 'H:mm'
+                                                        routePart.actualDeparture | date: 'HH:mm'
                                                     }}</span>
                                                 } @else {
-                                                    {{ routePart.actualDeparture | date: 'H:mm' }}
+                                                    {{ routePart.actualDeparture | date: 'HH:mm' }}
                                                 }
                                             } @else {
                                                 @if (!routePart.realisticTransfer) {
                                                     <span style="color: orange">{{
-                                                        routePart.plannedDeparture | date: 'H:mm'
+                                                        routePart.plannedDeparture | date: 'HH:mm'
                                                     }}</span>
                                                 } @else {
-                                                    {{ routePart.plannedDeparture | date: 'H:mm' }}
+                                                    {{ routePart.plannedDeparture | date: 'HH:mm' }}
                                                 }
                                             }
                                             >
