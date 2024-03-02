@@ -1,3 +1,4 @@
+import { DataSource } from "../enums/datasource"
 import { JourneyExpectation } from "../enums/journey-expectation"
 
 export interface JourneyResult {
@@ -7,7 +8,7 @@ export interface JourneyResult {
   }
   
   export interface Disruption {
-    source: string
+    source: DataSource
     title: string
     expectedEnd: Date
     descriptions: string[]
@@ -16,7 +17,7 @@ export interface JourneyResult {
   }
   
   export interface TravelAdvice {
-    source: string
+    source: DataSource
     realistic: boolean
     route: Route[]
     plannedDurationInMinutes: number
