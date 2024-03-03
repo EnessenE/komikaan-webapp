@@ -4,11 +4,12 @@ import { JourneyResult } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-main',
     standalone: true,
-    imports: [DatePipe, ErrorComponent],
+    imports: [DatePipe, ErrorComponent, NgbTooltipModule],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
 })

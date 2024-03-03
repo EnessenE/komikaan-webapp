@@ -15,6 +15,7 @@ export interface JourneyResult {
     descriptions: string[]
     type: string
     advices: string[]
+    affectedStops: string[]
   }
   
   export interface TravelAdvice {
@@ -28,7 +29,7 @@ export interface JourneyResult {
   export interface Route {
     name: string
     cancelled: boolean
-    alternativeTransfer: boolean
+    alternativeTransport: boolean
     realisticTransfer: boolean
 
     plannedDeparture: Date;

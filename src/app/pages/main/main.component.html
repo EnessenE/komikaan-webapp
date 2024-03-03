@@ -109,27 +109,47 @@
                             class="list-group-item list-group-item-action"
                             aria-current="true"
                         >
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{disruption.type}} | {{ disruption.title }}</h5>
-                                <small>{{ disruption.start | date: 'EEEE, MMMM d, y, HH:mm' }} </small>
-                            </div>
-                            <div class="d-flex w-100 justify-content-between">
-                                <p class="mb-1">
-                                    @for (description of disruption.descriptions; track description) {
-                                        {{ description }} <br>
-                                    } @empty {
-                                        <small>Geen beschrijving</small>
-                                    }
-                                </p>
-                                <small>{{ disruption.expectedEnd | date: 'EEEE, MMMM d, y, HH:mm' }}</small>
-                            </div>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5>{{ disruption.type }}</h5>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <h5 class="mb-1">{{ disruption.title }}</h5>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <small>{{ disruption.start | date: 'EEEE, MMMM d, y, HH:mm' }} </small>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <p class="mb-1">
+                                            @for (description of disruption.descriptions; track description) {
+                                                {{ description }} <br />
+                                            } @empty {
+                                                <small>Geen beschrijving</small>
+                                            }
+                                        </p>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <small>{{ disruption.expectedEnd | date: 'EEEE, MMMM d, y, HH:mm' }} </small>
+                                    </div>
+                                    <div class="col-12">
+                                        @for (advice of disruption.advices; track advice) {
+                                            <small class="text-body-secondary">{{ advice }}</small
+                                            ><br />
+                                        } @empty {
+                                            <small>Geen NS advies</small>
+                                        }
+                                    </div>
 
-                            @for (advice of disruption.advices; track advice) {
-                                <small class="text-body-secondary">{{ advice }}</small
-                                ><br />
-                            } @empty {
-                                <small>Geen NS advies</small>
-                            }
+                                    <div class="col-12">
+                                        @for (stops of disruption.affectedStops; track stops) {
+                                            <small class="text-body-secondary">{{ stops }}, </small>
+                                        } @empty {
+                                            <small>Alles ok!</small>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     } @empty {
                         Geen problemen op dit traject volgens onze data.
@@ -171,6 +191,19 @@
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-1">
                                     @for (routePart of travelAdvice.route; track routePart; let index = $index) {
+                                        @if (index > 0) {
+                                            @if (routePart.alternativeTransport) {
+                                                <span
+                                                    style="color: brown"
+                                                    ngbTooltip="Dit maakt gebruikt van alternatief transport"
+                                                    >!❓!</span
+                                                >
+                                            } @else {
+                                                
+                                                <span role="img" aria-label="Reis met trein"  ngbTooltip="Een reis met de trein">>🚆></span>
+
+                                            }
+                                        }
                                         @if (
                                             routePart.actualArrival &&
                                             routePart.actualArrival != routePart.plannedArrival
@@ -252,7 +285,6 @@
                                                     {{ routePart.plannedDeparture | date: 'HH:mm' }}
                                                 }
                                             }
-                                            >
                                         }
                                     }
                                 </h6>
