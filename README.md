@@ -1,4 +1,6 @@
 # komikaan
+[![Frontend to docker](https://github.com/EnessenE/komikaan-webapp/actions/workflows/docker-image.yml/badge.svg)](https://github.com/EnessenE/komikaan-webapp/actions/workflows/docker-image.yml) <br>
+The backend can be found [https://github.com/EnessenE/komikaan](https://github.com/EnessenE/komikaan)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.2.0.
 
