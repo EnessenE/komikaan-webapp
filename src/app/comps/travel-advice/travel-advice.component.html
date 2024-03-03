@@ -1,0 +1,130 @@
+<div
+    class="list-group-item list-group-item-action"
+    aria-current="true"
+>
+    @if (!travelAdvice.realistic) {
+        <div
+            class="alert alert-danger"
+            role="alert"
+        >
+            {{ travelAdvice.source }} denkt dat er een onrealistische overstap is.
+        </div>
+    }
+    <div class="d-flex w-100 justify-content-between">
+        <h6 class="mb-1">
+            @for (routePart of travelAdvice.route; track routePart; let index = $index) {
+                <!-- If the previous step has equivelant stations. Then dont show this. -->
+                @if (
+                    !(
+                        travelAdvice.route[index - 1] &&
+                        travelAdvice.route[index - 1].arrivalStation === routePart.departureStation
+                    )
+                ) {
+                    @if (routePart.cancelled) {
+                        &nbsp;<del style="color: red">{{ routePart.departureStation }}</del
+                        >&nbsp;
+                    } @else {
+                        {{ routePart.departureStation }}
+                    }
+                }
+
+                @if (routePart.plannedDepartureTrack) {
+                    @if (
+                        routePart.actualDepartureTrack &&
+                        routePart.actualDepartureTrack != routePart.plannedDepartureTrack
+                    ) {
+                        <del style="color: red">{{ routePart.plannedDepartureTrack }}</del
+                        >({{ routePart.actualDepartureTrack }})
+                    } @else {
+                        @if (routePart.cancelled) {
+                            <del style="color: red">{{ routePart.plannedDepartureTrack }}</del>
+                        } @else {
+                            {{ routePart.plannedDepartureTrack }}
+                        }
+                    }
+                }
+                @if (routePart.actualDeparture && routePart.actualDeparture != routePart.plannedDeparture) {
+                    <del style="color: red">{{ routePart.plannedDeparture | date: 'H:mm' }}</del
+                    >({{ routePart.actualDeparture | date: 'HH:mm' }})
+                } @else {
+                    @if (!routePart.realisticTransfer) {
+                        <span style="color: orange">{{
+                            routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
+                        }}</span>
+                    } @else {
+                        @if (routePart.cancelled) {
+                            <del style="color: red">{{
+                                routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
+                            }}</del>
+                        } @else {
+                            {{ routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm' }}
+                        }
+                    }
+                }
+
+                @if (routePart.alternativeTransport) {
+                    <span
+                        style="color: brown"
+                        ngbTooltip="Dit stuk maakt gebruik van alternatief transport"
+                        >>{{ routePart.type }}></span
+                    >
+                } @else {
+                    <span
+                        role="img"
+                        aria-label="Reis met trein"
+                        ngbTooltip="Een reis met de trein"
+                        >>🚆></span
+                    >
+                }
+
+                @if (routePart.actualArrival && routePart.actualArrival != routePart.plannedArrival) {
+                    <del style="color: red">{{ routePart.plannedArrival | date: 'HH:mm' }}</del>
+                    @if (!routePart.realisticTransfer) {
+                        <span style="color: orange">({{ routePart.actualArrival | date: 'HH:mm' }})</span>
+                    } @else {
+                        ({{ routePart.actualArrival | date: 'HH:mm' }})
+                    }
+                } @else if (routePart.cancelled) {
+                    <del style="color: red">{{
+                        routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
+                    }}</del>
+                } @else {
+                    @if (!routePart.realisticTransfer) {
+                        <span style="color: orange">{{
+                            routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
+                        }}</span>
+                    } @else {
+                        {{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}
+                    }
+                }
+
+                @if (routePart.cancelled) {
+                    &nbsp;<del style="color: red">{{ routePart.arrivalStation }}</del
+                    >&nbsp;
+                } @else {
+                    @if (routePart.plannedArrivalTrack) {
+                        @if (
+                            routePart.actualArrivalTrack &&
+                            routePart.actualArrivalTrack != routePart.plannedArrivalTrack
+                        ) {
+                            <del style="color: red">{{ routePart.plannedArrivalTrack }}</del
+                            >({{ routePart.actualArrivalTrack }})
+                        } @else {
+                            {{ routePart.plannedArrivalTrack }}
+                        }
+                    }
+                    {{ routePart.arrivalStation }}
+                }
+            }
+        </h6>
+
+        <small
+            >{{ travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }}
+            @if (travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes) {
+                <span style="color: orange"
+                    >({{ travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }})</span
+                >
+            }
+        </small>
+    </div>
+</div>

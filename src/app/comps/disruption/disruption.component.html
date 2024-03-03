@@ -1,0 +1,46 @@
+<div
+    class="list-group-item list-group-item-action"
+    aria-current="true"
+>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h5>{{ disruption.type }}</h5>
+            </div>
+            <div class="col-12 col-md-9">
+                <h5 class="mb-1">{{ disruption.title }}</h5>
+            </div>
+            <div class="col-12 col-md-3">
+                <small>{{ disruption.start | date: 'EEEE, MMMM d, y, HH:mm' }} </small>
+            </div>
+            <div class="col-12 col-md-9">
+                <p class="mb-1">
+                    @for (description of disruption.descriptions; track description) {
+                        {{ description }} <br />
+                    } @empty {
+                        <small>Geen beschrijving</small>
+                    }
+                </p>
+            </div>
+            <div class="col-12 col-md-3">
+                <small>{{ disruption.expectedEnd | date: 'EEEE, MMMM d, y, HH:mm' }} </small>
+            </div>
+            <div class="col-12">
+                @for (advice of disruption.advices; track advice) {
+                    <small class="text-body-secondary">{{ advice }}</small
+                    ><br />
+                } @empty {
+                    <small>Geen NS advies</small>
+                }
+            </div>
+
+            <div class="col-12">
+                @for (stops of disruption.affectedStops; track stops) {
+                    <small class="text-body-secondary">{{ stops }}, </small>
+                } @empty {
+                    <small>Alles ok!</small>
+                }
+            </div>
+        </div>
+    </div>
+</div>
