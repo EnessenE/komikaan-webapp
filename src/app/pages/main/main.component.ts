@@ -5,11 +5,13 @@ import { DatePipe } from '@angular/common';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { DisruptionComponent } from '../../comps/disruption/disruption.component';
+import { TravelAdviceComponent } from '../../comps/travel-advice/travel-advice.component';
 
 @Component({
     selector: 'app-main',
     standalone: true,
-    imports: [DatePipe, ErrorComponent, NgbTooltipModule],
+    imports: [DatePipe, ErrorComponent, NgbTooltipModule, DisruptionComponent, TravelAdviceComponent],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
 })

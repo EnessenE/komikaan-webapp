@@ -27,7 +27,10 @@ export interface JourneyResult {
   }
   
   export interface Route {
-    name: string
+    departureStation: string;
+    arrivalStation: string;
+
+    type: string;
     cancelled: boolean
     alternativeTransport: boolean
     realisticTransfer: boolean
@@ -35,8 +38,8 @@ export interface JourneyResult {
     plannedDeparture: Date;
     plannedArrival: Date;
 
-    actualDeparture: Date;
-    actualArrival: Date;
+    actualDeparture: Date | null;
+    actualArrival: Date | null;
 
     plannedArrivalTrack: string;
     plannedDepartureTrack: string;
