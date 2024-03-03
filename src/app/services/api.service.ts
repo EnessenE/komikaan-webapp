@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { JourneyResult } from '../models/journey-result';
+import { SimplifiedStop } from '../models/simplified-stop';
 
 @Injectable({
   providedIn: 'root',
@@ -10,12 +11,12 @@ import { JourneyResult } from '../models/journey-result';
 export class ApiService {
   constructor(private http: HttpClient) {}
 
-  GetStops(text: string): Observable<Array<string>> {
+  GetStops(text: string): Observable<Array<SimplifiedStop>> {
     if (!(text.length > 0)) {
       text = 'Amsterdam';
     }
 
-    return this.http.get<Array<string>>(
+    return this.http.get<Array<SimplifiedStop>>(
       environment.apiServer + '/v1/stops/search?filter=' + text
     );
   }
