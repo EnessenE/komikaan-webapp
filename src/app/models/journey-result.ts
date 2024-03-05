@@ -21,12 +21,12 @@ export interface JourneyResult {
   export interface TravelAdvice {
     source: DataSource
     realistic: boolean
-    route: Route[]
+    route: RoutePart[]
     plannedDurationInMinutes: number
     actualDurationInMinutes: number
   }
   
-  export interface Route {
+  export interface RoutePart {
     departureStation: string;
     arrivalStation: string;
 
@@ -46,5 +46,9 @@ export interface JourneyResult {
 
     actualArrivalTrack: string;
     actualDepartureTrack: string;
+
+    direction: string;
+    lineName: string;
+    operator: string;
   }
   

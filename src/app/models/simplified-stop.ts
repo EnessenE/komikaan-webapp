@@ -1,5 +1,5 @@
 export class SimplifiedStop {
-    id!: string[]
-    code!: string[]
+    ids!: Map<string, string[]>
+    codes!: Map<string, string[]>
     name!: string
 }
