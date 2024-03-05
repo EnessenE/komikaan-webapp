@@ -14,6 +14,7 @@ export interface JourneyResult {
     expectedEnd: Date
     descriptions: string[]
     type: string
+    url: string
     advices: string[]
     affectedStops: string[]
   }

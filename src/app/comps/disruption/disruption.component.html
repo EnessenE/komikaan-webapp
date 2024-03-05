@@ -25,12 +25,19 @@
             <div class="col-12 col-md-3">
                 <small>{{ disruption.expectedEnd | date: 'EEEE, MMMM d, y, HH:mm' }} </small>
             </div>
+            @if (disruption.url) {
+                <div class="col-12">
+                    <small
+                        >Mogelijk meer info hier: <a href="{{ disruption.url }}">{{ disruption.url }}</a></small
+                    >
+                </div>
+            }
             <div class="col-12">
                 @for (advice of disruption.advices; track advice) {
                     <small class="text-body-secondary">{{ advice }}</small
                     ><br />
                 } @empty {
-                    <small>Geen NS advies</small>
+                    <small>Geen {{ disruption.source }} advies</small>
                 }
             </div>
             <small class="text-body-secondary">{{ disruption.source }}</small>
