@@ -29,7 +29,7 @@
                                 class="dropdown-item"
                                 (click)="selectStopOrigin(stop)"
                             >
-                                {{ stop }}
+                                <app-stop [stop]="stop"></app-stop>
                             </button>
                         } @empty {
                             @if (foundStopsOrigin !== undefined) {
@@ -61,7 +61,7 @@
                                 class="dropdown-item"
                                 (click)="selectStopDestination(stop)"
                             >
-                                {{ stop }}
+                                <app-stop [stop]="stop"></app-stop>
                             </button>
                         } @empty {
                             @if (foundStopsDestination !== undefined) {

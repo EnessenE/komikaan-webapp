@@ -4,20 +4,22 @@ import { JourneyResult } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { DisruptionComponent } from '../../comps/disruption/disruption.component';
 import { TravelAdviceComponent } from '../../comps/travel-advice/travel-advice.component';
+import { StopComponent } from '../../comps/stop/stop.component';
+import { SimplifiedStop } from '../../models/simplified-stop';
 
 @Component({
     selector: 'app-main',
     standalone: true,
-    imports: [DatePipe, ErrorComponent, NgbTooltipModule, DisruptionComponent, TravelAdviceComponent],
+    imports: [DatePipe, ErrorComponent, NgbTooltipModule, DisruptionComponent, TravelAdviceComponent, NgbAccordionModule, StopComponent],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit {
-    foundStopsDestination: string[] | undefined;
-    foundStopsOrigin: string[] | undefined;
+    foundStopsDestination: SimplifiedStop[] | undefined;
+    foundStopsOrigin: SimplifiedStop[] | undefined;
     originStop: string = 'Amsterdam Centraal';
     destinationStop: string = 'Eindhoven Centraal';
     possibility: JourneyResult | undefined;
@@ -60,14 +62,14 @@ export class MainComponent implements OnInit {
         });
     }
 
-    selectStopOrigin(value: string) {
-        this.originStop = value;
+    selectStopOrigin(value: SimplifiedStop) {
+        this.originStop = value.name;
         this.foundStopsOrigin = undefined;
         this.checkPossibility();
     }
 
-    selectStopDestination(value: string) {
-        this.destinationStop = value;
+    selectStopDestination(value: SimplifiedStop) {
+        this.destinationStop = value.name;
         this.foundStopsDestination = undefined;
         this.checkPossibility();
     }
