@@ -71,15 +71,15 @@
                 } @else if (routePart.type == 'Unknown') {
                     <span
                         style="color: brown"
-                        ngbTooltip="Dit stuk maakt gebruik van onbekend transport door {{ routePart.operator }}"
-                        >>{{routePart.operator}} {{ routePart.type }} [{{ routePart.lineName }}]{{ routePart.direction }}></span
+                        ngbTooltip="Een reis met onbekend transport [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction}} door {{ routePart.operator }}"
+                        >>[{{ routePart.lineName }}]{{ routePart.direction }}></span
                     >
                 } @else {
                     <span
                         role="img"
                         aria-label="Reis met trein"
-                        ngbTooltip="Een reis met de trein ({{ routePart.type }}) door {{ routePart.operator }}"
-                        >>[{{ routePart.lineName }}]{{ routePart.direction }}></span
+                        ngbTooltip="Een reis met [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction}} door {{ routePart.operator }}"
+                        >> {{ routePart.direction }}🚆></span
                     >
                 }
 
