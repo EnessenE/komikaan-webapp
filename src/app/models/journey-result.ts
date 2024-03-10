@@ -24,7 +24,7 @@ export interface JourneyResult {
     realistic: boolean
     route: RoutePart[]
     plannedDurationInMinutes: number
-    actualDurationInMinutes: number
+    actualDurationInMinutes: number | null;
   }
   
   export interface RoutePart {
@@ -48,8 +48,8 @@ export interface JourneyResult {
     actualArrivalTrack: string;
     actualDepartureTrack: string;
 
-    direction: string;
-    lineName: string;
-    operator: string;
+    direction: string | null;
+    lineName: string | null;
+    operator: string | null;
   }
   
