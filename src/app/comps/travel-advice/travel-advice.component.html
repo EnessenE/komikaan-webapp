@@ -71,15 +71,15 @@
                 } @else if (routePart.type == 'Unknown') {
                     <span
                         style="color: brown"
-                        ngbTooltip="Een reis met onbekend transport [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction}} door {{ routePart.operator }}"
+                        ngbTooltip="Een reis met onbekend transport [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction ?? 'onbekend'}} door {{ routePart.operator }}"
                         >>[{{ routePart.lineName }}]{{ routePart.direction }}></span
                     >
                 } @else {
                     <span
                         role="img"
                         aria-label="Reis met trein"
-                        ngbTooltip="Een reis met [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction}} door {{ routePart.operator }}"
-                        >> {{ routePart.direction }}🚆></span
+                        ngbTooltip="Een reis met [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction ?? 'onbekend'}} door {{ routePart.operator }}"
+                        >> {{ routePart.direction ?? routePart.lineName ?? 'Onbekend' }}🚆></span
                     >
                 }
 
@@ -126,7 +126,7 @@
 
         <small
             >{{ travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }}
-            @if (travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes) {
+            @if (travelAdvice.actualDurationInMinutes && travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes) {
                 <span style="color: orange"
                     >({{ travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }})</span
                 >
