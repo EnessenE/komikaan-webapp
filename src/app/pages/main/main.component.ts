@@ -84,6 +84,8 @@ export class MainComponent implements OnInit {
         }
         if (this.originStop !== null && this.destinationStop !== null) {
             this.loadingPossibility = true;
+            this.possibility = undefined;
+            this.error = undefined;
             this.apiService.GetPossibility(this.originStop, this.destinationStop).subscribe({
                 next: (data) => this.setPossibility(data),
                 error: (error) => this.handleError(error),
