@@ -130,8 +130,8 @@
 
             @if (possibility) {
                 <div class="list-group">
-                    @for (travelAdvice of possibility?.travelAdvice; track travelAdvice) {
-                        <app-travel-advice [travelAdvice]="travelAdvice"></app-travel-advice>
+                    @for (travelAdvice of possibility?.travelAdvice; track travelAdvice; let index = $index) {
+                        <app-travel-advice [travelAdvice]="travelAdvice" [index]="index"></app-travel-advice>
                     } @empty {
                         Geen reisadvies op het moment.
                     }
