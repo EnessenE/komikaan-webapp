@@ -126,12 +126,25 @@
             </div>
         </div>
         <div class="col-12">
-            <h1>Reis advies</h1>
 
+            @if (pinnedData) {
+                <h1>Je pins:</h1>
+                <button (click)="clearPins()">Clear pins</button>
+                @for (travelAdvice of pinnedData; track travelAdvice; let index = $index) {
+                    <app-travel-advice
+                        [travelAdvice]="travelAdvice"
+                        [index]="index"
+                    ></app-travel-advice>
+                }
+            }
+            <h1>Reis advies</h1>
             @if (possibility) {
                 <div class="list-group">
                     @for (travelAdvice of possibility?.travelAdvice; track travelAdvice; let index = $index) {
-                        <app-travel-advice [travelAdvice]="travelAdvice" [index]="index"></app-travel-advice>
+                        <app-travel-advice
+                            [travelAdvice]="travelAdvice"
+                            [index]="index"
+                        ></app-travel-advice>
                     } @empty {
                         Geen reisadvies op het moment.
                     }

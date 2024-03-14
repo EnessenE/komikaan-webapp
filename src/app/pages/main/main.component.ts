@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, inject } from '@angular/core';
 import { ApiService } from '../../services/api.service';
-import { JourneyResult } from '../../models/journey-result';
+import { JourneyResult, TravelAdvice } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -26,14 +26,23 @@ export class MainComponent implements OnInit {
     loadingPossibility: boolean = false;
     searchFailed = false;
     error: HttpErrorResponse | undefined;
+    pinnedData: TravelAdvice[] | undefined;
 
     constructor(private apiService: ApiService) {}
 
     ngOnInit(): void {
         this.originStop = localStorage.getItem('originStop') as string;
         this.destinationStop = localStorage.getItem('destinationStop') as string;
+        var pinnedDataRaw = localStorage.getItem('pinned') as string;
         if (this.originStop && this.destinationStop) {
             this.checkPossibility();
+        }
+        if (pinnedDataRaw){
+            console.log("Pinned data detected");
+            this.pinnedData = JSON.parse(pinnedDataRaw);
+        }
+        else{
+            console.log("No pinned data");
         }
     }
 
@@ -111,5 +120,10 @@ export class MainComponent implements OnInit {
     handleError(error: HttpErrorResponse) {
         this.error = error;
         console.log(error);
+    }
+
+    clearPins(){
+        localStorage.removeItem("pinned");
+        this.pinnedData = undefined;
     }
 }

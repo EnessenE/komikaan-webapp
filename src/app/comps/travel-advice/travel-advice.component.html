@@ -1,6 +1,6 @@
 <div
     class="accordion"
-    id="accordion{{index}}"
+    id="accordion{{ index }}"
 >
     <div class="accordion-item">
         <h2
@@ -24,8 +24,24 @@
                 aria-expanded="true"
                 [attr.aria-controls]="'collapse' + index"
             >
-            <bi name="pin" class="icon">Pin</bi>
-            <bi name="pin-fill" class="icon">Pin</bi>
+                <button
+                    class="button"
+                    (click)="togglePin(travelAdvice)"
+                >
+                    @if (travelAdvice.pinned) {
+                        <bi
+                            name="pin-fill"
+                            class="icon"
+                            >Pin</bi
+                        >
+                    } @else {
+                        <bi
+                            name="pin"
+                            class="icon"
+                            >Pin</bi
+                        >
+                    }
+                </button>
 
                 <p>
                     <span
@@ -47,7 +63,8 @@
         </h2>
         <div
             id="collapse{{ index }}"
-            class="accordion-collapse " collapse
+            class="accordion-collapse collapse"
+            collapse
             aria-labelledby="index"
             [attr.data-bs-parent]="'#collapse' + index"
         >
