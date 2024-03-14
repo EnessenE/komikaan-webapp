@@ -5,3 +5,17 @@
 
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
+
+.cancellation {
+    color: red;
+    text-decoration: line-through;
+}
+
+.major-info-change {
+    color: red;
+    text-decoration: line-through;
+}
+
+.minor-info-change {
+    color: green;
+}
