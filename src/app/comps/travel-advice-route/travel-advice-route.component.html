@@ -41,31 +41,34 @@
             }
         }
     }
-
-    @if (routePart.alternativeTransport) {
-        <span
-            style="color: brown"
-            ngbTooltip="Dit stuk maakt gebruik van alternatief transport door {{ routePart.operator }}"
-            >>{{ routePart.operator }} {{ routePart.type }} [{{ routePart.lineName }}]{{ routePart.direction }}></span
-        >
-    } @else if (routePart.type == 'Unknown') {
-        <span
-            style="color: brown"
-            ngbTooltip="Een reis met onbekend transport [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{
-                routePart.direction ?? 'onbekend'
-            }} door {{ routePart.operator }}"
-            >>[{{ routePart.lineName }}]{{ routePart.direction }}></span
-        >
-    } @else {
-        <span
-            role="img"
-            [attr.aria-label]="'Reis met' + routePart.type"
-            ngbTooltip="Een reis met [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{
-                routePart.direction ?? 'onbekend'
-            }} door {{ routePart.operator }}"
-            >> {{ routePart.direction ?? routePart.lineName ?? 'Onbekend' }}🚆></span
-        >
-    }
+    <span [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
+        @if (routePart.alternativeTransport) {
+            <span
+                style="color: brown"
+                ngbTooltip="Dit stuk maakt gebruik van alternatief transport door {{ routePart.operator }}"
+                >>{{ routePart.operator }} {{ routePart.type }} [{{ routePart.lineName }}]{{
+                    routePart.direction
+                }}></span
+            >
+        } @else if (routePart.type == 'Unknown') {
+            <span
+                style="color: brown"
+                ngbTooltip="Een reis met onbekend transport [{{ routePart.lineName }}] ({{
+                    routePart.type
+                }}) richting {{ routePart.direction ?? 'onbekend' }} door {{ routePart.operator }}"
+                >>[{{ routePart.lineName }}]{{ routePart.direction }}></span
+            >
+        } @else {
+            <span
+                role="img"
+                [attr.aria-label]="'Reis met' + routePart.type"
+                ngbTooltip="Een reis met [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{
+                    routePart.direction ?? 'onbekend'
+                }} door {{ routePart.operator }}"
+                >> {{ routePart.direction ?? routePart.lineName ?? 'Onbekend' }}🚆></span
+            >
+        }
+    </span>
 
     @if (routePart.actualArrival && routePart.actualArrival != routePart.plannedArrival) {
         <del class="major-info-change">{{ routePart.plannedArrival | date: 'HH:mm' }}</del>
@@ -78,7 +81,9 @@
         <del class="major-info-change">{{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}</del>
     } @else {
         @if (!routePart.realisticTransfer) {
-            <span class="minor-info-change">{{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}</span>
+            <span class="minor-info-change">{{
+                routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
+            }}</span>
         } @else {
             {{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}
         }

@@ -2,14 +2,15 @@
     <div class="row">
         <div class="col-5 col-lg-1">
             <div
-                class="badge rounded-pill text-bg-primary text-wrap"
+                class="badge  text-bg-primary text-wrap"
                 style="width: 6rem; height: 3rem"
             >
                 <p>
                     Geadviseerd door:
                     <br />
-                    <img
+                    <img ngbTooltip="{{travelAdvice.source}}"
                         class="img-fluid logo"
+                        alt="{{travelAdvice.source}}"
                         src="assets/logos/{{ travelAdvice.source }}.svg"
                     />
                 </p>

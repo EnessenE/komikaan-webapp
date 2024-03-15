@@ -13,7 +13,15 @@ import { SimplifiedStop } from '../../models/simplified-stop';
 @Component({
     selector: 'app-main',
     standalone: true,
-    imports: [DatePipe, ErrorComponent, NgbTooltipModule, DisruptionComponent, TravelAdviceComponent, NgbAccordionModule, StopComponent],
+    imports: [
+        DatePipe,
+        ErrorComponent,
+        NgbTooltipModule,
+        DisruptionComponent,
+        TravelAdviceComponent,
+        NgbAccordionModule,
+        StopComponent,
+    ],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
 })
@@ -33,40 +41,43 @@ export class MainComponent implements OnInit {
     ngOnInit(): void {
         this.originStop = localStorage.getItem('originStop') as string;
         this.destinationStop = localStorage.getItem('destinationStop') as string;
-        var pinnedDataRaw = localStorage.getItem('pinned') as string;
         if (this.originStop && this.destinationStop) {
             this.checkPossibility();
         }
-        if (pinnedDataRaw){
-            console.log("Pinned data detected");
+        this.checkForPins();
+    }
+
+    checkForPins(): void {
+        var pinnedDataRaw = localStorage.getItem('pinned') as string;
+        if (pinnedDataRaw) {
             this.pinnedData = JSON.parse(pinnedDataRaw);
+
+            console.log('Pinned data detected');
             this.processPinnedData();
-        }
-        else{
-            console.log("No pinned data");
+        } else {
+            console.log('No pinned data');
         }
     }
 
-    processPinnedData(): void{
-        this.pinnedData.forEach(advice => {
+    processPinnedData(): void {
+        this.pinnedData.forEach((advice) => {
             advice.oldData = true;
         });
     }
 
-    verifyAgainstPins(): void{
-        this.possibility?.travelAdvice.forEach(advice => {
+    verifyAgainstPins(): void {
+        this.possibility?.travelAdvice.forEach((advice) => {
             advice.pinned = true;
             advice.oldData = true;
             var existingPinnedAdvice = this.pinnedData.find(
                 (pinnedAdvice) => JSON.stringify(pinnedAdvice) === JSON.stringify(advice),
             );
-            if (existingPinnedAdvice){
-                console.log("Detected a pin! WEE WOO!")
+            if (existingPinnedAdvice) {
+                console.log('Found an old pin in new data!');
                 advice.pinned = true;
                 advice.oldData = false;
                 existingPinnedAdvice.oldData = false;
-            }
-            else{
+            } else {
                 advice.pinned = false;
                 advice.oldData = false;
             }
@@ -111,6 +122,7 @@ export class MainComponent implements OnInit {
     }
 
     checkPossibility() {
+        this.checkForPins();
         console.log(this.originStop + ' > ' + this.destinationStop);
         if (this.originStop != null) {
             localStorage.setItem('originStop', this.originStop);
@@ -147,12 +159,12 @@ export class MainComponent implements OnInit {
 
     handleError(error: HttpErrorResponse) {
         this.error = error;
-        console.log(error);
+        console.error(error);
     }
 
-    clearPins(){
-        console.log("Pins cleared!")
-        localStorage.removeItem("pinned");
+    clearPins() {
+        console.log('Pins cleared!');
+        localStorage.removeItem('pinned');
         this.pinnedData = [];
     }
 }

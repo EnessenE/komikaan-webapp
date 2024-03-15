@@ -23,7 +23,7 @@
                         <p class="text-right">{{ routePart.plannedDeparture | date: 'H:mm' }}</p>
                     </div>
                     <div class="col-6">
-                        <div>
+                        <div [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
                             <p>
                                 {{ routePart.departureStation }}
                             </p>
