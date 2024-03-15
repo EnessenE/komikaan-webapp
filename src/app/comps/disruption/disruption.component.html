@@ -40,7 +40,13 @@
                     <small>Geen {{ disruption.source }} advies</small>
                 }
             </div>
-            <small class="text-body-secondary">{{ disruption.source }}</small>
+            <small class="text-body-secondary">Bron: 
+                <img
+                    ngbTooltip="{{ disruption.source }}"
+                    class="img-fluid logo"
+                    alt="{{ disruption.source }}"
+                    src="assets/logos/{{ disruption.source }}.svg"
+            /></small>
             <!-- <div class="col-12">
                 @for (stops of disruption.affectedStops; track stops) {
                     <small class="text-body-secondary">{{ stops }}, </small>

@@ -20,7 +20,7 @@ import { SimplifiedStop } from '../../models/simplified-stop';
         DisruptionComponent,
         TravelAdviceComponent,
         NgbAccordionModule,
-        StopComponent,
+        StopComponent
     ],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
