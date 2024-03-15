@@ -1,75 +1,105 @@
-<div
-    class="accordion"
-    id="accordion{{ index }}"
->
-    <div class="accordion-item">
-        <h2
-            class="accordion-header"
-            id="heading{{ index }}"
-        >
-            @if (!travelAdvice.realistic) {
-                <div
-                    class="alert alert-danger"
-                    role="alert"
-                >
-                    {{ travelAdvice.source }} denkt dat er een onrealistische overstap is.
-                </div>
-            }
-
-            <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                [attr.data-bs-target]="'#collapse' + index"
-                aria-expanded="true"
-                [attr.aria-controls]="'collapse' + index"
+<div class="container">
+    <div class="row">
+        <div class="col-5 col-lg-1">
+            <div
+                class="badge rounded-pill text-bg-primary text-wrap"
+                style="width: 6rem; height: 3rem"
             >
-                <button
-                    class="button"
-                    (click)="togglePin(travelAdvice)"
-                >
-                    @if (travelAdvice.pinned) {
-                        <bi
-                            name="pin-fill"
-                            class="icon"
-                            >Pin</bi
-                        >
-                    } @else {
-                        <bi
-                            name="pin"
-                            class="icon"
-                            >Pin</bi
+                <p>
+                    Geadviseerd door:
+                    <br />
+                    <img
+                        class="img-fluid logo"
+                        src="assets/logos/{{ travelAdvice.source }}.svg"
+                    />
+                </p>
+            </div>
+            <button
+                class="btn"
+                (click)="togglePin(travelAdvice)"
+                style="width: 3rem; height: 3rem"
+            >
+                @if (travelAdvice.pinned) {
+                    <bi
+                        name="pin-fill"
+                        class="icon"
+                        >Pin</bi
+                    >
+                } @else {
+                    <bi
+                        name="pin"
+                        class="icon"
+                        >Pin</bi
+                    >
+                }
+            </button>
+        </div>
+        <div class="col-5 col-lg-1">
+            <p>
+                <span
+                    >{{ travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }}
+                    @if (
+                        travelAdvice.actualDurationInMinutes &&
+                        travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
+                    ) {
+                        <span class="minor-info-change">
+                            >({{ travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }})</span
                         >
                     }
-                </button>
+                </span>
+            </p>
+        </div>
 
-                <p>
-                    <span
-                        >{{ travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }}
-                        @if (
-                            travelAdvice.actualDurationInMinutes &&
-                            travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
-                        ) {
-                            <span style="color: orange"
-                                >({{
-                                    travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
-                                }})</span
+        <div class="col-12 col-lg-10">
+            <div
+                class="accordion"
+                id="accordion{{ index }}{{ travelAdvice.pinned }}"
+            >
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="heading{{ index }}"
+                    >
+                        @if (!travelAdvice.realistic) {
+                            <div
+                                class="alert alert-danger"
+                                role="alert"
                             >
+                                {{ travelAdvice.source }} denkt dat er een onrealistische overstap is.
+                            </div>
                         }
-                    </span>
-                    <app-travel-advice-route [travelAdvice]="travelAdvice"></app-travel-advice-route>
-                </p>
-            </button>
-        </h2>
-        <div
-            id="collapse{{ index }}"
-            class="accordion-collapse collapse"
-            collapse
-            aria-labelledby="index"
-            [attr.data-bs-parent]="'#collapse' + index"
-        >
-            <div class="accordion-body">
-                <app-travel-advice-expanded [travelAdvice]="travelAdvice"></app-travel-advice-expanded>
+                        <button
+                            class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            [attr.data-bs-target]="'#collapse' + index + travelAdvice.pinned"
+                            aria-expanded="true"
+                            [attr.aria-controls]="'collapse' + index + travelAdvice.pinned"
+                        >
+                            <p>
+                                <app-travel-advice-route [travelAdvice]="travelAdvice"></app-travel-advice-route>
+                            </p>
+                        </button>
+                    </h2>
+                    <div
+                        id="collapse{{ index }}{{ travelAdvice.pinned }}"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="index"
+                        [attr.data-bs-parent]="'#collapse' + index"
+                    >
+                        <div class="accordion-body">
+                            <app-travel-advice-expanded [travelAdvice]="travelAdvice"></app-travel-advice-expanded>
+                        </div>
+                    </div>
+                </div>
+                @if (travelAdvice.oldData) {
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                    >
+                        Deze data is mogelijk verouderd!
+                    </div>
+                }
             </div>
         </div>
     </div>

@@ -40,6 +40,7 @@
                 </div>
                 <button
                     type="button"
+                    class="btn btn-secondary"
                     (click)="switchAround()"
                 >
                     ⇔
@@ -127,9 +128,9 @@
         </div>
         <div class="col-12">
 
-            @if (pinnedData) {
+            @if (pinnedData.length > 0) {
                 <h1>Je pins:</h1>
-                <button (click)="clearPins()">Clear pins</button>
+                <button class="btn btn-warning" (click)="clearPins()">Haal alle pins weg</button>
                 @for (travelAdvice of pinnedData; track travelAdvice; let index = $index) {
                     <app-travel-advice
                         [travelAdvice]="travelAdvice"

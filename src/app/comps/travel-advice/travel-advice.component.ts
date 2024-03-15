@@ -41,7 +41,7 @@ export class TravelAdviceComponent {
             );
             console.log(currentIndex);
             if (currentIndex >= 0) {
-                currentPins = currentPins.splice(currentIndex);
+                currentPins.splice(currentIndex, 1);
             } else {
                 console.error('Item was pinned but not found in the pin data');
             }

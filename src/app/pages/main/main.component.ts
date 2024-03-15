@@ -26,7 +26,7 @@ export class MainComponent implements OnInit {
     loadingPossibility: boolean = false;
     searchFailed = false;
     error: HttpErrorResponse | undefined;
-    pinnedData: TravelAdvice[] | undefined;
+    pinnedData: TravelAdvice[] = [];
 
     constructor(private apiService: ApiService) {}
 
@@ -40,10 +40,37 @@ export class MainComponent implements OnInit {
         if (pinnedDataRaw){
             console.log("Pinned data detected");
             this.pinnedData = JSON.parse(pinnedDataRaw);
+            this.processPinnedData();
         }
         else{
             console.log("No pinned data");
         }
+    }
+
+    processPinnedData(): void{
+        this.pinnedData.forEach(advice => {
+            advice.oldData = true;
+        });
+    }
+
+    verifyAgainstPins(): void{
+        this.possibility?.travelAdvice.forEach(advice => {
+            advice.pinned = true;
+            advice.oldData = true;
+            var existingPinnedAdvice = this.pinnedData.find(
+                (pinnedAdvice) => JSON.stringify(pinnedAdvice) === JSON.stringify(advice),
+            );
+            if (existingPinnedAdvice){
+                console.log("Detected a pin! WEE WOO!")
+                advice.pinned = true;
+                advice.oldData = false;
+                existingPinnedAdvice.oldData = false;
+            }
+            else{
+                advice.pinned = false;
+                advice.oldData = false;
+            }
+        });
     }
 
     switchAround() {
@@ -115,6 +142,7 @@ export class MainComponent implements OnInit {
                 travelAdvice.realistic = true;
             }
         });
+        this.verifyAgainstPins();
     }
 
     handleError(error: HttpErrorResponse) {
@@ -123,7 +151,8 @@ export class MainComponent implements OnInit {
     }
 
     clearPins(){
+        console.log("Pins cleared!")
         localStorage.removeItem("pinned");
-        this.pinnedData = undefined;
+        this.pinnedData = [];
     }
 }

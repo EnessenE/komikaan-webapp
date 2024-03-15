@@ -29,6 +29,7 @@ export interface TravelAdvice {
     //TODO: move them?
     realistic: boolean;
     pinned: boolean | false;
+    oldData: boolean | false;
 }
 
 export interface RoutePart {
