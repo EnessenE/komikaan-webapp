@@ -6,7 +6,7 @@
             travelAdvice.actualDurationInMinutes &&
             travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
         ) {
-            <span style="color: orange"
+            <span class="minor-info-change"
                 >({{ travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }})</span
             >
         }

@@ -4,7 +4,7 @@
         !(travelAdvice.route[index - 1] && travelAdvice.route[index - 1].arrivalStation === routePart.departureStation)
     ) {
         @if (routePart.cancelled) {
-            &nbsp;<del style="color: red">{{ routePart.departureStation }}</del
+            &nbsp;<del class="major-info-change">{{ routePart.departureStation }}</del
             >&nbsp;
         } @else {
             {{ routePart.departureStation }}
@@ -13,27 +13,27 @@
 
     @if (routePart.plannedDepartureTrack) {
         @if (routePart.actualDepartureTrack && routePart.actualDepartureTrack != routePart.plannedDepartureTrack) {
-            <del style="color: red">{{ routePart.plannedDepartureTrack }}</del
+            <del class="major-info-change">{{ routePart.plannedDepartureTrack }}</del
             >({{ routePart.actualDepartureTrack }})
         } @else {
             @if (routePart.cancelled) {
-                <del style="color: red">{{ routePart.plannedDepartureTrack }}</del>
+                <del class="major-info-change">{{ routePart.plannedDepartureTrack }}</del>
             } @else {
                 {{ routePart.plannedDepartureTrack }}
             }
         }
     }
     @if (routePart.actualDeparture && routePart.actualDeparture != routePart.plannedDeparture) {
-        <del style="color: red">{{ routePart.plannedDeparture | date: 'H:mm' }}</del
+        <del class="major-info-change">{{ routePart.plannedDeparture | date: 'H:mm' }}</del
         >({{ routePart.actualDeparture | date: 'HH:mm' }})
     } @else {
         @if (!routePart.realisticTransfer) {
-            <span style="color: orange">{{
+            <span class="minor-info-change">{{
                 routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
             }}</span>
         } @else {
             @if (routePart.cancelled) {
-                <del style="color: red">{{
+                <del class="major-info-change">{{
                     routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
                 }}</del>
             } @else {
@@ -68,29 +68,29 @@
     }
 
     @if (routePart.actualArrival && routePart.actualArrival != routePart.plannedArrival) {
-        <del style="color: red">{{ routePart.plannedArrival | date: 'HH:mm' }}</del>
+        <del class="major-info-change">{{ routePart.plannedArrival | date: 'HH:mm' }}</del>
         @if (!routePart.realisticTransfer) {
-            <span style="color: orange">({{ routePart.actualArrival | date: 'HH:mm' }})</span>
+            <span class="minor-info-change">({{ routePart.actualArrival | date: 'HH:mm' }})</span>
         } @else {
             ({{ routePart.actualArrival | date: 'HH:mm' }})
         }
     } @else if (routePart.cancelled) {
-        <del style="color: red">{{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}</del>
+        <del class="major-info-change">{{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}</del>
     } @else {
         @if (!routePart.realisticTransfer) {
-            <span style="color: orange">{{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}</span>
+            <span class="minor-info-change">{{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}</span>
         } @else {
             {{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}
         }
     }
 
     @if (routePart.cancelled) {
-        &nbsp;<del style="color: red">{{ routePart.arrivalStation }}</del
+        &nbsp;<del class="major-info-change">{{ routePart.arrivalStation }}</del
         >&nbsp;
     } @else {
         @if (routePart.plannedArrivalTrack) {
             @if (routePart.actualArrivalTrack && routePart.actualArrivalTrack != routePart.plannedArrivalTrack) {
-                <del style="color: red">{{ routePart.plannedArrivalTrack }}</del
+                <del class="major-info-change">{{ routePart.plannedArrivalTrack }}</del
                 >({{ routePart.actualArrivalTrack }})
             } @else {
                 {{ routePart.plannedArrivalTrack }}
