@@ -11,18 +11,8 @@
         }
     }
 
-    @if (routePart.plannedDepartureTrack) {
-        @if (routePart.actualDepartureTrack && routePart.actualDepartureTrack != routePart.plannedDepartureTrack) {
-            <del class="major-info-change">{{ routePart.plannedDepartureTrack }}</del
-            >({{ routePart.actualDepartureTrack }})
-        } @else {
-            @if (routePart.cancelled) {
-                <del class="major-info-change">{{ routePart.plannedDepartureTrack }}</del>
-            } @else {
-                {{ routePart.plannedDepartureTrack }}
-            }
-        }
-    }
+    <app-track-selection [plannedTrack]="routePart.plannedDepartureTrack" [actualTrack]="routePart.actualDepartureTrack"></app-track-selection>
+
     @if (routePart.actualDeparture && routePart.actualDeparture != routePart.plannedDeparture) {
         <del class="major-info-change">{{ routePart.plannedDeparture | date: 'H:mm' }}</del
         >({{ routePart.actualDeparture | date: 'HH:mm' }})
@@ -93,14 +83,8 @@
         &nbsp;<del class="major-info-change">{{ routePart.arrivalStation }}</del
         >&nbsp;
     } @else {
-        @if (routePart.plannedArrivalTrack) {
-            @if (routePart.actualArrivalTrack && routePart.actualArrivalTrack != routePart.plannedArrivalTrack) {
-                <del class="major-info-change">{{ routePart.plannedArrivalTrack }}</del
-                >({{ routePart.actualArrivalTrack }})
-            } @else {
-                {{ routePart.plannedArrivalTrack }}
-            }
-        }
+        <app-track-selection [plannedTrack]="routePart.plannedArrivalTrack" [actualTrack]="routePart.actualArrivalTrack"></app-track-selection>
+
         {{ routePart.arrivalStation }}
     }
 }
