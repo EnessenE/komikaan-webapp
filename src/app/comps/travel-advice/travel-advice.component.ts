@@ -25,6 +25,8 @@ export class TravelAdviceComponent {
     travelAdvice!: TravelAdvice;
     @Input()
     index!: number;
+    @Input()
+    travelAdviceDisplayType!: string;
 
     togglePin(travelAdvice: TravelAdvice) {
         var pinnedDataRaw = localStorage.getItem('pinned') as string;

@@ -1,65 +1,75 @@
 <div class="container">
     <div class="row">
-        <div class="col-5 col-lg-1">
-            <div
-                class="badge  text-bg-primary text-wrap"
-                style="width: 6rem; height: 3rem"
-            >
-                <p>
-                    Geadviseerd door:
-                    <br />
-                    <img ngbTooltip="{{travelAdvice.source}}"
-                        class="img-fluid logo"
-                        alt="{{travelAdvice.source}}"
-                        src="assets/logos/{{ travelAdvice.source }}.svg"
-                    />
-                </p>
-            </div>
-            <button
-                class="btn"
-                (click)="togglePin(travelAdvice)"
-                style="width: 3rem; height: 3rem"
-            >
-                @if (travelAdvice.pinned) {
-                    <bi
-                        name="pin-fill"
-                        class="icon"
-                        >Pin</bi
-                    >
-                } @else {
-                    <bi
-                        name="pin"
-                        class="icon"
-                        >Pin</bi
-                    >
-                }
-            </button>
-        </div>
-        <div class="col-5 col-lg-1">
-            <p>
-                <span
-                    >{{ travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }}
-                    @if (
-                        travelAdvice.actualDurationInMinutes &&
-                        travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
-                    ) {
-                        <span class="minor-info-change">
-                            > ({{ travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }})</span
+        <div class="col-12 col-lg-2">
+            <div class="container">
+                <div class="row">
+                    <div class="col-3">
+                        <div
+                            class="text-wrap"
+                            ngbTooltip="{{ travelAdvice.source }}"
                         >
-                    }
-                </span>
-            </p>
+                            <p>
+                                Bron:
+                                <br />
+                                <img
+                                    class="img-fluid logo"
+                                    alt="{{ travelAdvice.source }}"
+                                    src="assets/logos/{{ travelAdvice.source }}.svg"
+                                />
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <button
+                            class="btn"
+                            (click)="togglePin(travelAdvice)"
+                            style="width: 3rem; height: 3rem"
+                        >
+                            <bi
+                                [name]="travelAdvice.pinned == true ? 'pin-fill' : 'pin'"
+                                class="icon"
+                                >Pin</bi
+                            >
+                        </button>
+                    </div>
+                    <div class="col-3 text-wrap">
+                        <p>
+                            <span>
+                                @if (
+                                    travelAdvice.actualDurationInMinutes &&
+                                    travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
+                                ) {
+                                    <span
+                                        class="minor-info-change"
+                                        ngbTooltip="Normaal {{
+                                            travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                        }}"
+                                    >
+                                        {{
+                                            travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                        }}</span
+                                    >
+                                } @else {
+                                    <span>{{
+                                        travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                    }}</span>
+                                }
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="col-12 col-lg-10">
             <div
                 class="accordion"
-                id="accordion{{ index }}{{ travelAdvice.pinned }}"
+                id="accordion{{ index }}{{ travelAdviceDisplayType }}"
             >
                 <div class="accordion-item">
                     <h2
                         class="accordion-header"
-                        id="heading{{ index }}"
+                        id="heading{{ index }}{{ travelAdviceDisplayType }}"
                     >
                         @if (!travelAdvice.realistic) {
                             <div
@@ -73,9 +83,9 @@
                             class="accordion-button collapsed"
                             type="button"
                             data-bs-toggle="collapse"
-                            [attr.data-bs-target]="'#collapse' + index + travelAdvice.pinned"
+                            [attr.data-bs-target]="'#collapse' + index + travelAdviceDisplayType"
                             aria-expanded="true"
-                            [attr.aria-controls]="'collapse' + index + travelAdvice.pinned"
+                            [attr.aria-controls]="'collapse' + index + travelAdviceDisplayType"
                         >
                             <p>
                                 <app-travel-advice-route [travelAdvice]="travelAdvice"></app-travel-advice-route>
@@ -83,10 +93,10 @@
                         </button>
                     </h2>
                     <div
-                        id="collapse{{ index }}{{ travelAdvice.pinned }}"
-                        class="accordion-collapse "
+                        id="collapse{{ index }}{{ travelAdviceDisplayType }}"
+                        class="accordion-collapse collapse"
                         aria-labelledby="index"
-                        [attr.data-bs-parent]="'#collapse' + index"
+                        [attr.data-bs-parent]="'#collapse' + index + travelAdviceDisplayType"
                     >
                         <div class="accordion-body">
                             <app-travel-advice-expanded [travelAdvice]="travelAdvice"></app-travel-advice-expanded>
@@ -103,5 +113,6 @@
                 }
             </div>
         </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
     </div>
 </div>

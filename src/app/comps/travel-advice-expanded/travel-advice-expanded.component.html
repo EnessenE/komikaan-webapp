@@ -22,53 +22,82 @@
                 <p>Rijdt niet</p>
             }
 
+            <p>
+                Een reis met {{ routePart.lineName }} ({{ routePart.type }}) richting
+                {{ routePart.direction ?? 'onbekend' }}.
+            </p>
             <div class="col-12">
                 <div class="row">
                     <div class="col-2 text-right">
-                        <app-time-selection [actual]="routePart.actualDeparture" [planned]="routePart.plannedDeparture" [cancelled]="routePart.cancelled"></app-time-selection>
+                        <app-time-selection
+                            [actual]="routePart.actualDeparture"
+                            [planned]="routePart.plannedDeparture"
+                            [cancelled]="routePart.cancelled"
+                        ></app-time-selection>
                     </div>
                     <div class="col-7">
                         <div [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
                             <p>
                                 {{ routePart.departureStation }}
                             </p>
-                            <small>
-                                Een reis met {{ routePart.lineName }} ({{ routePart.type }}) richting
-                                {{ routePart.direction ?? 'onbekend' }}.
-                            </small>
-                            <p>Stopt op:</p>
-                            @for (stop of routePart.stops; track stop; let stopIndex = $index) {
-                                @if (stopIndex > 0 && stopIndex + 1 < routePart.stops.length) {
-                                    <p>
-                                        <app-time-selection [actual]="stop.actualDeparture" [planned]="stop.plannedDeparture" [cancelled]="false"></app-time-selection>
-                                        - <app-track-selection [plannedTrack]="stop.plannedDepartureTrack" [actualTrack]="stop.actualDepartureTrack"></app-track-selection> - {{ stop.name }}
-                                    </p>
-                                }
-                            }
                         </div>
                     </div>
+
                     <div class="col-3">
-                        <app-track-selection [plannedTrack]="routePart.plannedDepartureTrack" [actualTrack]="routePart.actualDepartureTrack"></app-track-selection>
+                        <app-track-selection
+                            [plannedTrack]="routePart.plannedDepartureTrack"
+                            [actualTrack]="routePart.actualDepartureTrack"
+                        ></app-track-selection>
                     </div>
+                    @for (stop of routePart.stops; track stop; let stopIndex = $index) {
+                        @if (stopIndex > 0 && stopIndex + 1 < routePart.stops.length) {
+                            <div class="col-2 text-right stop">
+                                <app-time-selection
+                                    class="smaller-text"
+                                    [actual]="stop.actualDeparture"
+                                    [planned]="stop.plannedDeparture"
+                                    [cancelled]="false"
+                                ></app-time-selection>
+                            </div>
+
+                            <div class="col-7">
+                                <p class="smaller-text">
+                                    {{ stop.name }}
+                                </p>
+                            </div>
+                            <div class="col-3">
+                                <app-track-selection
+                                    class="smaller-text"
+                                    [plannedTrack]="stop.plannedDepartureTrack"
+                                    [actualTrack]="stop.actualDepartureTrack"
+                                ></app-track-selection>
+                            </div>
+                        }
+                    }
                 </div>
             </div>
             <div class="col-12">
                 <div class="row align-items-start">
                     <div class="col-2">
-                        <app-time-selection [actual]="routePart.actualArrival" [planned]="routePart.plannedArrival" [cancelled]="false"></app-time-selection>
+                        <app-time-selection
+                            [actual]="routePart.actualArrival"
+                            [planned]="routePart.plannedArrival"
+                            [cancelled]="false"
+                        ></app-time-selection>
                     </div>
                     <div class="col-7">
                         <p>{{ routePart.arrivalStation }}</p>
                     </div>
                     <div class="col-3">
-                        <app-track-selection [plannedTrack]="routePart.plannedArrivalTrack" [actualTrack]="routePart.actualArrivalTrack"></app-track-selection>
+                        <app-track-selection
+                            [plannedTrack]="routePart.plannedArrivalTrack"
+                            [actualTrack]="routePart.actualArrivalTrack"
+                        ></app-track-selection>
                     </div>
                 </div>
             </div>
         </div>
-        <div
-            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 border-bottom"
-        ></div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
     }
 </div>
-<p>Bron: {{ travelAdvice.source }}</p>
+<p class="smaller-text">Bron: {{ travelAdvice.source }}</p>

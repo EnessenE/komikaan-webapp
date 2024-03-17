@@ -67,19 +67,19 @@ export class MainComponent implements OnInit {
 
     verifyAgainstPins(): void {
         this.possibility?.travelAdvice.forEach((advice) => {
-            advice.pinned = true;
-            advice.oldData = true;
+            //Work around for lazy equality checks
+            const adviceCopy = structuredClone(advice);
+            adviceCopy.pinned = true;
+            adviceCopy.oldData = true;
+
             var existingPinnedAdvice = this.pinnedData.find(
-                (pinnedAdvice) => JSON.stringify(pinnedAdvice) === JSON.stringify(advice),
+                (pinnedAdvice) => JSON.stringify(pinnedAdvice) === JSON.stringify(adviceCopy),
             );
+
             if (existingPinnedAdvice) {
                 console.log('Found an old pin in new data!');
-                advice.pinned = true;
-                advice.oldData = false;
                 existingPinnedAdvice.oldData = false;
-            } else {
-                advice.pinned = false;
-                advice.oldData = false;
+                advice.pinned = true;
             }
         });
     }
