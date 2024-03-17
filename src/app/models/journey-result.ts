@@ -42,18 +42,39 @@ export interface RoutePart {
     realisticTransfer: boolean;
 
     plannedDeparture: Date;
-    plannedArrival: Date;
+    plannedArrival: Date | null;
 
     actualDeparture: Date | null;
     actualArrival: Date | null;
 
-    plannedArrivalTrack: string;
-    plannedDepartureTrack: string;
+    plannedArrivalTrack: string | null;
+    plannedDepartureTrack: string | null;
 
-    actualArrivalTrack: string;
-    actualDepartureTrack: string;
+    actualArrivalTrack: string | null;
+    actualDepartureTrack: string | null;
 
     direction: string | null;
     lineName: string | null;
     operator: string | null;
+
+    stops: JourneyStop[];
+}
+
+export interface JourneyStop{
+    name: string;
+
+    plannedDeparture: Date;
+    plannedArrival: Date | null;
+
+    actualDeparture: Date | null;
+    actualArrival: Date | null;
+
+    plannedArrivalTrack: string | null;
+    plannedDepartureTrack: string | null;
+
+    actualArrivalTrack: string | null;
+    actualDepartureTrack: string | null;
+
+    longitude: number;
+    latitude: number;
 }

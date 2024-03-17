@@ -14,8 +14,13 @@
 </p>
 <div class="container">
     @for (routePart of travelAdvice.route; track routePart; let index = $index) {
-        <div class="row align-items-start" [class]="routePart.cancelled == true ? 'cancelled' : 'normal'">
-            @if(routePart.cancelled){ <p>Rijdt niet</p> }
+        <div
+            class="row align-items-start"
+            [class]="routePart.cancelled == true ? 'cancelled' : 'normal'"
+        >
+            @if (routePart.cancelled) {
+                <p>Rijdt niet</p>
+            }
 
             <div class="col-12">
                 <div class="row">
@@ -29,22 +34,22 @@
                             </p>
                             <small>
                                 Een reis met {{ routePart.lineName }} ({{ routePart.type }}) richting
-                                {{ routePart.direction ?? 'onbekend' }}
+                                {{ routePart.direction ?? 'onbekend' }}.
                             </small>
+                            <p>Stopt op:</p>
+                            @for (stop of routePart.stops; track stop; let stopIndex = $index) {
+                                @if (stopIndex > 0 && stopIndex + 1 < routePart.stops.length) {
+                                    <p>
+                                        <app-track-selection [plannedTrack]="stop.plannedDepartureTrack" [actualTrack]="stop.actualDepartureTrack"></app-track-selection>
+                                        {{ stop.plannedArrival | date: 'H:mm' }} -
+                                        {{ stop.name }}
+                                    </p>
+                                }
+                            }
                         </div>
                     </div>
                     <div class="col-3">
-                        @if (
-                            routePart.actualDepartureTrack &&
-                            routePart.plannedDepartureTrack != routePart.actualDepartureTrack
-                        ) {
-                            <p>
-                                <span class="major-info-change">({{ routePart.plannedDepartureTrack }})</span> >
-                                <span class="minor-info-change">{{ routePart.actualDepartureTrack }}</span>
-                            </p>
-                        } @else {
-                            <p>{{ routePart.plannedDepartureTrack }}</p>
-                        }
+                        <app-track-selection [plannedTrack]="routePart.plannedDepartureTrack" [actualTrack]="routePart.actualDepartureTrack"></app-track-selection>
                     </div>
                 </div>
             </div>
