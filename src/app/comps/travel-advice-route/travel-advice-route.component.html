@@ -13,24 +13,8 @@
 
     <app-track-selection [plannedTrack]="routePart.plannedDepartureTrack" [actualTrack]="routePart.actualDepartureTrack"></app-track-selection>
 
-    @if (routePart.actualDeparture && routePart.actualDeparture != routePart.plannedDeparture) {
-        <del class="major-info-change">{{ routePart.plannedDeparture | date: 'H:mm' }}</del
-        >({{ routePart.actualDeparture | date: 'HH:mm' }})
-    } @else {
-        @if (!routePart.realisticTransfer) {
-            <span class="minor-info-change">{{
-                routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
-            }}</span>
-        } @else {
-            @if (routePart.cancelled) {
-                <del class="major-info-change">{{
-                    routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
-                }}</del>
-            } @else {
-                {{ routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm' }}
-            }
-        }
-    }
+    <app-time-selection [actual]="routePart.actualDeparture" [planned]="routePart.plannedDeparture" [cancelled]="routePart.cancelled"></app-time-selection>
+
     <span [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
         @if (routePart.alternativeTransport) {
             <span
@@ -60,24 +44,7 @@
         }
     </span>
 
-    @if (routePart.actualArrival && routePart.actualArrival != routePart.plannedArrival) {
-        <del class="major-info-change">{{ routePart.plannedArrival | date: 'HH:mm' }}</del>
-        @if (!routePart.realisticTransfer) {
-            <span class="minor-info-change">({{ routePart.actualArrival | date: 'HH:mm' }})</span>
-        } @else {
-            ({{ routePart.actualArrival | date: 'HH:mm' }})
-        }
-    } @else if (routePart.cancelled) {
-        <del class="major-info-change">{{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}</del>
-    } @else {
-        @if (!routePart.realisticTransfer) {
-            <span class="minor-info-change">{{
-                routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
-            }}</span>
-        } @else {
-            {{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}
-        }
-    }
+    <app-time-selection [actual]="routePart.actualArrival" [planned]="routePart.plannedArrival" [cancelled]="routePart.cancelled"></app-time-selection>
 
     @if (routePart.cancelled) {
         &nbsp;<del class="major-info-change">{{ routePart.arrivalStation }}</del

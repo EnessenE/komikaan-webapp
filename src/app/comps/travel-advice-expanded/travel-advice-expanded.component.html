@@ -24,10 +24,10 @@
 
             <div class="col-12">
                 <div class="row">
-                    <div class="col-3 text-right">
-                        <p class="text-right">{{ routePart.plannedDeparture | date: 'H:mm' }}</p>
+                    <div class="col-2 text-right">
+                        <app-time-selection [actual]="routePart.actualDeparture" [planned]="routePart.plannedDeparture" [cancelled]="routePart.cancelled"></app-time-selection>
                     </div>
-                    <div class="col-6">
+                    <div class="col-7">
                         <div [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
                             <p>
                                 {{ routePart.departureStation }}
@@ -40,9 +40,8 @@
                             @for (stop of routePart.stops; track stop; let stopIndex = $index) {
                                 @if (stopIndex > 0 && stopIndex + 1 < routePart.stops.length) {
                                     <p>
-                                        <app-track-selection [plannedTrack]="stop.plannedDepartureTrack" [actualTrack]="stop.actualDepartureTrack"></app-track-selection>
-                                        {{ stop.plannedArrival | date: 'H:mm' }} -
-                                        {{ stop.name }}
+                                        <app-time-selection [actual]="stop.actualDeparture" [planned]="stop.plannedDeparture" [cancelled]="false"></app-time-selection>
+                                        - <app-track-selection [plannedTrack]="stop.plannedDepartureTrack" [actualTrack]="stop.actualDepartureTrack"></app-track-selection> - {{ stop.name }}
                                     </p>
                                 }
                             }
@@ -55,24 +54,14 @@
             </div>
             <div class="col-12">
                 <div class="row align-items-start">
-                    <div class="col-3">
-                        <p>{{ routePart.plannedArrival | date: 'H:mm' }}</p>
+                    <div class="col-2">
+                        <app-time-selection [actual]="routePart.actualArrival" [planned]="routePart.plannedArrival" [cancelled]="false"></app-time-selection>
                     </div>
-                    <div class="col-6">
+                    <div class="col-7">
                         <p>{{ routePart.arrivalStation }}</p>
                     </div>
                     <div class="col-3">
-                        @if (
-                            routePart.actualArrivalTrack &&
-                            routePart.actualArrivalTrack != routePart.plannedArrivalTrack
-                        ) {
-                            <p>
-                                <span class="major-info-change">({{ routePart.plannedArrivalTrack }})</span> >
-                                <span class="minor-info-change">{{ routePart.actualArrivalTrack }}</span>
-                            </p>
-                        } @else {
-                            <p>{{ routePart.plannedArrivalTrack }}</p>
-                        }
+                        <app-track-selection [plannedTrack]="routePart.plannedArrivalTrack" [actualTrack]="routePart.actualArrivalTrack"></app-track-selection>
                     </div>
                 </div>
             </div>
