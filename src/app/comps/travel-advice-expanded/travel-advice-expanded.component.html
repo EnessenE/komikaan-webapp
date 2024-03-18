@@ -106,11 +106,18 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
     }
 </div>
+
+<div
+    class="leaflet"
+    leaflet
+    [leafletOptions]="options"
+    [leafletLayers]="layers"
+    [leafletLayersControl]="layersControl">
+></div>
 <p class="smaller-text">
     Bron:
     <img
         class="img-fluid logo"
-        height="1%"
         alt="{{ travelAdvice.source }}"
         src="assets/logos/{{ travelAdvice.source }}.svg"
     />
