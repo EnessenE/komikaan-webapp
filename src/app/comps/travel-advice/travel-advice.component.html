@@ -19,20 +19,19 @@
                             </p>
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <button
                             class="btn"
                             (click)="togglePin(travelAdvice)"
-                            style="width: 3rem; height: 3rem"
                         >
                             <bi
                                 [name]="travelAdvice.pinned == true ? 'pin-fill' : 'pin'"
-                                class="icon"
+                                class="icon pin-button"
                                 >Pin</bi
                             >
                         </button>
                     </div>
-                    <div class="col-3 text-wrap">
+                    <div class="col-5 text-wrap">
                         <p>
                             <span>
                                 @if (

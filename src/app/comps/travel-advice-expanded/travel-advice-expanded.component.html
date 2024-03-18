@@ -35,20 +35,23 @@
                             [cancelled]="routePart.cancelled"
                         ></app-time-selection>
                     </div>
-                    <div class="col-7">
+                    <div class="col-6">
                         <div [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
-                            <p>
+                            <p class="fw-bold">
                                 {{ routePart.departureStation }}
                             </p>
                         </div>
                     </div>
 
-                    <div class="col-3">
+                    <div class="col-4">
                         <app-track-selection
                             [plannedTrack]="routePart.plannedDepartureTrack"
                             [actualTrack]="routePart.actualDepartureTrack"
                         ></app-track-selection>
                     </div>
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+                    ></div>
                     @for (stop of routePart.stops; track stop; let stopIndex = $index) {
                         @if (stopIndex > 0 && stopIndex + 1 < routePart.stops.length) {
                             <div class="col-2 text-right stop">
@@ -60,12 +63,12 @@
                                 ></app-time-selection>
                             </div>
 
-                            <div class="col-7">
+                            <div class="col-6">
                                 <p class="smaller-text">
                                     {{ stop.name }}
                                 </p>
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <app-track-selection
                                     class="smaller-text"
                                     [plannedTrack]="stop.plannedDepartureTrack"
@@ -74,6 +77,9 @@
                             </div>
                         }
                     }
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+                    ></div>
                 </div>
             </div>
             <div class="col-12">
@@ -85,10 +91,10 @@
                             [cancelled]="false"
                         ></app-time-selection>
                     </div>
-                    <div class="col-7">
-                        <p>{{ routePart.arrivalStation }}</p>
+                    <div class="col-6">
+                        <p class="fw-bold">{{ routePart.arrivalStation }}</p>
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <app-track-selection
                             [plannedTrack]="routePart.plannedArrivalTrack"
                             [actualTrack]="routePart.actualArrivalTrack"
@@ -100,4 +106,12 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
     }
 </div>
-<p class="smaller-text">Bron: {{ travelAdvice.source }}</p>
+<p class="smaller-text">
+    Bron:
+    <img
+        class="img-fluid logo"
+        height="1%"
+        alt="{{ travelAdvice.source }}"
+        src="assets/logos/{{ travelAdvice.source }}.svg"
+    />
+</p>
