@@ -19,17 +19,17 @@ export interface Disruption {
     affectedStops: string[];
 }
 
-export interface TravelAdvice {
-    source: DataSource;
-    route: RoutePart[];
-    plannedDurationInMinutes: number;
-    actualDurationInMinutes: number | null;
+export class TravelAdvice {
+    source?: DataSource;
+    route!: RoutePart[];
+    plannedDurationInMinutes!: number;
+    actualDurationInMinutes?: number | null;
 
     //Web-app related values
     //TODO: move them?
-    realistic: boolean;
-    pinned: boolean | false;
-    oldData: boolean | false;
+    realistic?: boolean;
+    pinned: boolean = false;
+    oldData: boolean = false;
 }
 
 export interface RoutePart {

@@ -1,61 +1,60 @@
 <div class="container">
     <div class="row">
-        <div class="col-12 col-lg-2">
-            <div class="container">
-                <div class="row">
-                    <div class="col-3">
-                        <div
-                            class="text-wrap"
-                            ngbTooltip="{{ travelAdvice.source }}"
-                        >
-                            <p>
-                                Bron:
-                                <br />
-                                <img
-                                    class="img-fluid logo"
-                                    alt="{{ travelAdvice.source }}"
-                                    src="assets/logos/{{ travelAdvice.source }}.svg"
-                                />
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <button
-                            class="btn"
-                            (click)="togglePin(travelAdvice)"
-                        >
-                            <bi
-                                [name]="travelAdvice.pinned == true ? 'pin-fill' : 'pin'"
-                                class="icon pin-button"
-                                >Pin</bi
-                            >
-                        </button>
-                    </div>
-                    <div class="col-5 text-wrap">
+        <div class="col-12 col-lg-1">
+            <div class="row">
+                <!-- <div class="col-1 col-lg-6">
+                    <div
+                        class="text-wrap"
+                        ngbTooltip="{{ travelAdvice.source }}"
+                    >
                         <p>
-                            <span>
-                                @if (
-                                    travelAdvice.actualDurationInMinutes &&
-                                    travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
-                                ) {
-                                    <span
-                                        class="minor-info-change"
-                                        ngbTooltip="Normaal {{
-                                            travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
-                                        }}"
-                                    >
-                                        {{
-                                            travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
-                                        }}</span
-                                    >
-                                } @else {
-                                    <span>{{
-                                        travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
-                                    }}</span>
-                                }
-                            </span>
+                            Bron:
+                            <br />
+                            <img
+                                class="img-fluid logo"
+                                alt="{{ travelAdvice.source }}"
+                                src="assets/logos/{{ travelAdvice.source }}.svg"
+                            />
                         </p>
                     </div>
+                </div> -->
+                <div
+                    class="col-6"
+                    type="submit" (click)="togglePin(travelAdvice)"
+                >
+                    <a>
+                        <i
+                            style="background-color: pink"
+                            [class]="travelAdvice.pinned == true ? 'bi-pin-fill' : 'bi-pin'"
+                            class="pin-button"
+                            style="font-size: 2rem"
+                        ></i>
+                    </a>
+                </div>
+                <div class="col-6 text-wrap">
+                    <p>
+                        <span>
+                            @if (
+                                travelAdvice.actualDurationInMinutes &&
+                                travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
+                            ) {
+                                <span
+                                    class="minor-info-change"
+                                    ngbTooltip="Normaal {{
+                                        travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                    }}"
+                                >
+                                    {{
+                                        travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                    }}</span
+                                >
+                            } @else {
+                                <span>{{
+                                    travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                }}</span>
+                            }
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -85,6 +84,7 @@
                             [attr.data-bs-target]="'#collapse' + index + travelAdviceDisplayType"
                             aria-expanded="true"
                             [attr.aria-controls]="'collapse' + index + travelAdviceDisplayType"
+                            (click)="expand(travelAdvice)"
                         >
                             <p>
                                 <app-travel-advice-route [travelAdvice]="travelAdvice"></app-travel-advice-route>
@@ -93,7 +93,7 @@
                     </h2>
                     <div
                         id="collapse{{ index }}{{ travelAdviceDisplayType }}"
-                        class="accordion-collapse "
+                        class="accordion-collapse collapse"
                         aria-labelledby="index"
                         [attr.data-bs-parent]="'#collapse' + index + travelAdviceDisplayType"
                     >
