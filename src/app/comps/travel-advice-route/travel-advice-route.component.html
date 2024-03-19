@@ -11,9 +11,17 @@
         }
     }
 
-    <app-track-selection [plannedTrack]="routePart.plannedDepartureTrack" [actualTrack]="routePart.actualDepartureTrack"></app-track-selection>
+    <app-track-selection
+        [plannedTrack]="routePart.plannedDepartureTrack"
+        [actualTrack]="routePart.actualDepartureTrack"
+        [cancelled]="routePart.cancelled"
+    ></app-track-selection>
 
-    <app-time-selection [actual]="routePart.actualDeparture" [planned]="routePart.plannedDeparture" [cancelled]="routePart.cancelled"></app-time-selection>
+    <app-time-selection
+        [actual]="routePart.actualDeparture"
+        [planned]="routePart.plannedDeparture"
+        [cancelled]="routePart.cancelled"
+    ></app-time-selection>
 
     <span [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
         @if (routePart.alternativeTransport) {
@@ -44,13 +52,21 @@
         }
     </span>
 
-    <app-time-selection [actual]="routePart.actualArrival" [planned]="routePart.plannedArrival" [cancelled]="routePart.cancelled"></app-time-selection>
+    <app-time-selection
+        [actual]="routePart.actualArrival"
+        [planned]="routePart.plannedArrival"
+        [cancelled]="routePart.cancelled"
+    ></app-time-selection>
 
     @if (routePart.cancelled) {
         &nbsp;<del class="major-info-change">{{ routePart.arrivalStation }}</del
         >&nbsp;
     } @else {
-        <app-track-selection [plannedTrack]="routePart.plannedArrivalTrack" [actualTrack]="routePart.actualArrivalTrack"></app-track-selection>
+        <app-track-selection
+            [plannedTrack]="routePart.plannedArrivalTrack"
+            [actualTrack]="routePart.actualArrivalTrack"
+            [cancelled]="routePart.cancelled"
+        ></app-track-selection>
 
         {{ routePart.arrivalStation }}
     }

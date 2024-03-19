@@ -1,4 +1,7 @@
-@if (actualTrack && plannedTrack != actualTrack) {
+@if (cancelled) {
+    <span class="major-info-change">{{ plannedTrack }}</span>
+}
+@else if (actualTrack && plannedTrack != actualTrack) {
     <span>
         <span class="major-info-change">({{ plannedTrack }})</span> >
         <span class="minor-info-change">{{ actualTrack }}</span>

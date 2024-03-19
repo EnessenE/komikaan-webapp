@@ -12,4 +12,6 @@ export class TrackSelectionComponent {
     plannedTrack: string | null | undefined;
     @Input()
     actualTrack: string | null | undefined;
+    @Input()
+    cancelled: boolean = false;
 }

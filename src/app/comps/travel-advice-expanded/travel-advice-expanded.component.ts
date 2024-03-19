@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { TravelAdvice } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -6,7 +6,6 @@ import { TrackSelectionComponent } from '../track-selection/track-selection.comp
 import { TimeSelectionComponent } from '../time-selection/time-selection.component';
 import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
 import {
-    FitBoundsOptions,
     Icon,
     LatLng,
     LatLngBounds,
@@ -52,7 +51,9 @@ export class TravelAdviceExpandedComponent implements OnInit {
         }),
     ];
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        console.log("init")
+    }
 
     onMapReady(map: Map) {
         var markerLayers = featureGroup();
@@ -75,9 +76,7 @@ export class TravelAdviceExpandedComponent implements OnInit {
                 stopMark.bindPopup(popup);
                 markerLayers.addLayer(stopMark);
 
-                routeLine.push(latLng(stop.latitude, stop.longitude));        
-                
-
+                routeLine.push(latLng(stop.latitude, stop.longitude));
             });
             var line = polyline(routeLine, { color: 'red' });
             this.layersControl.overlays[routePart.lineName ?? routePart.direction ?? 'Part ' + index] = line;
@@ -86,7 +85,5 @@ export class TravelAdviceExpandedComponent implements OnInit {
 
         this.layers.push(markerLayers);
         map.fitBounds(markerLayers.getBounds());
-
-        
     }
 }
