@@ -1,137 +1,117 @@
-<div
-    class="list-group-item list-group-item-action"
-    aria-current="true"
->
-    @if (!travelAdvice.realistic) {
-        <div
-            class="alert alert-danger"
-            role="alert"
-        >
-            {{ travelAdvice.source }} denkt dat er een onrealistische overstap is.
-        </div>
-    }
-    <div class="d-flex w-100 justify-content-between">
-        <h6 class="mb-1">
-            @for (routePart of travelAdvice.route; track routePart; let index = $index) {
-                <!-- If the previous step has equivelant stations. Then dont show this. -->
-                @if (
-                    !(
-                        travelAdvice.route[index - 1] &&
-                        travelAdvice.route[index - 1].arrivalStation === routePart.departureStation
-                    )
-                ) {
-                    @if (routePart.cancelled) {
-                        &nbsp;<del style="color: red">{{ routePart.departureStation }}</del
-                        >&nbsp;
-                    } @else {
-                        {{ routePart.departureStation }}
-                    }
-                }
-
-                @if (routePart.plannedDepartureTrack) {
-                    @if (
-                        routePart.actualDepartureTrack &&
-                        routePart.actualDepartureTrack != routePart.plannedDepartureTrack
-                    ) {
-                        <del style="color: red">{{ routePart.plannedDepartureTrack }}</del
-                        >({{ routePart.actualDepartureTrack }})
-                    } @else {
-                        @if (routePart.cancelled) {
-                            <del style="color: red">{{ routePart.plannedDepartureTrack }}</del>
-                        } @else {
-                            {{ routePart.plannedDepartureTrack }}
-                        }
-                    }
-                }
-                @if (routePart.actualDeparture && routePart.actualDeparture != routePart.plannedDeparture) {
-                    <del style="color: red">{{ routePart.plannedDeparture | date: 'H:mm' }}</del
-                    >({{ routePart.actualDeparture | date: 'HH:mm' }})
-                } @else {
-                    @if (!routePart.realisticTransfer) {
-                        <span style="color: orange">{{
-                            routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
-                        }}</span>
-                    } @else {
-                        @if (routePart.cancelled) {
-                            <del style="color: red">{{
-                                routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm'
-                            }}</del>
-                        } @else {
-                            {{ routePart.actualDeparture ?? routePart.plannedDeparture | date: 'HH:mm' }}
-                        }
-                    }
-                }
-
-                @if (routePart.alternativeTransport) {
-                    <span
-                        style="color: brown"
-                        ngbTooltip="Dit stuk maakt gebruik van alternatief transport door {{ routePart.operator }}"
-                        >>{{routePart.operator}} {{ routePart.type }} [{{ routePart.lineName }}]{{ routePart.direction }}></span
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-lg-1">
+            <div class="row">
+                <!-- <div class="col-1 col-lg-6">
+                    <div
+                        class="text-wrap"
+                        ngbTooltip="{{ travelAdvice.source }}"
                     >
-                } @else if (routePart.type == 'Unknown') {
-                    <span
-                        style="color: brown"
-                        ngbTooltip="Een reis met onbekend transport [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction ?? 'onbekend'}} door {{ routePart.operator }}"
-                        >>[{{ routePart.lineName }}]{{ routePart.direction }}></span
-                    >
-                } @else {
-                    <span
-                        role="img"
-                        aria-label="Reis met trein"
-                        ngbTooltip="Een reis met [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{routePart.direction ?? 'onbekend'}} door {{ routePart.operator }}"
-                        >> {{ routePart.direction ?? routePart.lineName ?? 'Onbekend' }}🚆></span
-                    >
-                }
-
-                @if (routePart.actualArrival && routePart.actualArrival != routePart.plannedArrival) {
-                    <del style="color: red">{{ routePart.plannedArrival | date: 'HH:mm' }}</del>
-                    @if (!routePart.realisticTransfer) {
-                        <span style="color: orange">({{ routePart.actualArrival | date: 'HH:mm' }})</span>
-                    } @else {
-                        ({{ routePart.actualArrival | date: 'HH:mm' }})
-                    }
-                } @else if (routePart.cancelled) {
-                    <del style="color: red">{{
-                        routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
-                    }}</del>
-                } @else {
-                    @if (!routePart.realisticTransfer) {
-                        <span style="color: orange">{{
-                            routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm'
-                        }}</span>
-                    } @else {
-                        {{ routePart.actualArrival ?? routePart.plannedArrival | date: 'HH:mm' }}
-                    }
-                }
-
-                @if (routePart.cancelled) {
-                    &nbsp;<del style="color: red">{{ routePart.arrivalStation }}</del
-                    >&nbsp;
-                } @else {
-                    @if (routePart.plannedArrivalTrack) {
-                        @if (
-                            routePart.actualArrivalTrack &&
-                            routePart.actualArrivalTrack != routePart.plannedArrivalTrack
-                        ) {
-                            <del style="color: red">{{ routePart.plannedArrivalTrack }}</del
-                            >({{ routePart.actualArrivalTrack }})
-                        } @else {
-                            {{ routePart.plannedArrivalTrack }}
-                        }
-                    }
-                    {{ routePart.arrivalStation }}
-                }
-            }
-        </h6>
-
-        <small
-            >{{ travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }}
-            @if (travelAdvice.actualDurationInMinutes && travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes) {
-                <span style="color: orange"
-                    >({{ travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000' }})</span
+                        <p>
+                            Bron:
+                            <br />
+                            <img
+                                class="img-fluid logo"
+                                alt="{{ travelAdvice.source }}"
+                                src="assets/logos/{{ travelAdvice.source }}.svg"
+                            />
+                        </p>
+                    </div>
+                </div> -->
+                <div
+                    class="col-6"
+                    type="submit" (click)="togglePin(travelAdvice)"
                 >
-            }
-        </small>
+                    <a>
+                        <i
+                            style="background-color: pink"
+                            [class]="travelAdvice.pinned == true ? 'bi-pin-fill' : 'bi-pin'"
+                            class="pin-button"
+                            style="font-size: 2rem"
+                        ></i>
+                    </a>
+                </div>
+                <div class="col-6 text-wrap">
+                    <p>
+                        <span>
+                            @if (
+                                travelAdvice.actualDurationInMinutes &&
+                                travelAdvice.plannedDurationInMinutes != travelAdvice.actualDurationInMinutes
+                            ) {
+                                <span
+                                    class="minor-info-change"
+                                    ngbTooltip="Normaal {{
+                                        travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                    }}"
+                                >
+                                    {{
+                                        travelAdvice.actualDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                    }}</span
+                                >
+                            } @else {
+                                <span>{{
+                                    travelAdvice.plannedDurationInMinutes * 1000 * 60 | date: 'HH:mm' : '+0000'
+                                }}</span>
+                            }
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-10">
+            <div
+                class="accordion"
+                id="accordion{{ index }}{{ travelAdviceDisplayType }}"
+            >
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="heading{{ index }}{{ travelAdviceDisplayType }}"
+                    >
+                        @if (!travelAdvice.realistic) {
+                            <div
+                                class="alert alert-danger"
+                                role="alert"
+                            >
+                                {{ travelAdvice.source }} denkt dat er een onrealistische overstap is.
+                            </div>
+                        }
+                        <button
+                            class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            [attr.data-bs-target]="'#collapse' + index + travelAdviceDisplayType"
+                            aria-expanded="true"
+                            [attr.aria-controls]="'collapse' + index + travelAdviceDisplayType"
+                            (click)="expand(travelAdvice)"
+                        >
+                            <p>
+                                <app-travel-advice-route [travelAdvice]="travelAdvice"></app-travel-advice-route>
+                            </p>
+                        </button>
+                    </h2>
+                    <div
+                        id="collapse{{ index }}{{ travelAdviceDisplayType }}"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="index"
+                        [attr.data-bs-parent]="'#collapse' + index + travelAdviceDisplayType"
+                    >
+                        <div class="accordion-body">
+                            <app-travel-advice-expanded [travelAdvice]="travelAdvice"></app-travel-advice-expanded>
+                        </div>
+                    </div>
+                </div>
+                @if (travelAdvice.oldData) {
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                    >
+                        Deze data is mogelijk verouderd!
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
     </div>
-    <small>{{ travelAdvice.source }}</small>
 </div>

@@ -5,3 +5,21 @@
 
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
+
+@import 'leaflet/dist/leaflet.css';
+
+@import 'bootstrap-icons/font/bootstrap-icons.min.css';
+
+.cancellation {
+    color: red;
+    text-decoration: line-through;
+}
+
+.major-info-change {
+    color: red;
+    text-decoration: line-through;
+}
+
+.minor-info-change {
+    color: orange;
+}

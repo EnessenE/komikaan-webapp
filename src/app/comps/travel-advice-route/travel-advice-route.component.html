@@ -1,0 +1,73 @@
+@for (routePart of travelAdvice.route; track routePart; let index = $index) {
+    <!-- If the previous step has equivelant stations. Then dont show this. -->
+    @if (
+        !(travelAdvice.route[index - 1] && travelAdvice.route[index - 1].arrivalStation === routePart.departureStation)
+    ) {
+        @if (routePart.cancelled) {
+            &nbsp;<del class="major-info-change">{{ routePart.departureStation }}</del
+            >&nbsp;
+        } @else {
+            {{ routePart.departureStation }}
+        }
+    }
+
+    <app-track-selection
+        [plannedTrack]="routePart.plannedDepartureTrack"
+        [actualTrack]="routePart.actualDepartureTrack"
+        [cancelled]="routePart.cancelled"
+    ></app-track-selection>
+
+    <app-time-selection
+        [actual]="routePart.actualDeparture"
+        [planned]="routePart.plannedDeparture"
+        [cancelled]="routePart.cancelled"
+    ></app-time-selection>
+
+    <span [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
+        @if (routePart.alternativeTransport) {
+            <span
+                style="color: brown"
+                ngbTooltip="Dit stuk maakt gebruik van alternatief transport door {{ routePart.operator }}"
+                >>{{ routePart.operator }} {{ routePart.type }} [{{ routePart.lineName }}]{{
+                    routePart.direction
+                }}></span
+            >
+        } @else if (routePart.type == 'Unknown') {
+            <span
+                style="color: brown"
+                ngbTooltip="Een reis met onbekend transport [{{ routePart.lineName }}] ({{
+                    routePart.type
+                }}) richting {{ routePart.direction ?? 'onbekend' }} door {{ routePart.operator }}"
+                >>[{{ routePart.lineName }}]{{ routePart.direction }}></span
+            >
+        } @else {
+            <span
+                role="img"
+                [attr.aria-label]="'Reis met' + routePart.type"
+                ngbTooltip="Een reis met [{{ routePart.lineName }}] ({{ routePart.type }}) richting {{
+                    routePart.direction ?? 'onbekend'
+                }} door {{ routePart.operator }}"
+                >> {{ routePart.direction ?? routePart.lineName ?? 'Onbekend' }}🚆></span
+            >
+        }
+    </span>
+
+    <app-time-selection
+        [actual]="routePart.actualArrival"
+        [planned]="routePart.plannedArrival"
+        [cancelled]="routePart.cancelled"
+    ></app-time-selection>
+
+    @if (routePart.cancelled) {
+        &nbsp;<del class="major-info-change">{{ routePart.arrivalStation }}</del
+        >&nbsp;
+    } @else {
+        <app-track-selection
+            [plannedTrack]="routePart.plannedArrivalTrack"
+            [actualTrack]="routePart.actualArrivalTrack"
+            [cancelled]="routePart.cancelled"
+        ></app-track-selection>
+
+        {{ routePart.arrivalStation }}
+    }
+}
