@@ -36,11 +36,9 @@
                         ></app-time-selection>
                     </div>
                     <div class="col-6">
-                        <div [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
-                            <p class="fw-bold">
-                                {{ routePart.departureStation }}
-                            </p>
-                        </div>
+                        <p class="fw-bold">
+                            {{ routePart.departureStation }}
+                        </p>
                     </div>
 
                     <div class="col-4">
@@ -88,7 +86,7 @@
                         <app-time-selection
                             [actual]="routePart.actualArrival"
                             [planned]="routePart.plannedArrival"
-                            [cancelled]="false"
+                            [cancelled]="routePart.cancelled"
                         ></app-time-selection>
                     </div>
                     <div class="col-6">
@@ -112,8 +110,11 @@
     leaflet
     [leafletOptions]="options"
     [leafletLayers]="layers"
-    [leafletLayersControl]="layersControl">
-></div>
+    [leafletLayersControl]="layersControl"
+    (leafletMapReady)="onMapReady($event)"
+>
+    >
+</div>
 <p class="smaller-text">
     Bron:
     <img

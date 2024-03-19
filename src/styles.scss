@@ -6,6 +6,8 @@
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
 
+@import 'leaflet/dist/leaflet.css';
+
 .cancellation {
     color: red;
     text-decoration: line-through;

@@ -1,11 +1,25 @@
-import { AfterContentInit, Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TravelAdvice } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TrackSelectionComponent } from '../track-selection/track-selection.component';
 import { TimeSelectionComponent } from '../time-selection/time-selection.component';
 import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { LatLng, Layer, circle, latLng, polyline, tileLayer } from 'leaflet';
+import {
+    FitBoundsOptions,
+    Icon,
+    LatLng,
+    LatLngBounds,
+    Layer,
+    Map,
+    Popup,
+    featureGroup,
+    icon,
+    latLng,
+    marker,
+    polyline,
+    tileLayer,
+} from 'leaflet';
 
 @Component({
     selector: 'app-travel-advice-expanded',
@@ -23,6 +37,8 @@ export class TravelAdviceExpandedComponent implements OnInit {
         overlays: {},
     };
 
+    mapFitToBounds!: LatLngBounds;
+
     get options() {
         return {
             zoom: 10,
@@ -33,24 +49,44 @@ export class TravelAdviceExpandedComponent implements OnInit {
     layers: Layer[] = [
         tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
-            attribution: '...',
         }),
     ];
 
-    ngOnInit(): void {
+    ngOnInit(): void {}
+
+    onMapReady(map: Map) {
+        var markerLayers = featureGroup();
         this.travelAdvice.route.forEach((routePart, index) => {
             var routeLine: LatLng[] = [];
             routePart.stops.forEach((stop) => {
-                var stopMark = circle([stop.latitude, stop.longitude], { radius: 100 });
-                this.layers.push(stopMark);
+                var stopMark = marker([stop.latitude, stop.longitude], {
+                    // Workaround https://github.com/bluehalo/ngx-leaflet?tab=readme-ov-file#angular-cli-marker-workaround
+                    icon: icon({
+                        ...Icon.Default.prototype.options,
+                        iconUrl: 'assets/marker-icon.png',
+                        iconRetinaUrl: 'assets/marker-icon-2x.png',
+                        shadowUrl: 'assets/marker-shadow.png',
+                    }),
+                });
 
-                routeLine.push(latLng(stop.latitude, stop.longitude));
+                var popup = new Popup();
+                popup.setContent(stop.name);
+
+                stopMark.bindPopup(popup);
+                markerLayers.addLayer(stopMark);
+
+                routeLine.push(latLng(stop.latitude, stop.longitude));        
+                
+
             });
-            this.layersControl.overlays;
-            this.layersControl.overlays[routePart.lineName ?? routePart.direction ?? 'Part ' + index] = polyline(
-                routeLine,
-                { color: 'red' },
-            );
+            var line = polyline(routeLine, { color: 'red' });
+            this.layersControl.overlays[routePart.lineName ?? routePart.direction ?? 'Part ' + index] = line;
+            this.layers.push(line);
         });
+
+        this.layers.push(markerLayers);
+        map.fitBounds(markerLayers.getBounds());
+
+        
     }
 }
