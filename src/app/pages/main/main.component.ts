@@ -37,7 +37,7 @@ export class MainComponent implements OnInit {
     error: HttpErrorResponse | undefined;
     pinnedData: TravelAdvice[] = [];
 
-    departureTimes: GTFSStopTime[] | undefined;
+    destinationTimes: GTFSStopTime[] | undefined;
     originTimes: GTFSStopTime[] | undefined;
 
     constructor(private apiService: ApiService) {}
@@ -118,8 +118,8 @@ export class MainComponent implements OnInit {
         this.foundStopsOrigin = undefined;
         this.checkPossibility();
 
-        
-        this.apiService.GetStopDepartures(this.originStop.ids!.get("komikaan")!.at(0)!).subscribe({
+        console.log(this.originStop);
+        this.apiService.GetStopDepartures(this.originStop.ids.at(0)!).subscribe({
             next: (data) => (this.originTimes = data),
         });
     }
@@ -129,8 +129,8 @@ export class MainComponent implements OnInit {
         this.foundStopsDestination = undefined;
         this.checkPossibility();
 
-        this.apiService.GetStopDepartures(this.destinationStop.ids!.get("komikaan")!.at(0)!).subscribe({
-            next: (data) => (this.departureTimes = data),
+        this.apiService.GetStopDepartures(this.destinationStop.ids!.at(0)!).subscribe({
+            next: (data) => (this.destinationTimes = data),
         });
     }
 

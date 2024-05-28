@@ -18,7 +18,7 @@
                     type="search"
                     placeholder="Amsterdam Centraal"
                     aria-label="Search"
-                    [value]="originStop"
+                    [value]="originStop?.name"
                     (input)="onSearchInputChangeOrigin($event)"
                 />
                 <div>
@@ -51,7 +51,7 @@
                     type="search"
                     placeholder="Utrecht Centraal"
                     aria-label="Search"
-                    [value]="destinationStop"
+                    [value]="destinationStop?.name"
                     (input)="onSearchInputChange($event)"
                 />
                 <div>
@@ -104,6 +104,27 @@
                 <p><small>Op basis van wat wij weten.</small></p>
             }
         </div>
+
+        <div class="col-12">
+            <h1>Times origin</h1>
+            <div>
+                @for (tripStop of originTimes; track tripStop; let index = $index) {
+                    <p>
+                        {{ tripStop.arrivalTime }}/{{ tripStop.arrivalTime }} {{ tripStop.routeShortName }}
+                        {{ tripStop.routeShortName }} - {{ tripStop.headsign }}
+                    </p>
+                }
+            </div>
+            <h1>Times arrival</h1>
+            <div>
+                @for (tripStop of destinationTimes; track tripStop; let index = $index) {
+                    <p>
+                        {{ tripStop.arrivalTime }}/{{ tripStop.arrivalTime }} {{ tripStop.routeShortName }}
+                        {{ tripStop.routeShortName }} - {{ tripStop.headsign }}
+                    </p>
+                }
+            </div>
+        </div>
         <div class="col-12">
             <h1>Problemen onderweg</h1>
             <div class="list-group">
@@ -130,10 +151,14 @@
             </div>
         </div>
         <div class="col-12">
-
             @if (pinnedData.length > 0) {
                 <h1>Je pins:</h1>
-                <button class="btn btn-warning" (click)="clearPins()">Haal alle pins weg</button>
+                <button
+                    class="btn btn-warning"
+                    (click)="clearPins()"
+                >
+                    Haal alle pins weg
+                </button>
                 @for (travelAdvice of pinnedData; track travelAdvice; let index = $index) {
                     <app-travel-advice
                         [travelAdvice]="travelAdvice"

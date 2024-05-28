@@ -24,7 +24,7 @@ export class ApiService {
 
   GetStopDepartures(stopId: string): Observable<Array<GTFSStopTime>> {
     return this.http.get<Array<GTFSStopTime>>(
-      environment.apiServer + '/v1/stops/' + stopId + '/departures'
+      environment.apiServer + '/v1/stops/' + stopId + '/trips'
     );
   }
 

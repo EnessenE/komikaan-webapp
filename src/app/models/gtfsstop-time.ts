@@ -3,6 +3,7 @@ export interface GTFSStopTime {
     arrivalTime?: string | null;
     departureTime?: string | null;
     stopHeadsign: string;
+    headsign: string;
     shortName: string;
     routeShortName: string;
     routeLongName: string;
