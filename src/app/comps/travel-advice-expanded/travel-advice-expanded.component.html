@@ -21,7 +21,6 @@
             @if (routePart.cancelled) {
                 <p>Rijdt niet</p>
             }
-
             <p>
                 Een reis met {{ routePart.lineName }} ({{ routePart.type }}) richting
                 {{ routePart.direction ?? 'onbekend' }}.
@@ -115,9 +114,7 @@
     [leafletLayers]="layers"
     [leafletLayersControl]="layersControl"
     (leafletMapReady)="onMapReady($event)"
->
-    >
-</div>
+></div>
 <p class="smaller-text">
     Bron:
     <img

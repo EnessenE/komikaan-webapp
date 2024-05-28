@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { JourneyResult } from '../models/journey-result';
 import { SimplifiedStop } from '../models/simplified-stop';
+import { GTFSStopTime } from '../models/gtfsstop-time';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,12 @@ export class ApiService {
 
     return this.http.get<Array<SimplifiedStop>>(
       environment.apiServer + '/v1/stops/search?filter=' + text
+    );
+  }
+
+  GetStopDepartures(stopId: string): Observable<Array<GTFSStopTime>> {
+    return this.http.get<Array<GTFSStopTime>>(
+      environment.apiServer + '/v1/stops/' + stopId + '/departures'
     );
   }
 

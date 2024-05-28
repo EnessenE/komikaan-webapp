@@ -9,6 +9,7 @@ import { DisruptionComponent } from '../../comps/disruption/disruption.component
 import { TravelAdviceComponent } from '../../comps/travel-advice/travel-advice.component';
 import { StopComponent } from '../../comps/stop/stop.component';
 import { SimplifiedStop } from '../../models/simplified-stop';
+import { GTFSStopTime } from '../../models/gtfsstop-time';
 
 @Component({
     selector: 'app-main',
@@ -28,19 +29,22 @@ import { SimplifiedStop } from '../../models/simplified-stop';
 export class MainComponent implements OnInit {
     foundStopsDestination: SimplifiedStop[] | undefined;
     foundStopsOrigin: SimplifiedStop[] | undefined;
-    originStop: string = 'Amsterdam Centraal';
-    destinationStop: string = 'Eindhoven Centraal';
+    originStop: SimplifiedStop | undefined;
+    destinationStop: SimplifiedStop | undefined;
     possibility: JourneyResult | undefined;
     loadingPossibility: boolean = false;
     searchFailed = false;
     error: HttpErrorResponse | undefined;
     pinnedData: TravelAdvice[] = [];
 
+    departureTimes: GTFSStopTime[] | undefined;
+    originTimes: GTFSStopTime[] | undefined;
+
     constructor(private apiService: ApiService) {}
 
     ngOnInit(): void {
-        this.originStop = localStorage.getItem('originStop') as string;
-        this.destinationStop = localStorage.getItem('destinationStop') as string;
+        this.originStop = JSON.parse(localStorage.getItem('originStop') as string);
+        this.destinationStop = JSON.parse(localStorage.getItem('destinationStop') as string);
         if (this.originStop && this.destinationStop) {
             this.checkPossibility();
         }
@@ -110,31 +114,40 @@ export class MainComponent implements OnInit {
     }
 
     selectStopOrigin(value: SimplifiedStop) {
-        this.originStop = value.name;
+        this.originStop = value;
         this.foundStopsOrigin = undefined;
         this.checkPossibility();
+
+        
+        this.apiService.GetStopDepartures(this.originStop.ids!.get("komikaan")!.at(0)!).subscribe({
+            next: (data) => (this.originTimes = data),
+        });
     }
 
     selectStopDestination(value: SimplifiedStop) {
-        this.destinationStop = value.name;
+        this.destinationStop = value;
         this.foundStopsDestination = undefined;
         this.checkPossibility();
+
+        this.apiService.GetStopDepartures(this.destinationStop.ids!.get("komikaan")!.at(0)!).subscribe({
+            next: (data) => (this.departureTimes = data),
+        });
     }
 
     checkPossibility() {
         this.checkForPins();
         console.log(this.originStop + ' > ' + this.destinationStop);
         if (this.originStop != null) {
-            localStorage.setItem('originStop', this.originStop);
+            localStorage.setItem('originStop', JSON.stringify(this.originStop));
         }
         if (this.destinationStop != null) {
-            localStorage.setItem('destinationStop', this.destinationStop);
+            localStorage.setItem('destinationStop', JSON.stringify(this.destinationStop));
         }
         if (this.originStop !== null && this.destinationStop !== null) {
             this.loadingPossibility = true;
             this.possibility = undefined;
             this.error = undefined;
-            this.apiService.GetPossibility(this.originStop, this.destinationStop).subscribe({
+            this.apiService.GetPossibility(this.originStop!.name, this.destinationStop!.name).subscribe({
                 next: (data) => this.setPossibility(data),
                 error: (error) => this.handleError(error),
             });
