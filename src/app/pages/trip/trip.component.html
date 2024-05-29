@@ -1,12 +1,12 @@
-<h1>Showing data for stop {{ selectedStop }}</h1>
+<h1>Showing data for stop {{ selectedTrip }}</h1>
 
 <h1>Departures</h1>
 <div class="container">
-    @for (tripStop of stopTimes; track tripStop; let index = $index) {
+    @for (tripStop of tripStops; track tripStop; let index = $index) {
         <div
-            class="row align-items-start departurebox"
+            class="row align-items-start stopbox"
             [class]="tripStop.cancelled == true ? 'cancelled' : 'normal'"
-            routerLink="/trip/{{tripStop.tripId}}"
+            routerLink="/stops/{{tripStop.id}}"
         >
             @if (tripStop.cancelled) {
                 <p>Rijdt niet</p>
@@ -21,8 +21,8 @@
                         ></app-time-only-selection>
                     </div>
                     <div class="col-6">
-                        <p class="fw-bold">{{ tripStop.routeShortName }} - {{ tripStop.headsign }}</p>
-                        <small>{{ tripStop.operator }} - {{ tripStop.routeLongName }}</small>
+                        <p class="fw-bold">{{ tripStop.name }}</p>
+                        <small>[{{tripStop.sequence}}] Platform: {{ tripStop.platformCode }}</small>
                     </div>
 
                     <div class="col-4">
@@ -35,7 +35,6 @@
                     <div
                         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
                     >
-                        <small>Datasource: {{ tripStop.dataOrigin }} / {{tripStop.tripId}}</small>
                     </div>
                 </div>
             </div>

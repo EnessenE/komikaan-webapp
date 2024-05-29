@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { JourneyResult } from '../models/journey-result';
 import { SimplifiedStop } from '../models/simplified-stop';
 import { GTFSStopTime } from '../models/gtfsstop-time';
+import { GTFSTrip } from '../models/gtfstrip';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,12 @@ export class ApiService {
   GetStopDepartures(stopId: string): Observable<Array<GTFSStopTime>> {
     return this.http.get<Array<GTFSStopTime>>(
       environment.apiServer + '/v1/stops/' + stopId + '/trips'
+    );
+  }
+
+  GetTrip(trip: string): Observable<Array<GTFSTrip>> {
+    return this.http.get<Array<GTFSTrip>>(
+      environment.apiServer + '/v1/trips/' + trip
     );
   }
 

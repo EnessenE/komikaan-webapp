@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GTFSStopTime } from '../../models/gtfsstop-time';
 import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
 import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
@@ -8,7 +8,7 @@ import { TrackSelectionComponent } from '../../comps/track-selection/track-selec
 @Component({
     selector: 'app-departures',
     standalone: true,
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink],
     templateUrl: './departures.component.html',
     styleUrl: './departures.component.scss',
 })
