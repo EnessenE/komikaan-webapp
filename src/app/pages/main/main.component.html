@@ -37,6 +37,9 @@
                             }
                         }
                     </div>
+                    @if (originStop?.name) {
+                        <a routerLink="/stops/{{originStop!.ids.at(0)}}/">Departures for this stop</a>
+                    }
                 </div>
                 <button
                     type="button"
@@ -70,6 +73,10 @@
                             }
                         }
                     </div>
+
+                    @if (destinationStop?.name) {
+                        <a routerLink="/stops/{{destinationStop!.ids.at(0)}}/">Departures for this stop</a>
+                    }
                 </div>
             </form>
         </div>
@@ -105,26 +112,6 @@
             }
         </div>
 
-        <div class="col-12">
-            <h1>Times origin</h1>
-            <div>
-                @for (tripStop of originTimes; track tripStop; let index = $index) {
-                    <p>
-                        {{ tripStop.arrivalTime }}/{{ tripStop.arrivalTime }} {{ tripStop.routeShortName }}
-                        {{ tripStop.routeShortName }} - {{ tripStop.headsign }}
-                    </p>
-                }
-            </div>
-            <h1>Times arrival</h1>
-            <div>
-                @for (tripStop of destinationTimes; track tripStop; let index = $index) {
-                    <p>
-                        {{ tripStop.arrivalTime }}/{{ tripStop.arrivalTime }} {{ tripStop.routeShortName }}
-                        {{ tripStop.routeShortName }} - {{ tripStop.headsign }}
-                    </p>
-                }
-            </div>
-        </div>
         <div class="col-12">
             <h1>Problemen onderweg</h1>
             <div class="list-group">

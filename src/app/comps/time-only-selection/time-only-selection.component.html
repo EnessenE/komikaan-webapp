@@ -1,0 +1,12 @@
+<span>
+    @if (actual && actual != planned) {
+        <span class="major-info-change">{{ planned }}</span
+        >({{ actual }})
+    } @else {
+        @if (cancelled) {
+            <span class="major-info-change">{{ actual ?? planned }}</span>
+        } @else {
+            {{ actual ?? planned }}
+        }
+    }
+</span>

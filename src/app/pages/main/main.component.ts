@@ -10,6 +10,7 @@ import { TravelAdviceComponent } from '../../comps/travel-advice/travel-advice.c
 import { StopComponent } from '../../comps/stop/stop.component';
 import { SimplifiedStop } from '../../models/simplified-stop';
 import { GTFSStopTime } from '../../models/gtfsstop-time';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-main',
@@ -21,7 +22,8 @@ import { GTFSStopTime } from '../../models/gtfsstop-time';
         DisruptionComponent,
         TravelAdviceComponent,
         NgbAccordionModule,
-        StopComponent
+        StopComponent,
+        RouterLink
     ],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
@@ -36,9 +38,6 @@ export class MainComponent implements OnInit {
     searchFailed = false;
     error: HttpErrorResponse | undefined;
     pinnedData: TravelAdvice[] = [];
-
-    destinationTimes: GTFSStopTime[] | undefined;
-    originTimes: GTFSStopTime[] | undefined;
 
     constructor(private apiService: ApiService) {}
 
@@ -119,19 +118,12 @@ export class MainComponent implements OnInit {
         this.checkPossibility();
 
         console.log(this.originStop);
-        this.apiService.GetStopDepartures(this.originStop.ids.at(0)!).subscribe({
-            next: (data) => (this.originTimes = data),
-        });
     }
 
     selectStopDestination(value: SimplifiedStop) {
         this.destinationStop = value;
         this.foundStopsDestination = undefined;
         this.checkPossibility();
-
-        this.apiService.GetStopDepartures(this.destinationStop.ids!.at(0)!).subscribe({
-            next: (data) => (this.destinationTimes = data),
-        });
     }
 
     checkPossibility() {
@@ -143,7 +135,7 @@ export class MainComponent implements OnInit {
         if (this.destinationStop != null) {
             localStorage.setItem('destinationStop', JSON.stringify(this.destinationStop));
         }
-        if (this.originStop !== null && this.destinationStop !== null) {
+        if (this.originStop && this.destinationStop) {
             this.loadingPossibility = true;
             this.possibility = undefined;
             this.error = undefined;
