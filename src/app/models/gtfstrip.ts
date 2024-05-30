@@ -8,6 +8,9 @@ export interface GTFSTripStop {
     stopHeadsign: string;
     cancelled: boolean;
 
+    longitude: number;
+    latitude: number;
+
     plannedPlatform: string;
     actualPlatform: string;
     plannedArrivalTime?: Time | null;
