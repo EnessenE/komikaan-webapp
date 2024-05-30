@@ -1,7 +1,19 @@
-<h1>Showing data for stop {{ selectedStop }}</h1>
-
-<h1>Departures</h1>
 <div class="container">
+    <h1>Showing data for stop {{ stop?.name }}</h1>
+    <h2>Description: {{ stop?.description }}</h2>
+    <p>Zone: {{ stop?.zone }}</p>
+    <small>Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} - {{ stop?.parentStation }}</small>
+
+    @if (stop?.relatedStops) {
+        <h2>Related stops:</h2>
+        @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
+            <a routerLink="/stops/{{ relatedStop.id }}"
+                ><p>Related stop: {{ stop?.name }}</p></a
+            >
+        }
+    }
+    <h1>Stops</h1>
+
     @if (loading) {
         <div>
             <div
@@ -14,7 +26,7 @@
             <p>Loading all stops...</p>
         </div>
     }
-    @for (tripStop of stopTimes; track tripStop; let index = $index) {
+    @for (tripStop of stop?.departures; track tripStop; let index = $index) {
         <a routerLink="/trip/{{ tripStop.tripId }}">
             <div
                 class="row align-items-start departurebox"
@@ -34,6 +46,12 @@
                         </div>
                         <div class="col-6">
                             <p class="fw-bold">{{ tripStop.headsign }}</p>
+                            @if (tripStop.stopHeadsign) {
+                                <p>
+                                    Will show as <span class="font-italic">{{ tripStop.stopHeadsign }}</span> on this
+                                    stop
+                                </p>
+                            }
                             <small
                                 >{{ tripStop.routeShortName }} - {{ tripStop.operator }} -
                                 {{ tripStop.routeLongName }}</small

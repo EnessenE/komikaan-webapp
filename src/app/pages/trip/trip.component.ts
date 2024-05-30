@@ -14,7 +14,7 @@ import { GTFSTrip } from '../../models/gtfstrip';
     styleUrl: './trip.component.scss',
 })
 export class TripComponent {
-    tripStops: GTFSTrip[] | undefined;
+    trip: GTFSTrip | undefined;
     selectedTrip: string | undefined;
     loading: boolean = false;
 
@@ -26,12 +26,12 @@ export class TripComponent {
     ngOnInit(): void {
         this.loading = true;
         var routeSub = this.route.params.subscribe((params) => {
-            this.tripStops = undefined;
+            this.trip = undefined;
             this.selectedTrip = params['id'];
             this.apiService.GetTrip(params['id']).subscribe({
                 next: (data) => {
                     this.loading = false;
-                    this.tripStops = data
+                    this.trip = data
                 },
             });
         });

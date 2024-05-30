@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GTFSStopTime } from '../../models/gtfsstop-time';
 import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
 import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
+import { GTFSStop } from '../../models/gtfsstop';
 
 @Component({
     selector: 'app-departures',
@@ -13,7 +14,7 @@ import { TrackSelectionComponent } from '../../comps/track-selection/track-selec
     styleUrl: './departures.component.scss',
 })
 export class DeparturesComponent implements OnInit {
-    stopTimes: GTFSStopTime[] | undefined;
+    stop: GTFSStop | undefined;
     selectedStop: string | undefined;
     loading: boolean = false;
 
@@ -26,10 +27,10 @@ export class DeparturesComponent implements OnInit {
         this.loading = true;
         var routeSub = this.route.params.subscribe((params) => {
             this.selectedStop = params['id'];
-            this.apiService.GetStopDepartures(params['id']).subscribe({
+            this.apiService.GetStop(params['id']).subscribe({
                 next: (data) => {
                     this.loading = false;
-                    this.stopTimes = data;
+                    this.stop = data;
                 },
             });
         });

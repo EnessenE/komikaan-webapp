@@ -1,7 +1,8 @@
-<h1>Showing data for trip {{ selectedTrip }}</h1>
-
-<h1>Departures</h1>
 <div class="container">
+    <h1>Showing data for trip {{ trip?.headsign }}</h1>
+    <h2>Trip: {{trip?.shortname}}</h2>
+    <small>Internal mumbo jumbo: {{ selectedTrip }} - {{ trip?.dataOrigin }}</small>
+    <h1>Stops</h1>
     @if (loading) {
         <div>
             <div
@@ -14,12 +15,11 @@
             <p>Loading all stops...</p>
         </div>
     }
-    @for (tripStop of tripStops; track tripStop; let index = $index) {
+    @for (tripStop of trip?.stops; track tripStop; let index = $index) {
         <a routerLink="/stops/{{ tripStop.id }}">
             <div
                 class="row align-items-start stopbox"
                 [class]="tripStop.cancelled == true ? 'cancelled' : 'normal'"
-                routerLink="/stops/{{ tripStop.id }}"
             >
                 @if (tripStop.cancelled) {
                     <p>Rijdt niet</p>
@@ -54,6 +54,6 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
         </a>
     } @empty {
-        <p>No known departures</p>
+        <p>No known stops</p>
     }
 </div>
