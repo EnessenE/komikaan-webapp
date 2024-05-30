@@ -7,9 +7,13 @@
     @if (stop?.relatedStops) {
         <h2>Related stops:</h2>
         @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
-            <a routerLink="/stops/{{ relatedStop.id }}"
-                ><p>Related stop: {{ stop?.name }}</p></a
-            >
+            <div>
+                <a routerLink="/stops/{{ relatedStop.id }}"
+                    ><p>Related stop: {{ relatedStop?.name }}</p>
+                </a>
+                <p>Platform code: {{ relatedStop?.platformCode }}</p>
+                <p>Data origin: {{ relatedStop?.dataOrigin }}</p>
+            </div>
         }
     }
     <h1>Stops</h1>

@@ -5,6 +5,7 @@ export interface GTFSTripStop {
     sequence: number;
     name: string;
     platformCode: string;
+    stopHeadsign: string;
     cancelled: boolean;
 
     plannedPlatform: string;

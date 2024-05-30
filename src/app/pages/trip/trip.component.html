@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Showing data for trip {{ trip?.headsign }}</h1>
-    <h2>Trip: {{trip?.shortname}}</h2>
+    <h2>Trip: {{ trip?.shortname }}</h2>
     <small>Internal mumbo jumbo: {{ selectedTrip }} - {{ trip?.dataOrigin }}</small>
     <h1>Stops</h1>
     @if (loading) {
@@ -35,7 +35,12 @@
                         </div>
                         <div class="col-6">
                             <p class="fw-bold">{{ tripStop.name }}</p>
-                            <small>[{{ tripStop.sequence }}] Platform: {{ tripStop.platformCode }}</small>
+                            @if (tripStop.stopHeadsign) {
+                                <p>
+                                    Will show as <span class="font-italic">{{ tripStop.stopHeadsign }}</span> on this
+                                    stop
+                                </p>
+                            }
                         </div>
 
                         <div class="col-4">
