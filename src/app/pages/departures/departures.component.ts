@@ -15,6 +15,7 @@ import { TrackSelectionComponent } from '../../comps/track-selection/track-selec
 export class DeparturesComponent implements OnInit {
     stopTimes: GTFSStopTime[] | undefined;
     selectedStop: string | undefined;
+    loading: boolean = false;
 
     constructor(
         private apiService: ApiService,
@@ -22,10 +23,14 @@ export class DeparturesComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        this.loading = true;
         var routeSub = this.route.params.subscribe((params) => {
             this.selectedStop = params['id'];
             this.apiService.GetStopDepartures(params['id']).subscribe({
-                next: (data) => (this.stopTimes = data),
+                next: (data) => {
+                    this.loading = false;
+                    this.stopTimes = data;
+                },
             });
         });
     }
