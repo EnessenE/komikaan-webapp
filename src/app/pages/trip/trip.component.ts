@@ -61,7 +61,7 @@ export class TripComponent {
         overlays: {},
     };
 
-    mapFitToBounds!: LatLngBounds; 
+    mapFitToBounds!: LatLngBounds;
 
     options = {
         zoom: 10,
@@ -74,7 +74,7 @@ export class TripComponent {
         }),
     ];
 
-    dataRetrieved(){
+    dataRetrieved() {
         var routeLine: LatLng[] = [];
         this.trip!.stops?.forEach((stop) => {
             var stopLayer = marker([stop.latitude, stop.longitude], {
@@ -88,13 +88,19 @@ export class TripComponent {
             });
 
             var popup = new Popup();
-            popup.setContent(stop.name);
+            popup.setContent('<a routerLink="/stops/' + stop.id + '">' + stop.name + '</a>');
 
             stopLayer.bindPopup(popup);
             this.markerLayers.addLayer(stopLayer);
 
-            routeLine.push(latLng(stop.latitude, stop.longitude));
+            if (!(this.trip?.shapes && this.trip?.shapes.length > 0)) {
+                routeLine.push(latLng(stop.latitude, stop.longitude));
+            }
         });
+        this.trip!.shapes?.forEach((shape) => {
+            routeLine.push(latLng(shape.latitude, shape.longitude));
+        });
+
         var lineColor = 'green';
 
         var line = polyline(routeLine, { color: lineColor });
@@ -114,5 +120,4 @@ export class TripComponent {
         this.map?.invalidateSize();
         this.map?.fitBounds(this.markerLayers.getBounds());
     }
-
 }

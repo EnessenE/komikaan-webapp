@@ -20,5 +20,11 @@ export interface GTFSStopTime {
     plannedPlatform: string;
     actualPlatform: string;
 
+    routeUrl: string;
+    routeType: string;
+    routeDesc: string;
+    routeColor: string;
+    routeTextColor: string;
+
     cancelled: boolean;
 }

@@ -1,4 +1,5 @@
 import { Time } from '@angular/common';
+import { GTFSShape } from './gtfsshape';
 
 export interface GTFSTripStop {
     id: string;
@@ -30,4 +31,5 @@ export interface GTFSTrip {
     dataOrigin: string;
 
     stops: GTFSTripStop[] | null;
+    shapes: GTFSShape[] | null;
 }
