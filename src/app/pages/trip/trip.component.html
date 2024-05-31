@@ -1,7 +1,7 @@
 <div class="grid">
     <div class="row">
         <div class="col-6">
-            <h1>Showing data for trip {{ trip?.headsign }}</h1>
+            <h1>Showing data for trip towards <span class="fst-italic">{{ trip?.headsign }}</span></h1>
             <h2>Trip: {{ trip?.shortname }}</h2>
             <small>Internal mumbo jumbo: {{ selectedTrip }} - {{ trip?.dataOrigin }}</small>
             <h1>Stops</h1>
@@ -50,7 +50,7 @@
                                     <p class="fw-bold">{{ tripStop.name }}</p>
                                     @if (tripStop.stopHeadsign) {
                                         <p>
-                                            Will show as <span class="font-italic">{{ tripStop.stopHeadsign }}</span> on
+                                            Will show as <span class="fst-italic">{{ tripStop.stopHeadsign }}</span> on
                                             this stop
                                         </p>
                                     }
