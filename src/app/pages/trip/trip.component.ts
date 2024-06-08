@@ -5,6 +5,7 @@ import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time
 import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
 import { GTFSTrip } from '../../models/gtfstrip';
 import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
+import {ClipboardModule} from '@angular/cdk/clipboard';
 import {
     FeatureGroup,
     Icon,
@@ -20,11 +21,12 @@ import {
     polyline,
     tileLayer,
 } from 'leaflet';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-trip',
     standalone: true,
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, LeafletModule],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, LeafletModule, ClipboardModule],
     templateUrl: './trip.component.html',
     styleUrl: './trip.component.scss',
 })
@@ -36,6 +38,7 @@ export class TripComponent {
     constructor(
         private apiService: ApiService,
         private route: ActivatedRoute,
+        private titleService: Title,
     ) {}
 
     ngOnInit(): void {
@@ -48,6 +51,7 @@ export class TripComponent {
                     this.loading = false;
                     this.trip = data;
                     this.dataRetrieved();
+                    this.titleService.setTitle(this.trip.headsign + ' > ' + this.trip.shortname);
                 },
             });
         });

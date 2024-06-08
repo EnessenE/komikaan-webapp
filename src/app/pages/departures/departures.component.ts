@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { GTFSStopTime } from '../../models/gtfsstop-time';
 import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
 import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
 import { GTFSStop } from '../../models/gtfsstop';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-departures',
@@ -21,6 +21,7 @@ export class DeparturesComponent implements OnInit {
     constructor(
         private apiService: ApiService,
         private route: ActivatedRoute,
+        private titleService: Title,
     ) {}
 
     ngOnInit(): void {
@@ -31,6 +32,7 @@ export class DeparturesComponent implements OnInit {
                 next: (data) => {
                     this.loading = false;
                     this.stop = data;
+                    this.titleService.setTitle(this.stop.name);
                 },
             });
         });
