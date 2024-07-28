@@ -1,0 +1,111 @@
+<div class="grid">
+    <div class="row">
+        <div class="col-6">
+            <h1>
+                Showing data for trip towards <span class="fst-italic">{{ trip?.headsign }}</span>
+            </h1>
+            <h2>Trip: {{ trip?.shortname }}</h2>
+            <small>Internal mumbo jumbo: {{ selectedTrip }} - {{ trip?.dataOrigin }}</small>
+            <h1>Stops</h1>
+            @if (loading) {
+                <div>
+                    <div
+                        class="spinner-border"
+                        role="status"
+                    >
+                        🚉
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading all stops...</p>
+                </div>
+            }
+            @for (tripStop of trip?.stops; track tripStop; let index = $index) {
+                <div
+                    class="row align-items-start stopbox"
+                    [class]="tripStop.cancelled == true ? 'cancelled' : 'normal'"
+                >
+                    @if (tripStop.cancelled) {
+                        <p>Rijdt niet</p>
+                    }
+
+                    <div class="col-12">
+                        <div class="row">
+                            <a
+                                class="col-10 row"
+                                routerLink="/stops/{{ tripStop.id }}/{{ tripStop.stopType }}"
+                            >
+                                <div class="col-2 text-right">
+                                    @if (
+                                        tripStop.actualArrivalTime != tripStop.plannedArrivalTime ||
+                                        tripStop.plannedDepartureTime != tripStop.actualDepartureTime ||
+                                        tripStop.plannedArrivalTime != tripStop.plannedDepartureTime
+                                    ) {
+                                        <app-time-only-selection
+                                            [actual]="tripStop.actualArrivalTime"
+                                            [planned]="tripStop.plannedArrivalTime"
+                                            [cancelled]="tripStop.cancelled"
+                                        ></app-time-only-selection>
+                                        <br />
+                                        <br />
+                                    }
+                                    <span class="fw-bold">
+                                        <app-time-only-selection
+                                            [actual]="tripStop.actualDepartureTime"
+                                            [planned]="tripStop.plannedDepartureTime"
+                                            [cancelled]="tripStop.cancelled"
+                                        ></app-time-only-selection
+                                    ></span>
+                                </div>
+                                <div class="col-6">
+                                    <p class="fw-bold">{{ tripStop.name }}</p>
+                                    @if (tripStop.stopHeadsign) {
+                                        <p>
+                                            Will show as "<span class="fst-italic">{{ tripStop.stopHeadsign }}</span
+                                            >" on this stop
+                                        </p>
+                                    }
+                                </div>
+
+                                <div class="col-2">
+                                    <app-track-selection
+                                        [plannedTrack]="tripStop.plannedPlatform"
+                                        [actualTrack]="tripStop.actualPlatform"
+                                        [cancelled]="tripStop.cancelled"
+                                    ></app-track-selection>
+                                </div>
+                            </a>
+                            <div class="col-2">
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    cdkCopyToClipboard="{{ tripStop.name }}"
+                                    value="click to copy"
+                                >
+                                    Copy this
+                                </button>
+                            </div>
+                            <div
+                                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+                ></div>
+            } @empty {
+                <p>No known stops</p>
+            }
+        </div>
+        <div class="col-6">
+            <div
+                class="leaflet"
+                leaflet
+                [leafletOptions]="options"
+                [leafletLayers]="layers"
+                [leafletLayersControl]="layersControl"
+                (leafletMapReady)="onMapReady($event)"
+            ></div>
+        </div>
+    </div>
+</div>

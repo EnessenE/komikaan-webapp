@@ -1,0 +1,109 @@
+<div class="grid">
+    <div class="col-12">
+        <h1>Showing data for stop {{ stop?.name }}</h1>
+        <h2>Description: {{ stop?.description }}</h2>
+        <p>Zone: {{ stop?.zone }}</p>
+        <p>Stop type: {{ stop?.stopType }}</p>
+        <small>Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} - {{ stop?.parentStation }}</small>
+
+        @if (stop?.relatedStops) {
+            <h2>Related stops:</h2>
+            @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
+                <div>
+                    <a routerLink="/stops/{{ relatedStop.id }}/{{ relatedStop.stopType }}"
+                        ><p>Related stop: {{ relatedStop?.name }}</p>
+                    </a>
+                    <p>Stop type: {{ relatedStop?.stopType }}</p>
+                </div>
+            }
+        }
+        <h1>Stops</h1>
+        @if (error) {
+            <div class="alert alert-danger">
+                <h1>Something went wrong! Whoops! Try reloading</h1>
+                <p>{{ error }}</p>
+                And yes at some point this error will look nice.
+            </div>
+        }
+        @if (loading) {
+            <div>
+                <div
+                    class="spinner-border"
+                    role="status"
+                >
+                    🚉
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Loading all stops...</p>
+            </div>
+        }
+        @for (tripStop of stop?.departures; track tripStop; let index = $index) {
+            <a routerLink="/trip/{{ tripStop.tripId }}">
+                <div
+                    class="row align-items-start departurebox"
+                    [class]="tripStop.cancelled == true ? 'cancelled' : 'normal'"
+                >
+                    @if (tripStop.cancelled) {
+                        <p>Rijdt niet</p>
+                    }
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 text-right">
+                                <app-time-only-selection
+                                    [actual]="tripStop.actualArrivalTime"
+                                    [planned]="tripStop.plannedArrivalTime"
+                                    [cancelled]="tripStop.cancelled"
+                                ></app-time-only-selection>
+                            </div>
+                            <div class="col-6">
+                                <p class="fw-bold">
+                                    <span
+                                        [style]="
+                                            'max-height: 50vw; min-width:50vw; background-color: #' +
+                                            tripStop.routeColor +
+                                            '; color: #' +
+                                            tripStop.routeTextColor
+                                        "
+                                        >{{ tripStop.routeShortName }}</span
+                                    >
+                                    {{ tripStop.headsign }}
+                                </p>
+                                @if (tripStop.stopHeadsign) {
+                                    <p>
+                                        Will show as <span class="fst-italic">{{ tripStop.stopHeadsign }}</span> on this
+                                        stop
+                                    </p>
+                                }
+                                <small
+                                    >{{ tripStop.routeShortName }} - {{ tripStop.operator }} -
+                                    {{ tripStop.routeLongName }}
+                                    @if (tripStop.routeColor) {
+                                        <br />
+                                        Color: {{ tripStop.routeColor }} TextColor: {{ tripStop.routeTextColor }}
+                                    }
+                                    {{ tripStop.routeDesc }}
+                                </small>
+                            </div>
+
+                            <div class="col-4">
+                                <app-track-selection
+                                    [plannedTrack]="tripStop.plannedPlatform"
+                                    [actualTrack]="tripStop.actualPlatform"
+                                    [cancelled]="tripStop.cancelled"
+                                ></app-track-selection>
+                            </div>
+                            <div
+                                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+                            >
+                                <!-- <small>Datasource: {{ tripStop.dataOrigin }} / {{tripStop.tripId}}</small> -->
+                            </div>
+                        </div>
+                    </div>
+                </div></a
+            >
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
+        } @empty {
+            <p>No known departures</p>
+        }
+    </div>
+</div>

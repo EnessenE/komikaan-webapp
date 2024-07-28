@@ -59,7 +59,7 @@ export class TravelAdviceExpandedComponent {
         this.travelAdvice.route.forEach((routePart, index) => {
             var routeLine: LatLng[] = [];
             routePart.stops.forEach((stop) => {
-                var stopMark = marker([stop.latitude, stop.longitude], {
+                var stopLayer = marker([stop.latitude, stop.longitude], {
                     // Workaround https://github.com/bluehalo/ngx-leaflet?tab=readme-ov-file#angular-cli-marker-workaround
                     icon: icon({
                         ...Icon.Default.prototype.options,
@@ -72,8 +72,8 @@ export class TravelAdviceExpandedComponent {
                 var popup = new Popup();
                 popup.setContent(stop.name);
 
-                stopMark.bindPopup(popup);
-                this.markerLayers.addLayer(stopMark);
+                stopLayer.bindPopup(popup);
+                this.markerLayers.addLayer(stopLayer);
 
                 routeLine.push(latLng(stop.latitude, stop.longitude));
             });

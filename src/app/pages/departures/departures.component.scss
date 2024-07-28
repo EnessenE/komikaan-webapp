@@ -1,8 +1,12 @@
-p {
+.departurebox {
     background-color: white;
     color: black;
     &:hover {
         background-color: gray;
         color: white;
     }
+}
+
+a {
+    text-decoration: none;
 }
