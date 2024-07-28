@@ -29,147 +29,37 @@ import { RouterLink } from '@angular/router';
     styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit {
-    foundStopsDestination: SimplifiedStop[] | undefined;
     foundStopsOrigin: SimplifiedStop[] | undefined;
     originStop: SimplifiedStop | undefined;
-    destinationStop: SimplifiedStop | undefined;
-    possibility: JourneyResult | undefined;
     loadingPossibility: boolean = false;
-    searchFailed = false;
     error: HttpErrorResponse | undefined;
-    pinnedData: TravelAdvice[] = [];
 
     constructor(private apiService: ApiService) {}
 
     ngOnInit(): void {
         this.originStop = JSON.parse(localStorage.getItem('originStop') as string);
-        this.destinationStop = JSON.parse(localStorage.getItem('destinationStop') as string);
-        if (this.originStop && this.destinationStop) {
-            this.checkPossibility();
-        }
-        this.checkForPins();
     }
 
-    checkForPins(): void {
-        var pinnedDataRaw = localStorage.getItem('pinned') as string;
-        if (pinnedDataRaw) {
-            this.pinnedData = JSON.parse(pinnedDataRaw);
 
-            console.log('Pinned data detected');
-            this.processPinnedData();
-        } else {
-            console.log('No pinned data');
-        }
-    }
-
-    processPinnedData(): void {
-        this.pinnedData.forEach((advice) => {
-            advice.oldData = true;
-        });
-    }
-
-    verifyAgainstPins(): void {
-        this.possibility?.travelAdvice.forEach((advice) => {
-            //Work around for lazy equality checks
-            const adviceCopy = structuredClone(advice);
-            adviceCopy.pinned = true;
-            adviceCopy.oldData = true;
-
-            var existingPinnedAdvice = this.pinnedData.find(
-                (pinnedAdvice) => JSON.stringify(pinnedAdvice) === JSON.stringify(adviceCopy),
-            );
-
-            if (existingPinnedAdvice) {
-                console.log('Found an old pin in new data!');
-                existingPinnedAdvice.oldData = false;
-                advice.pinned = true;
-            }
-        });
-    }
-
-    switchAround() {
-        var tempOrigin = this.originStop;
-        this.originStop = this.destinationStop;
-        this.destinationStop = tempOrigin;
-        if (this.originStop && this.destinationStop) {
-            this.checkPossibility();
-        }
-    }
-
-    async onSearchInputChange(event: any) {
-        var searchText = event.target.value;
-        console.log('Searching for ' + searchText);
-        this.apiService.GetStops(event.target.value).subscribe({
-            next: (data) => (this.foundStopsDestination = data),
-        });
-    }
 
     async onSearchInputChangeOrigin(event: any) {
         var searchText = event.target.value;
         console.log('Searching for ' + searchText);
         this.apiService.GetStops(event.target.value).subscribe({
             next: (data) => (this.foundStopsOrigin = data),
+            error: (error) => (this.error = error)
         });
     }
 
     selectStopOrigin(value: SimplifiedStop) {
         this.originStop = value;
         this.foundStopsOrigin = undefined;
-        this.checkPossibility();
 
         console.log(this.originStop);
-    }
-
-    selectStopDestination(value: SimplifiedStop) {
-        this.destinationStop = value;
-        this.foundStopsDestination = undefined;
-        this.checkPossibility();
-    }
-
-    checkPossibility() {
-        this.checkForPins();
-        console.log(this.originStop + ' > ' + this.destinationStop);
-        if (this.originStop != null) {
-            localStorage.setItem('originStop', JSON.stringify(this.originStop));
-        }
-        if (this.destinationStop != null) {
-            localStorage.setItem('destinationStop', JSON.stringify(this.destinationStop));
-        }
-        if (this.originStop && this.destinationStop) {
-            this.loadingPossibility = true;
-            this.possibility = undefined;
-            this.error = undefined;
-            this.apiService.GetPossibility(this.originStop!.name, this.destinationStop!.name).subscribe({
-                next: (data) => this.setPossibility(data),
-                error: (error) => this.handleError(error),
-            });
-        }
-    }
-
-    setPossibility(journeyResult: JourneyResult) {
-        this.loadingPossibility = false;
-        this.possibility = journeyResult;
-        this.possibility.travelAdvice.forEach((travelAdvice) => {
-            var impossibility = travelAdvice.route.find(
-                (item) => item.realisticTransfer === false && item.cancelled == false,
-            );
-            if (impossibility !== undefined) {
-                travelAdvice.realistic = false;
-            } else {
-                travelAdvice.realistic = true;
-            }
-        });
-        this.verifyAgainstPins();
     }
 
     handleError(error: HttpErrorResponse) {
         this.error = error;
         console.error(error);
-    }
-
-    clearPins() {
-        console.log('Pins cleared!');
-        localStorage.removeItem('pinned');
-        this.pinnedData = [];
     }
 }

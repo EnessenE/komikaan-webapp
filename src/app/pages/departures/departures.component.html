@@ -3,22 +3,28 @@
         <h1>Showing data for stop {{ stop?.name }}</h1>
         <h2>Description: {{ stop?.description }}</h2>
         <p>Zone: {{ stop?.zone }}</p>
+        <p>Stop type: {{ stop?.stopType }}</p>
         <small>Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} - {{ stop?.parentStation }}</small>
 
         @if (stop?.relatedStops) {
             <h2>Related stops:</h2>
             @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
                 <div>
-                    <a routerLink="/stops/{{ relatedStop.id }}"
+                    <a routerLink="/stops/{{ relatedStop.id }}/{{ relatedStop.stopType }}"
                         ><p>Related stop: {{ relatedStop?.name }}</p>
                     </a>
-                    <p>Platform code: {{ relatedStop?.platformCode }}</p>
-                    <p>Data origin: {{ relatedStop?.dataOrigin }}</p>
+                    <p>Stop type: {{ relatedStop?.stopType }}</p>
                 </div>
             }
         }
         <h1>Stops</h1>
-
+        @if (error) {
+            <div class="alert alert-danger">
+                <h1>Something went wrong! Whoops! Try reloading</h1>
+                <p>{{ error }}</p>
+                And yes at some point this error will look nice.
+            </div>
+        }
         @if (loading) {
             <div>
                 <div
@@ -51,12 +57,21 @@
                             </div>
                             <div class="col-6">
                                 <p class="fw-bold">
+                                    <span
+                                        [style]="
+                                            'max-height: 50vw; min-width:50vw; background-color: #' +
+                                            tripStop.routeColor +
+                                            '; color: #' +
+                                            tripStop.routeTextColor
+                                        "
+                                        >{{ tripStop.routeShortName }}</span
+                                    >
                                     {{ tripStop.headsign }}
                                 </p>
                                 @if (tripStop.stopHeadsign) {
                                     <p>
-                                        Will show as <span class="fst-italic">{{ tripStop.stopHeadsign }}</span> on
-                                        this stop
+                                        Will show as <span class="fst-italic">{{ tripStop.stopHeadsign }}</span> on this
+                                        stop
                                     </p>
                                 }
                                 <small

@@ -24,9 +24,9 @@ export class ApiService {
     );
   }
 
-  GetStop(stopId: string): Observable<GTFSStop> {
+  GetStop(stopId: string, stopType: string): Observable<GTFSStop> {
     return this.http.get<GTFSStop>(
-      environment.apiServer + '/v1/stops/' + stopId
+      environment.apiServer + '/v1/stops/' + stopId + '/' + stopType
     );
   }
 

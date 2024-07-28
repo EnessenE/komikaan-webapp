@@ -9,9 +9,9 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-6 col-12">
+        <div class="col-lg-12 col-12">
             <form class="form-inline my-2 my-lg-0">
-                <p>Vanaf welk station start je?</p>
+                <p>Voor welk station wil je de vertrektijden zien?</p>
 
                 <input
                     class="form-control mr-sm-2"
@@ -24,163 +24,21 @@
                 <div>
                     <div class="dropdown">
                         @for (stop of foundStopsOrigin; track stop) {
-                            <button
-                                type="button"
-                                class="dropdown-item"
-                                (click)="selectStopOrigin(stop)"
-                            >
-                                <app-stop [stop]="stop"></app-stop>
-                            </button>
+                            <a routerLink="/stops/{{ stop!.ids.at(0) }}/{{ stop.stopType }}">
+                                <button
+                                    type="button"
+                                    class="dropdown-item"
+                                >
+                                    <app-stop [stop]="stop"></app-stop></button
+                            ></a>
                         } @empty {
                             @if (foundStopsOrigin !== undefined) {
                                 No relevant stops found
                             }
                         }
                     </div>
-                    @if (originStop?.name) {
-                        <a routerLink="/stops/{{originStop!.ids.at(0)}}/">Departures for this stop</a>
-                    }
-                </div>
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    (click)="switchAround()"
-                >
-                    ⇔
-                </button>
-                <p>Naar welk station ga je toe?</p>
-                <input
-                    class="form-control mr-sm-2"
-                    type="search"
-                    placeholder="Utrecht Centraal"
-                    aria-label="Search"
-                    [value]="destinationStop?.name"
-                    (input)="onSearchInputChange($event)"
-                />
-                <div>
-                    <div class="dropdown">
-                        @for (stop of foundStopsDestination; track stop) {
-                            <button
-                                type="button"
-                                class="dropdown-item"
-                                (click)="selectStopDestination(stop)"
-                            >
-                                <app-stop [stop]="stop"></app-stop>
-                            </button>
-                        } @empty {
-                            @if (foundStopsDestination !== undefined) {
-                                No relevant stops found
-                            }
-                        }
-                    </div>
-
-                    @if (destinationStop?.name) {
-                        <a routerLink="/stops/{{destinationStop!.ids.at(0)}}/">Departures for this stop</a>
-                    }
                 </div>
             </form>
-        </div>
-        <div class="col-lg-6 col-12">
-            <h1>Kom ik aan?</h1>
-            @if (loadingPossibility) {
-                <div>
-                    <div
-                        class="spinner-border"
-                        role="status"
-                    >
-                        ❓
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p>Even kijken...</p>
-                </div>
-            } @else if (possibility) {
-                @switch (possibility.journeyExpectation) {
-                    @case ('Full') {
-                        <h1 style="color: green">Ja!</h1>
-                    }
-                    @case ('Maybe') {
-                        <h1 style="color: orange">Waarschijnlijk</h1>
-                    }
-                    @case ('Nope') {
-                        <h1 style="color: red">Lijkt er niet op</h1>
-                    }
-                    @case ('Unknown') {
-                        <h1 style="color: red">We hebben geen idee.</h1>
-                    }
-                }
-                <p><small>Op basis van wat wij weten.</small></p>
-            }
-        </div>
-
-        <div class="col-12">
-            <h1>Problemen onderweg</h1>
-            <div class="list-group">
-                @if (possibility) {
-                    @for (disruption of possibility.disruptions; track disruption) {
-                        <app-disruption [disruption]="disruption"></app-disruption>
-                    } @empty {
-                        Geen problemen op dit traject volgens onze data.
-                    }
-                } @else if (loadingPossibility) {
-                    <div>
-                        <div
-                            class="spinner-border"
-                            role="status"
-                        >
-                            🚉
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p>Zoekende voor data over problemen op dit traject...</p>
-                    </div>
-                } @else {
-                    <p>Selecteer een traject om problemen onderweg in te zien</p>
-                }
-            </div>
-        </div>
-        <div class="col-12">
-            @if (pinnedData.length > 0) {
-                <h1>Je pins:</h1>
-                <button
-                    class="btn btn-warning"
-                    (click)="clearPins()"
-                >
-                    Haal alle pins weg
-                </button>
-                @for (travelAdvice of pinnedData; track travelAdvice; let index = $index) {
-                    <app-travel-advice
-                        [travelAdvice]="travelAdvice"
-                        [index]="index"
-                        travelAdviceDisplayType="pins"
-                    ></app-travel-advice>
-                }
-            }
-            <h1>Reis advies</h1>
-            @if (possibility) {
-                <div class="list-group">
-                    @for (travelAdvice of possibility?.travelAdvice; track travelAdvice; let index = $index) {
-                        <app-travel-advice
-                            [travelAdvice]="travelAdvice"
-                            [index]="index"
-                            travelAdviceDisplayType="advice"
-                        ></app-travel-advice>
-                    } @empty {
-                        Geen reisadvies op het moment.
-                    }
-                </div>
-            } @else if (loadingPossibility) {
-                <div>
-                    <div
-                        class="spinner-border"
-                        role="status"
-                    >
-                        🚅
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-                <p>Zoekende voor advies voor jou reis...</p>
-            } @else {
-                <p>Selecteer een route voor reisadvies.</p>
-            }
         </div>
     </div>
 </div>

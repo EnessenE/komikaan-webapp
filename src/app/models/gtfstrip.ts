@@ -7,6 +7,7 @@ export interface GTFSTripStop {
     name: string;
     platformCode: string;
     stopHeadsign: string;
+    stopType: string;
     cancelled: boolean;
 
     longitude: number;

@@ -5,7 +5,7 @@ import { TripComponent } from './pages/trip/trip.component';
 
 export const routes: Routes = [
     {
-        path: 'stops/:id',
+        path: 'stops/:id/:type',
         component: DeparturesComponent,
     },{
         path: 'trip/:id',

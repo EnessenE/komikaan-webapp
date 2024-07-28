@@ -1,4 +1,7 @@
-export class SimplifiedStop {
-    ids!: string[]
-    name!: string
+import { StopType } from "./gtfsstop"
+
+export interface SimplifiedStop {
+    ids: string[]
+    name: string,
+    stopType: StopType
 }
