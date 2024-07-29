@@ -1,11 +1,18 @@
 <div class="grid">
     <div class="col-12">
         <h1>Showing data for stop {{ stop?.name }}</h1>
-        <h2>Description: {{ stop?.description }}</h2>
-        <p>Zone: {{ stop?.zone }}</p>
-        <p>Stop type: {{ stop?.stopType }}</p>
-        <small>Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} - {{ stop?.parentStation }}</small>
+        <h2>Stop type: {{ stop?.stopType }}</h2>
 
+        <p>Description: {{ stop?.description }}</p>
+        <p>Zone: {{ stop?.zone }}</p>
+        <p>
+            This stop consists of <b>{{ stop?.mergedStops ?? "an unknown amount of "}}</b> merged stops.
+        </p>
+        <p>
+            <small>Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} - {{ stop?.parentStation }}</small>
+            <br />
+            <small>Last updated: {{ stop?.lastUpdated }}</small>
+        </p>
         @if (stop?.relatedStops) {
             <h2>Related stops:</h2>
             @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
@@ -77,10 +84,6 @@
                                 <small
                                     >{{ tripStop.routeShortName }} - {{ tripStop.operator }} -
                                     {{ tripStop.routeLongName }}
-                                    @if (tripStop.routeColor) {
-                                        <br />
-                                        Color: {{ tripStop.routeColor }} TextColor: {{ tripStop.routeTextColor }}
-                                    }
                                     {{ tripStop.routeDesc }}
                                 </small>
                             </div>

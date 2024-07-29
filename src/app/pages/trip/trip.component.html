@@ -1,6 +1,6 @@
 <div class="grid">
     <div class="row">
-        <div class="col-6">
+        <div class="col-lg-6 col-12">
             <h1>
                 Showing data for trip towards <span class="fst-italic">{{ trip?.headsign }}</span>
             </h1>
@@ -16,7 +16,7 @@
                         🚉
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p>Loading all stops...</p>
+                    <p>Loading trips data...</p>
                 </div>
             }
             @for (tripStop of trip?.stops; track tripStop; let index = $index) {
@@ -34,7 +34,7 @@
                                 class="col-10 row"
                                 routerLink="/stops/{{ tripStop.id }}/{{ tripStop.stopType }}"
                             >
-                                <div class="col-2 text-right">
+                                <div class="col-3 text-right">
                                     @if (
                                         tripStop.actualArrivalTime != tripStop.plannedArrivalTime ||
                                         tripStop.plannedDepartureTime != tripStop.actualDepartureTime ||
@@ -56,17 +56,19 @@
                                         ></app-time-only-selection
                                     ></span>
                                 </div>
-                                <div class="col-6">
-                                    <p class="fw-bold">{{ tripStop.name }}</p>
+                                <div class="col-7">
+                                    <p class="fw-bold">{{ tripStop.name }}
                                     @if (tripStop.stopHeadsign) {
-                                        <p>
+                                        <br>
+                                        <span class="fw-normal">
                                             Will show as "<span class="fst-italic">{{ tripStop.stopHeadsign }}</span
                                             >" on this stop
-                                        </p>
+                                        </span>
                                     }
+                                </p>
                                 </div>
 
-                                <div class="col-2">
+                                <div class="col-1">
                                     <app-track-selection
                                         [plannedTrack]="tripStop.plannedPlatform"
                                         [actualTrack]="tripStop.actualPlatform"
@@ -74,14 +76,14 @@
                                     ></app-track-selection>
                                 </div>
                             </a>
-                            <div class="col-2">
+                            <div class="col-1">
                                 <button
                                     type="button"
-                                    class="btn btn-primary"
+                                    class="btn"
                                     cdkCopyToClipboard="{{ tripStop.name }}"
                                     value="click to copy"
                                 >
-                                    Copy this
+                                    Copy
                                 </button>
                             </div>
                             <div
@@ -97,7 +99,7 @@
                 <p>No known stops</p>
             }
         </div>
-        <div class="col-6">
+        <div class="col-lg-6 col-12">
             <div
                 class="leaflet"
                 leaflet

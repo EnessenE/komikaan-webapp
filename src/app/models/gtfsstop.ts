@@ -9,6 +9,9 @@ export interface GTFSStop {
     longitude: number;
     latitude: number;
 
+    mergedStops: number;
+    lastUpdated: Date;
+
     zone: string;
     locationType: string;
     parentStation: string;
