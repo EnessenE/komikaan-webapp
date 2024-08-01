@@ -20,6 +20,16 @@
                 </div>
             }
             @for (tripStop of trip?.stops; track tripStop; let index = $index) {
+                @if (
+                    trip!.stops![index - 1] != null &&
+                    convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
+                        convertToDate(trip!.stops![index - 1].actualArrivalTime.toString()).getDay()
+                ) {
+                    <hr class="bg-danger border-2 border-top border-warning" />
+
+                    <p>The next day!</p>
+                }
+
                 <div
                     class="row align-items-start stopbox"
                     [class]="tripStop.cancelled == true ? 'cancelled' : 'normal'"
@@ -27,7 +37,6 @@
                     @if (tripStop.cancelled) {
                         <p>Rijdt niet</p>
                     }
-
                     <div class="col-12">
                         <div class="row">
                             <a
@@ -57,15 +66,16 @@
                                     ></span>
                                 </div>
                                 <div class="col-7">
-                                    <p class="fw-bold">{{ tripStop.name }}
-                                    @if (tripStop.stopHeadsign) {
-                                        <br>
-                                        <span class="fw-normal">
-                                            Will show as "<span class="fst-italic">{{ tripStop.stopHeadsign }}</span
-                                            >" on this stop
-                                        </span>
-                                    }
-                                </p>
+                                    <p class="fw-bold">
+                                        {{ tripStop.name }}
+                                        @if (tripStop.stopHeadsign) {
+                                            <br />
+                                            <span class="fw-normal">
+                                                Will show as "<span class="fst-italic">{{ tripStop.stopHeadsign }}</span
+                                                >" on this stop
+                                            </span>
+                                        }
+                                    </p>
                                 </div>
 
                                 <div class="col-1">
@@ -100,7 +110,7 @@
             }
         </div>
         <div class="col-lg-6 col-12">
-            <div
+            <div (window:resize)="onResize($event)"
                 class="leaflet"
                 leaflet
                 [leafletOptions]="options"

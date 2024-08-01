@@ -6,7 +6,7 @@
         <p>Description: {{ stop?.description }}</p>
         <p>Zone: {{ stop?.zone }}</p>
         <p>
-            This stop consists of <b>{{ stop?.mergedStops ?? "an unknown amount of "}}</b> merged stops.
+            This stop consists of <b>{{ stop?.mergedStops ?? 'an unknown amount of ' }}</b> merged stops.
         </p>
         <p>
             <small>Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} - {{ stop?.parentStation }}</small>
@@ -45,6 +45,17 @@
             </div>
         }
         @for (tripStop of stop?.departures; track tripStop; let index = $index) {
+            @if (
+                index == 0 ||
+                (stop!.departures[index - 1] != null &&
+                    convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
+                        convertToDate(stop!.departures![index - 1].actualArrivalTime.toString()).getDay())
+            ) {
+                <hr class="bg-danger border-2 border-top border-warning" />
+
+                <p>{{ convertToDate(tripStop.actualArrivalTime.toString()) | date: 'yyyy-MM-dd' }}</p>
+            }
+
             <a routerLink="/trip/{{ tripStop.tripId }}">
                 <div
                     class="row align-items-start departurebox"

@@ -10,9 +10,9 @@ import { Component, Input } from '@angular/core';
 })
 export class TimeOnlySelectionComponent {
   @Input()
-  planned: Time | null | undefined;
+  planned: Date | null | undefined;
   @Input()
-  actual: Time | null | undefined;
+  actual: Date | null | undefined;
   @Input()
   cancelled: boolean | null | undefined;
 }

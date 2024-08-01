@@ -3,10 +3,10 @@ import { Time } from "@angular/common";
 export interface GTFSStopTime {
     tripId: string;
 
-    plannedArrivalTime?: Time | null;
-    plannedDepartureTime?: Time | null;
-    actualArrivalTime?: Time | null;
-    actualDepartureTime?: Time | null;
+    plannedArrivalTime?: Date | null;
+    plannedDepartureTime?: Date | null;
+    actualArrivalTime: Date;
+    actualDepartureTime: Date;
 
     stopHeadsign: string;
     headsign: string;

@@ -22,11 +22,12 @@ import {
     tileLayer,
 } from 'leaflet';
 import { Title } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-trip',
     standalone: true,
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, LeafletModule, ClipboardModule],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, LeafletModule, ClipboardModule, DatePipe],
     templateUrl: './trip.component.html',
     styleUrl: './trip.component.scss',
 })
@@ -78,6 +79,11 @@ export class TripComponent {
         }),
     ];
 
+    
+    convertToDate(dateString: string): Date {
+        return new Date(dateString);
+      }
+
     dataRetrieved() {
         var routeLine: LatLng[] = [];
         this.trip!.stops?.forEach((stop) => {
@@ -112,7 +118,7 @@ export class TripComponent {
         this.layers.push(line);
 
         this.layers.push(this.markerLayers);
-        this.InvalidateMap();
+        this.invalidateMap();
     }
 
     onMapReady(map: Map) {
@@ -120,8 +126,12 @@ export class TripComponent {
         this.markerLayers = featureGroup();
     }
 
-    InvalidateMap(): void {
+    invalidateMap(): void {
         this.map?.invalidateSize();
         this.map?.fitBounds(this.markerLayers.getBounds());
     }
+
+    onResize(event: any) {
+        this.invalidateMap();}
+
 }

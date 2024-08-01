@@ -5,11 +5,12 @@ import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time
 import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
 import { GTFSStop } from '../../models/gtfsstop';
 import { Title } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-departures',
     standalone: true,
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe],
     templateUrl: './departures.component.html',
     styleUrl: './departures.component.scss',
 })
@@ -18,12 +19,17 @@ export class DeparturesComponent implements OnInit {
     selectedStop: string | undefined;
     loading: boolean = false;
     error: string | undefined;
+    new: any;
 
     constructor(
         private apiService: ApiService,
         private route: ActivatedRoute,
         private titleService: Title,
     ) {}
+
+    convertToDate(dateString: string): Date {
+        return new Date(dateString);
+    }
 
     ngOnInit(): void {
         this.loading = true;
@@ -34,13 +40,13 @@ export class DeparturesComponent implements OnInit {
             this.apiService.GetStop(params['id'], params['type']).subscribe({
                 next: (data) => {
                     this.loading = false;
-                    this.stop = data;
+                    this.stop = data as GTFSStop;
                     this.titleService.setTitle(this.stop.name);
                 },
-                error: (error) =>{
+                error: (error) => {
                     this.loading = false;
                     this.error = error.message;
-                }
+                },
             });
         });
     }

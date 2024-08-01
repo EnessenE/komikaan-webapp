@@ -1,4 +1,4 @@
 export const environment = {
-    // apiServer: "http://localhost:3001"
-    apiServer: "https://api.komikaan.nl"
+    apiServer: "https://localhost:7252"
+    // apiServer: "https://api.komikaan.nl"
 };

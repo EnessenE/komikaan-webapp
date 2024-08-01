@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DeparturesComponent } from './departures.component';
+import { DatePipe } from '@angular/common';
 
 describe('DeparturesComponent', () => {
   let component: DeparturesComponent;
@@ -8,7 +9,7 @@ describe('DeparturesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DeparturesComponent]
+      imports: [DeparturesComponent, DatePipe]
     })
     .compileComponents();
     

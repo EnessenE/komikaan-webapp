@@ -1,12 +1,12 @@
 <span>
     @if (actual && actual != planned) {
-        <span class="major-info-change">{{ planned }}</span
-        >({{ actual }})
+        <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span
+        >({{ actual | date: 'HH:mm:ss' }})
     } @else {
         @if (cancelled) {
             <span class="major-info-change">{{ actual ?? planned }}</span>
         } @else {
-            {{ actual ?? planned }}
+            {{ actual ?? planned | date: 'HH:mm:ss' }}
         }
     }
 </span>

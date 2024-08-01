@@ -15,10 +15,10 @@ export interface GTFSTripStop {
 
     plannedPlatform: string;
     actualPlatform: string;
-    plannedArrivalTime?: Time | null;
-    plannedDepartureTime?: Time | null;
-    actualArrivalTime?: Time | null;
-    actualDepartureTime?: Time | null;
+    plannedArrivalTime: Date;
+    plannedDepartureTime?: Date | null;
+    actualArrivalTime: Date;
+    actualDepartureTime?: Date | null;
 }
 
 export interface GTFSTrip {
