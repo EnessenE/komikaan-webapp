@@ -47,6 +47,7 @@ export class TripComponent {
         var routeSub = this.route.params.subscribe((params) => {
             this.trip = undefined;
             this.selectedTrip = params['id'];
+            this.titleService.setTitle("Seaching for " + this.selectedTrip);
             this.apiService.GetTrip(params['id']).subscribe({
                 next: (data) => {
                     this.loading = false;
@@ -132,6 +133,7 @@ export class TripComponent {
     }
 
     onResize(event: any) {
-        this.invalidateMap();}
+        this.invalidateMap();
+    }
 
 }

@@ -1,7 +1,7 @@
 @if (error) {
     <app-error></app-error>
     <div style="background-color: red">
-        <h1>Iets ging fout!</h1>
+        <h1>Something went wrong!</h1>
         <p>{{ error.message }}</p>
         <small>We hebben nog geen mooie error pagina gebouwd</small>
     </div>
@@ -9,10 +9,24 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-12 col-12">
+        <div class="col-6">
+            <div
+                (window:resize)="onResize($event)"
+                class="leaflet stop-map-view"
+                leaflet
+                [leafletOptions]="options"
+                [leafletLayers]="layers"
+                [leafletLayersControl]="layersControl"
+                (leafletMapReady)="onMapReady($event)"
+            ></div>
+        </div>
+        <div class="col-lg-6 col-6">
             <form class="form-inline my-2 my-lg-0">
                 <p>For which station do you want to see departures?</p>
-                <small>Fill in a stop you know nearby and let's see if we can find it. From there you can keep clicking and see where you end up</small>
+                <small
+                    >Fill in a stop you know nearby and let's see if we can find it. From there you can keep clicking
+                    and see where you end up</small
+                >
 
                 <input
                     class="form-control mr-sm-2"
@@ -22,10 +36,22 @@
                     [value]="originStop?.name"
                     (input)="onSearchInputChangeOrigin($event)"
                 />
+                @if (loading) {
+                    <div>
+                        <div
+                            class="spinner-border"
+                            role="status"
+                        >
+                            🚉
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Loading all stops...</p>
+                    </div>
+                }
                 <div>
                     <div class="dropdown">
                         @for (stop of foundStopsOrigin; track stop) {
-                            <a routerLink="/stops/{{ stop!.ids.at(0) }}/{{ stop.stopType }}">
+                            <a routerLink="/stops/{{ stop.id }}/{{ stop.stopType }}">
                                 <button
                                     type="button"
                                     class="dropdown-item"
@@ -40,6 +66,33 @@
                     </div>
                 </div>
             </form>
+        </div>
+
+        <div class="col-6">
+            <button
+                type="button"
+                class="btn btn-info"
+                (click)="getNearbyStops()"
+            >
+                Search for nearby stops?
+            </button>
+            @if (location) {
+                <p>Got your location: {{ location.lat }} - {{ location.lng }}</p>
+
+                @for (stop of nearbyStops; track stop) {
+                    <a routerLink="/stops/{{ stop!.id }}/{{ stop.stopType }}">
+                        <button
+                            type="button"
+                            class="dropdown-item"
+                        >
+                            <app-stop [stop]="stop"></app-stop></button
+                    ></a>
+                } @empty {
+                    @if (foundStopsOrigin !== undefined) {
+                        No nearby stops found
+                    }
+                }
+            }
         </div>
     </div>
 </div>
