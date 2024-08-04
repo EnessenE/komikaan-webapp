@@ -68,11 +68,11 @@
                                 <div class="col-7">
                                     <p class="fw-bold">
                                         {{ tripStop.name }}
-                                        @if (tripStop.stopHeadsign) {
+                                        @if (tripStop.stopHeadsign && tripStop.stopHeadsign != trip?.headsign) {
                                             <br />
                                             <span class="fw-normal">
-                                                Will show as "<span class="fst-italic">{{ tripStop.stopHeadsign }}</span
-                                                >" on this stop
+                                                Headsign on this stop will be
+                                                <span class="fst-italic">{{ tripStop.stopHeadsign }}</span>
                                             </span>
                                         }
                                     </p>
@@ -110,7 +110,8 @@
             }
         </div>
         <div class="col-lg-6 col-12">
-            <div (window:resize)="onResize($event)"
+            <div
+                (window:resize)="onResize($event)"
                 class="leaflet"
                 leaflet
                 [leafletOptions]="options"

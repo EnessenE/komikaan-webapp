@@ -86,10 +86,9 @@
                                     >
                                     {{ tripStop.headsign }}
                                 </p>
-                                @if (tripStop.stopHeadsign) {
+                                @if (tripStop.stopHeadsign && tripStop.stopHeadsign != "" && tripStop.stopHeadsign != tripStop.headsign) {
                                     <p>
-                                        Will show as <span class="fst-italic">{{ tripStop.stopHeadsign }}</span> on this
-                                        stop
+                                        Headsign on this stop will be <span class="fst-italic">[{{ tripStop.stopHeadsign }}]</span> 
                                     </p>
                                 }
                                 <small
