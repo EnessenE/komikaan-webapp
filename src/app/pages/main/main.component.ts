@@ -81,7 +81,6 @@ export class MainComponent implements OnInit {
     constructor(private apiService: ApiService) {}
 
     ngOnInit(): void {
-        this.originStop = JSON.parse(localStorage.getItem('originStop') as string);
         this.searchInputSubject.pipe(
             debounceTime(300)  // Adjust the debounce time as needed (e.g., 300ms)
         ).subscribe(searchText => {
