@@ -10,7 +10,7 @@ import { TravelAdviceComponent } from '../../comps/travel-advice/travel-advice.c
 import { StopComponent } from '../../comps/stop/stop.component';
 import { GTFSStopTime } from '../../models/gtfsstop-time';
 import { RouterLink } from '@angular/router';
-import { PointTuple } from 'leaflet';
+import { circle, PointTuple } from 'leaflet';
 import {
     FeatureGroup,
     Icon,
@@ -49,7 +49,6 @@ import { debounceTime, Subject } from 'rxjs';
 })
 export class MainComponent implements OnInit {
     foundStopsOrigin: GTFSStop[] | undefined;
-    nearbyStops: GTFSStop[] | undefined;
     originStop: GTFSStop | undefined;
     loading: boolean = false;
     error: HttpErrorResponse | undefined;
@@ -68,34 +67,35 @@ export class MainComponent implements OnInit {
     mapFitToBounds!: LatLngBounds;
 
     options = {
-        zoom: 10,
+        zoom: 13,
         center: latLng(52.0907, 5.1214),
     };
 
     layers: Layer[] = [
         tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
+            maxZoom: 5,
         }),
     ];
 
     constructor(private apiService: ApiService) {}
 
     ngOnInit(): void {
-        this.searchInputSubject.pipe(
-            debounceTime(300)  // Adjust the debounce time as needed (e.g., 300ms)
-        ).subscribe(searchText => {
-            this.loading = true;
-            console.log('Searching for ' + searchText);
-            this.apiService.GetStops(searchText).subscribe({
-                next: (data) => {
-                    this.loading = false;
-                    this.foundStopsOrigin = data;
-                    this.addStopsToMap(data);
-                },
-                error: (error) => (this.error = error),
+        this.searchInputSubject
+            .pipe(
+                debounceTime(300), // Adjust the debounce time as needed (e.g., 300ms)
+            )
+            .subscribe((searchText) => {
+                this.loading = true;
+                console.log('Searching for ' + searchText);
+                this.apiService.GetStops(searchText).subscribe({
+                    next: (data) => {
+                        this.loading = false;
+                        this.foundStopsOrigin = data;
+                        this.addStopsToMap(data);
+                    },
+                    error: (error) => (this.error = error),
+                });
             });
-        });
-
     }
 
     onSearchInputChangeOrigin(event: any) {
@@ -135,8 +135,8 @@ export class MainComponent implements OnInit {
                         this.location = location;
                         this.apiService.NearbyStops(location).subscribe({
                             next: (data) => {
-                                this.nearbyStops = data;
-                                this.addStopsToMap(this.nearbyStops);
+                                this.foundStopsOrigin = data;
+                                this.addStopsToMap(this.foundStopsOrigin);
                             },
                             error: (error) => (this.error = error),
                         });
@@ -159,7 +159,27 @@ export class MainComponent implements OnInit {
             this.markerLayers.removeLayer(layer);
         });
         stops.forEach((stop) => {
-            var stopLayer = marker([stop.latitude, stop.longitude], {
+            var stopLayer = circle([stop.latitude, stop.longitude], { radius: 100 });
+
+            var popup = new Popup();
+            popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
+
+            stopLayer.bindPopup(popup);
+            this.markerLayers.addLayer(stopLayer);
+        });
+        console.log("pushing layers")
+        this.layers.push(this.markerLayers);
+        this.addDefaultMarkers();
+        console.log("default layers")
+        console.log(this.markerLayers)
+        this.map.fitBounds(this.markerLayers.getBounds());
+        console.log("bounds")
+        this.invalidateMap();
+    }
+
+    addDefaultMarkers() {
+        if (this.location) {
+            var currentLocationLayer = marker([this.location.lat, this.location.lng], {
                 // Workaround https://github.com/bluehalo/ngx-leaflet?tab=readme-ov-file#angular-cli-marker-workaround
                 icon: icon({
                     ...Icon.Default.prototype.options,
@@ -170,19 +190,16 @@ export class MainComponent implements OnInit {
             });
 
             var popup = new Popup();
-            popup.setContent('<a [routerLink]="/stops/' + stop.id + '">' + stop.name + '</a>');
-
-            stopLayer.bindPopup(popup);
-            this.markerLayers.addLayer(stopLayer);
-        });
-        this.layers.push(this.markerLayers);
-        this.map?.fitBounds(this.markerLayers.getBounds());
-        this.invalidateMap();
+            currentLocationLayer.bindPopup(popup);
+            popup.setContent('My current location');
+            this.markerLayers.addLayer(currentLocationLayer);
+        }
     }
 
     onMapReady(map: Map) {
         this.map = map;
         this.markerLayers = featureGroup();
+        this.invalidateMap();
     }
 
     invalidateMap(): void {

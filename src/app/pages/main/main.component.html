@@ -19,7 +19,18 @@
                 [leafletLayersControl]="layersControl"
                 (leafletMapReady)="onMapReady($event)"
             ></div>
+            <button
+            type="button"
+            class="btn btn-info"
+            (click)="getNearbyStops()"
+        >
+            Search for nearby stops?
+        </button>
+        @if (location) {
+            <p>Got your location: {{ location.lat }} - {{ location.lng }}</p>
+        }
         </div>
+        
         <div class="col-lg-6 col-6">
             <form class="form-inline my-2 my-lg-0">
                 <p>For which station do you want to see departures?</p>
@@ -66,33 +77,6 @@
                     </div>
                 </div>
             </form>
-        </div>
-
-        <div class="col-6">
-            <button
-                type="button"
-                class="btn btn-info"
-                (click)="getNearbyStops()"
-            >
-                Search for nearby stops?
-            </button>
-            @if (location) {
-                <p>Got your location: {{ location.lat }} - {{ location.lng }}</p>
-
-                @for (stop of nearbyStops; track stop) {
-                    <a routerLink="/stops/{{ stop!.id }}/{{ stop.stopType }}">
-                        <button
-                            type="button"
-                            class="dropdown-item"
-                        >
-                            <app-stop [stop]="stop"></app-stop></button
-                    ></a>
-                } @empty {
-                    @if (foundStopsOrigin !== undefined) {
-                        No nearby stops found
-                    }
-                }
-            }
         </div>
     </div>
 </div>
