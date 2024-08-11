@@ -26,12 +26,9 @@
         }
         <h1>Stops</h1>
         @if (error) {
-            <div class="alert alert-danger">
-                <h1>Something went wrong! Whoops! Try reloading</h1>
-                <p>{{ error }}</p>
-                And yes at some point this error will look nice.
-            </div>
+            <app-error [httpErrorResponse]="error"></app-error>
         }
+
         @if (loading) {
             <div>
                 <div
@@ -41,7 +38,7 @@
                     🚉
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <p>Loading all stops...</p>
+                <p>Loading stops...</p>
             </div>
         }
         @for (tripStop of stop?.departures; track tripStop; let index = $index) {

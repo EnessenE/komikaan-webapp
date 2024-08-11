@@ -1,10 +1,5 @@
 @if (error) {
-    <app-error></app-error>
-    <div style="background-color: red">
-        <h1>Something went wrong!</h1>
-        <p>{{ error.message }}</p>
-        <small>We hebben nog geen mooie error pagina gebouwd</small>
-    </div>
+    <app-error [httpErrorResponse]="error"></app-error>
 }
 
 <div class="container">
@@ -20,17 +15,24 @@
                 (leafletMapReady)="onMapReady($event)"
             ></div>
             <button
-            type="button"
-            class="btn btn-info"
-            (click)="getNearbyStops()"
-        >
-            Search for nearby stops?
-        </button>
-        @if (location) {
-            <p>Got your location: {{ location.lat }} - {{ location.lng }}</p>
-        }
+                type="button"
+                class="btn btn-info"
+                (click)="getNearbyStops()"
+            >
+                Search for nearby stops?
+            </button>
+            <!-- <button
+                type="button"
+                class="btn btn-info"
+                (click)="getAllStops()"
+            >
+                Search for ALL stops?
+            </button> -->
+            @if (location) {
+                <p>Got your location: {{ location.lat }} - {{ location.lng }}</p>
+            }
         </div>
-        
+
         <div class="col-lg-6 col-6">
             <form class="form-inline my-2 my-lg-0">
                 <p>For which station do you want to see departures?</p>
@@ -70,8 +72,8 @@
                                     <app-stop [stop]="stop"></app-stop></button
                             ></a>
                         } @empty {
-                            @if (foundStopsOrigin !== undefined) {
-                                No relevant stops found
+                            @if (foundStopsOrigin !== undefined && !loading) {
+                                <p>No relevant stops found</p>
                             }
                         }
                     </div>

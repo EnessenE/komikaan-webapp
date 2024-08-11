@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { JourneyResult } from '../models/journey-result';
 import { GTFSTrip } from '../models/gtfstrip';
 import { GTFSStop } from '../models/gtfsstop';
+import { GTFSSearchStop } from '../models/gtfssearchstop';
 
 @Injectable({
     providedIn: 'root',
@@ -12,19 +13,27 @@ import { GTFSStop } from '../models/gtfsstop';
 export class ApiService {
     constructor(private http: HttpClient) {}
 
-    GetStops(text: string): Observable<Array<GTFSStop>> {
+    GetStops(text: string): Observable<Array<GTFSSearchStop>> {
         if (!(text.length > 0)) {
             text = 'Amsterdam';
         }
 
-        return this.http.get<Array<GTFSStop>>(environment.apiServer + '/v1/stops/search?filter=' + text);
+        return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/stops/search?filter=' + text);
     }
 
-    NearbyStops(location: { lat: number; lng: number }): Observable<Array<GTFSStop>> {
-        return this.http.get<Array<GTFSStop>>(
+    NearbyStops(location: { lat: number; lng: number }): Observable<Array<GTFSSearchStop>> {
+        return this.http.get<Array<GTFSSearchStop>>(
             environment.apiServer + '/v1/stops/nearby?longitude=' + location.lng + '&latitude=' + location.lat,
         );
     }
+
+
+    AllStops(): Observable<Array<GTFSSearchStop>> {
+        return this.http.get<Array<GTFSSearchStop>>(
+            environment.apiServer + '/v1/stops/all',
+        );
+    }
+
 
     GetStop(stopId: string, stopType: string): Observable<GTFSStop> {
         return this.http.get<GTFSStop>(environment.apiServer + '/v1/stops/' + stopId + '/' + stopType);

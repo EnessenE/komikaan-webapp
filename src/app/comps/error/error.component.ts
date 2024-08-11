@@ -1,4 +1,5 @@
-import { AfterContentInit, Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterContentInit, Component, Input, OnInit, TemplateRef, ViewChild, inject, input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -8,13 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     templateUrl: './error.component.html',
     styleUrl: './error.component.scss',
 })
-export class ErrorComponent implements AfterContentInit {
-
-    ngAfterContentInit(): void {
-    }
-
-    open() {
-    }
-
-    close() {}
+export class ErrorComponent  {
+    @Input()
+    httpErrorResponse!: HttpErrorResponse;
 }

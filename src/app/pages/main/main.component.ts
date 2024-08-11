@@ -29,6 +29,7 @@ import {
 import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { GTFSStop } from '../../models/gtfsstop';
 import { debounceTime, Subject } from 'rxjs';
+import { GTFSSearchStop } from '../../models/gtfssearchstop';
 
 @Component({
     selector: 'app-main',
@@ -48,8 +49,8 @@ import { debounceTime, Subject } from 'rxjs';
     styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit {
-    foundStopsOrigin: GTFSStop[] | undefined;
     originStop: GTFSStop | undefined;
+    foundStopsOrigin: GTFSSearchStop[] | undefined;
     loading: boolean = false;
     error: HttpErrorResponse | undefined;
     searchInputSubject: Subject<string> = new Subject();
@@ -86,6 +87,7 @@ export class MainComponent implements OnInit {
             )
             .subscribe((searchText) => {
                 this.loading = true;
+                this.foundStopsOrigin = [];
                 console.log('Searching for ' + searchText);
                 this.apiService.GetStops(searchText).subscribe({
                     next: (data) => {
@@ -103,16 +105,16 @@ export class MainComponent implements OnInit {
         this.searchInputSubject.next(searchText);
     }
 
+    handleError(error: HttpErrorResponse) {
+        this.error = error;
+        console.error(error);
+    }
+
     selectStopOrigin(value: GTFSStop) {
         this.originStop = value;
         this.foundStopsOrigin = undefined;
 
         console.log(this.originStop);
-    }
-
-    handleError(error: HttpErrorResponse) {
-        this.error = error;
-        console.error(error);
     }
 
     getNearbyStops() {
@@ -133,12 +135,17 @@ export class MainComponent implements OnInit {
                         console.log('Got a location: ' + location);
 
                         this.location = location;
+                        this.loading = true;
                         this.apiService.NearbyStops(location).subscribe({
                             next: (data) => {
                                 this.foundStopsOrigin = data;
                                 this.addStopsToMap(this.foundStopsOrigin);
+                                this.loading = false;
                             },
-                            error: (error) => (this.error = error),
+                            error: (error) => {
+                                this.error = error;
+                                this.loading = false;
+                            },
                         });
                     }
                 },
@@ -149,7 +156,22 @@ export class MainComponent implements OnInit {
         }
     }
 
-    addStopsToMap(stops: GTFSStop[]) {
+    getAllStops() {
+        this.loading = true;
+        this.apiService.AllStops().subscribe({
+            next: (data) => {
+                this.foundStopsOrigin = data;
+                this.addStopsToMap(this.foundStopsOrigin);
+                this.loading = false;
+            },
+            error: (error) => {
+                this.error = error;
+                this.loading = false;
+            }
+        });
+    }
+
+    addStopsToMap(stops: GTFSSearchStop[]) {
         this.layers = [
             tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
@@ -159,21 +181,24 @@ export class MainComponent implements OnInit {
             this.markerLayers.removeLayer(layer);
         });
         stops.forEach((stop) => {
-            var stopLayer = circle([stop.latitude, stop.longitude], { radius: 100 });
+            
+            stop.adjustedCoordinates.forEach((coordinate) => {
+                var stopLayer = circle([coordinate.latitude, coordinate.longitude], { radius: 100 });
 
-            var popup = new Popup();
-            popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
+                var popup = new Popup();
+                popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
 
-            stopLayer.bindPopup(popup);
-            this.markerLayers.addLayer(stopLayer);
+                stopLayer.bindPopup(popup);
+                this.markerLayers.addLayer(stopLayer);
+            });
         });
-        console.log("pushing layers")
+        console.log('pushing layers');
         this.layers.push(this.markerLayers);
         this.addDefaultMarkers();
-        console.log("default layers")
-        console.log(this.markerLayers)
+        console.log('default layers');
+        console.log(this.markerLayers);
         this.map.fitBounds(this.markerLayers.getBounds());
-        console.log("bounds")
+        console.log('bounds');
         this.invalidateMap();
     }
 

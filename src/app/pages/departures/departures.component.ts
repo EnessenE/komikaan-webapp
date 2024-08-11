@@ -6,11 +6,13 @@ import { TrackSelectionComponent } from '../../comps/track-selection/track-selec
 import { GTFSStop } from '../../models/gtfsstop';
 import { Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
+import { ErrorComponent } from '../../comps/error/error.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'app-departures',
     standalone: true,
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe, ErrorComponent],
     templateUrl: './departures.component.html',
     styleUrl: './departures.component.scss',
 })
@@ -18,7 +20,7 @@ export class DeparturesComponent implements OnInit {
     stop: GTFSStop | undefined;
     selectedStop: string | undefined;
     loading: boolean = false;
-    error: string | undefined;
+    error: HttpErrorResponse | undefined;
     new: any;
 
     constructor(
@@ -45,7 +47,7 @@ export class DeparturesComponent implements OnInit {
                 },
                 error: (error) => {
                     this.loading = false;
-                    this.error = error.message;
+                    this.error = error;
                 },
             });
         });

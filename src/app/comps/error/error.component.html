@@ -1,16 +1,5 @@
-<ng-template #errorModal>
-	<div class="modal-header">
-		<h4 class="modal-title" id="modal-basic-title">Iets ging fout...</h4>
-		<button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
-	</div>
-	<div class="modal-body">
-		<form>
-			<div class="mb-3">
-				<label for="dateOfBirth">We weten niet wat.</label>
-			</div>
-		</form>
-	</div>
-	<div class="modal-footer">
-		<button type="button" class="btn btn-outline-dark" (click)="close()">Save</button>
-	</div>
-</ng-template>
+<div style="background-color: red">
+	<h1>Something went wrong!</h1>
+	<p>{{ httpErrorResponse.message }}</p>
+	<small>No real error page was built yet, so enjoy this red banner.</small>
+</div>

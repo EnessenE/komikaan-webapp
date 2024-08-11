@@ -1,5 +1,5 @@
 import { Component, Input, input } from '@angular/core';
-import { GTFSStop } from '../../models/gtfsstop';
+import { GTFSSearchStop } from '../../models/gtfssearchstop';
 
 @Component({
     selector: 'app-stop',
@@ -10,5 +10,5 @@ import { GTFSStop } from '../../models/gtfsstop';
 })
 export class StopComponent {
     @Input()
-    stop!: GTFSStop;
+    stop!: GTFSSearchStop;
 }
