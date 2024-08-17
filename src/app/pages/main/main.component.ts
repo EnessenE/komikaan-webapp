@@ -167,7 +167,7 @@ export class MainComponent implements OnInit {
             error: (error) => {
                 this.error = error;
                 this.loading = false;
-            }
+            },
         });
     }
 
@@ -181,7 +181,6 @@ export class MainComponent implements OnInit {
             this.markerLayers.removeLayer(layer);
         });
         stops.forEach((stop) => {
-            
             stop.adjustedCoordinates.forEach((coordinate) => {
                 var stopLayer = circle([coordinate.latitude, coordinate.longitude], { radius: 100 });
 
@@ -192,12 +191,13 @@ export class MainComponent implements OnInit {
                 this.markerLayers.addLayer(stopLayer);
             });
         });
-        console.log('pushing layers');
         this.layers.push(this.markerLayers);
         this.addDefaultMarkers();
-        console.log('default layers');
-        console.log(this.markerLayers);
-        this.map.fitBounds(this.markerLayers.getBounds());
+        // Timeout due to timing bug on the initalization for an unknown reason.
+        setTimeout(() => {
+            console.log('Fitting bounds to markerLayers...');
+            this.map.fitBounds(this.markerLayers.getBounds());
+        }, 100);
         console.log('bounds');
         this.invalidateMap();
     }
