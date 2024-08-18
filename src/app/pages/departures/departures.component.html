@@ -1,4 +1,4 @@
-<div class="grid">
+<div class="container-fluid grid">
     <div class="col-12">
         <h1>Showing data for stop {{ stop?.name }}</h1>
         <h2>Stop type: {{ stop?.stopType }}</h2>
@@ -22,7 +22,39 @@
                     </a>
                     <p>Stop type: {{ relatedStop?.stopType }}</p>
                 </div>
+            } @empty {
+                <p>No related stops</p>
             }
+        }
+
+        <h1>Routes on this stop</h1>
+
+        @if (loading) {
+            <div>
+                <div
+                    class="spinner-border"
+                    role="status"
+                >
+                    🚉
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Loading routes...</p>
+            </div>
+        }
+
+        @for (route of stop?.routes; track route; let index = $index) {
+            <p class="fw-bold">
+                <span
+                    [style]="
+                        'max-height: 50vw; min-width:50vw; background-color: #' +
+                        route.color +
+                        '; color: #' +
+                        route.textColor
+                    "
+                    >{{ route.shortName }}</span
+                >
+                 - {{ route.longName }}
+            </p>
         }
         <h1>Stops</h1>
         @if (error) {
@@ -83,9 +115,14 @@
                                     >
                                     {{ tripStop.headsign }}
                                 </p>
-                                @if (tripStop.stopHeadsign && tripStop.stopHeadsign != "" && tripStop.stopHeadsign != tripStop.headsign) {
+                                @if (
+                                    tripStop.stopHeadsign &&
+                                    tripStop.stopHeadsign != '' &&
+                                    tripStop.stopHeadsign != tripStop.headsign
+                                ) {
                                     <p>
-                                        Headsign on this stop will be <span class="fst-italic">[{{ tripStop.stopHeadsign }}]</span> 
+                                        Headsign on this stop will be
+                                        <span class="fst-italic">[{{ tripStop.stopHeadsign }}]</span>
                                     </p>
                                 }
                                 <small

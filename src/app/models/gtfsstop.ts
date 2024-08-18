@@ -1,3 +1,4 @@
+import { GTFSRoute } from './gtfsroute';
 import { GTFSStopTime } from './gtfsstop-time';
 
 export interface GTFSStop {
@@ -21,6 +22,7 @@ export interface GTFSStop {
 
     departures: GTFSStopTime[];
     relatedStops: GTFSStop[];
+    routes: GTFSRoute[];
 }
 export enum StopType {
     Bus = 'Bus',
