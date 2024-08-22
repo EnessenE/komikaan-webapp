@@ -99,7 +99,7 @@ export class TripComponent {
             });
 
             var popup = new Popup();
-            popup.setContent('<a routerLink="/stops/' + stop.id + '">' + stop.name + '</a>');
+            popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
 
             stopLayer.bindPopup(popup);
             this.markerLayers.addLayer(stopLayer);

@@ -197,6 +197,14 @@ export class MainComponent implements OnInit {
         setTimeout(() => {
             console.log('Fitting bounds to markerLayers...');
             this.map.fitBounds(this.markerLayers.getBounds());
+            var stopLayer = circle(this.map.getBounds().getNorthEast(), { radius: 100, color: 'red' });
+            this.markerLayers.addLayer(stopLayer);
+            var stopLayer = circle(this.map.getBounds().getNorthWest(), { radius: 100, color: 'red' });
+            this.markerLayers.addLayer(stopLayer);
+            var stopLayer = circle(this.map.getBounds().getSouthWest(), { radius: 100, color: 'red' });
+            this.markerLayers.addLayer(stopLayer);
+            var stopLayer = circle(this.map.getBounds().getSouthEast(), { radius: 100, color: 'red' });
+            this.markerLayers.addLayer(stopLayer);
         }, 100);
         console.log('bounds');
         this.invalidateMap();
