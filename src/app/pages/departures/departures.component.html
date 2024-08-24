@@ -51,9 +51,11 @@
                         '; color: #' +
                         route.textColor
                     "
-                    >{{ route.shortName }}</span
                 >
-                 - {{ route.longName }}
+                    <span>[{{ route.agency }}]</span>
+                    <span> {{ route.shortName }}</span>
+                    - {{ route.longName }}
+                </span>
             </p>
         }
         <h1>Stops</h1>
@@ -111,14 +113,16 @@
                                             '; color: #' +
                                             tripStop.routeTextColor
                                         "
-                                        >{{ tripStop.routeShortName }}</span
                                     >
-                                    {{ tripStop.headsign }}
+                                        <span>[{{ tripStop.routeShortName }}]</span>
+                                        {{ tripStop.headsign ?? tripStop.stopHeadsign ?? tripStop.routeLongName ?? "Unknown route"}}</span
+                                    >
                                 </p>
                                 @if (
                                     tripStop.stopHeadsign &&
                                     tripStop.stopHeadsign != '' &&
-                                    tripStop.stopHeadsign != tripStop.headsign
+                                    tripStop.stopHeadsign != tripStop.headsign &&
+                                    tripStop.headsign
                                 ) {
                                     <p>
                                         Headsign on this stop will be
