@@ -4,13 +4,6 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <p>Welcome! On this website we try to show you public transport data in a simple straight forward way.</p>
-            <p>
-                Currently this is very much a work in progress, we do import data daily but we are still working on
-                things. You may see for example some stops appearing twice and missing some data. Realtime data and data latency is also a work in progress.
-            </p>
-        </div>
         <div class="col-6">
             <div
                 (window:resize)="onResize($event)"
@@ -45,16 +38,7 @@
             <form class="form-inline my-2 my-lg-0">
                 <p><b>For which station do you want to see departures?</b></p>
                 <small
-                    >A part of west europe is in here (Mostly NL, BE, Berlin and Paris. Parts of the data of FR and DE),
-                    flixbus and BlaBlaCar Bus</small
-                >
-                <br />
-                <small>A good part of New Zealand</small><br />
-                <small>Los Angeles Metro area</small><br />
-                <small
-                    >Fill in a stop you know nearby and let's see if we can find it. From there you can keep clicking
-                    and see where you end up</small
-                >
+                    >To see our data sources: <a routerLink="/feeds">click here!</a></small>
 
                 <input
                     class="form-control mr-sm-2"

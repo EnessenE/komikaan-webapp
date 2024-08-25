@@ -6,6 +6,7 @@ import { JourneyResult } from '../models/journey-result';
 import { GTFSTrip } from '../models/gtfstrip';
 import { GTFSStop } from '../models/gtfsstop';
 import { GTFSSearchStop } from '../models/gtfssearchstop';
+import { Feed } from '../models/feed';
 
 @Injectable({
     providedIn: 'root',
@@ -34,6 +35,11 @@ export class ApiService {
         );
     }
 
+    GetFeeds(): Observable<Array<Feed>> {
+        return this.http.get<Array<Feed>>(
+            environment.apiServer + '/v1/feeds',
+        );
+    }
 
     GetStop(stopId: string, stopType: string): Observable<GTFSStop> {
         return this.http.get<GTFSStop>(environment.apiServer + '/v1/stops/' + stopId + '/' + stopType);

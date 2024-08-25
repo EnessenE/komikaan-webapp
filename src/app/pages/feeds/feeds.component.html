@@ -1,0 +1,47 @@
+<div class="col-12">
+    @if (loading) {
+        <div>
+            <div
+                class="spinner-border"
+                role="status"
+            >
+                🚉
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading feed data...</p>
+        </div>
+    }
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Currently importing</th>
+                <th scope="col">Last failed attempt</th>
+                <th scope="col">Last update</th>
+                <th scope="col">Interval</th>
+                <th scope="col">Total agencies</th>
+                <th scope="col">Total routes</th>
+                <th scope="col">Total stops</th>
+                <th scope="col">Total trips</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (feed of feeds; track feed) {
+                <tr>
+                    <th scope="row">{{ feed.name }}</th>
+                    <td>{{ feed.downloadPending }}</td>
+                    <td>{{ feed.lastAttempt }}</td>
+                    <td>{{ feed.lastUpdated }}</td>
+                    <td>{{ feed.interval }}</td>
+                    <td>{{ feed.agencies }}</td>
+                    <td>{{ feed.routes }}</td>
+                    <td>{{ feed.stops }}</td>
+                    <td>{{ feed.trips }}</td>
+                </tr>
+            } @empty {
+                <p>No feeds loaded to display!</p>
+            }
+        </tbody>
+    </table>
+</div>
