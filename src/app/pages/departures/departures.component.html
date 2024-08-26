@@ -43,20 +43,7 @@
         }
 
         @for (route of stop?.routes; track route; let index = $index) {
-            <p class="fw-bold">
-                <span
-                    [style]="
-                        'max-height: 50vw; min-width:50vw; background-color: #' +
-                        route.color +
-                        '; color: #' +
-                        route.textColor
-                    "
-                >
-                    <span>[{{ route.agency }}]</span>
-                    <span> {{ route.shortName }}</span>
-                    - {{ route.longName }}
-                </span>
-            </p>
+            <app-route [route]="route"></app-route>
         }
         <h1>Stops</h1>
         @if (error) {

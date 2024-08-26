@@ -1,6 +1,5 @@
-import { Component, OnInit, TemplateRef, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
-import { JourneyResult, TravelAdvice } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -8,13 +7,11 @@ import { NgbAccordionModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap
 import { DisruptionComponent } from '../../comps/disruption/disruption.component';
 import { TravelAdviceComponent } from '../../comps/travel-advice/travel-advice.component';
 import { StopComponent } from '../../comps/stop/stop.component';
-import { GTFSStopTime } from '../../models/gtfsstop-time';
 import { RouterLink } from '@angular/router';
-import { circle, PointTuple } from 'leaflet';
+import { circle } from 'leaflet';
 import {
     FeatureGroup,
     Icon,
-    LatLng,
     LatLngBounds,
     Layer,
     Map,
@@ -23,7 +20,6 @@ import {
     icon,
     latLng,
     marker,
-    polyline,
     tileLayer,
 } from 'leaflet';
 import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
@@ -155,22 +151,7 @@ export class MainComponent implements OnInit {
             alert('Geolocation is not supported by this browser.');
         }
     }
-
-    getAllStops() {
-        this.loading = true;
-        this.apiService.AllStops().subscribe({
-            next: (data) => {
-                this.foundStopsOrigin = data;
-                this.addStopsToMap(this.foundStopsOrigin);
-                this.loading = false;
-            },
-            error: (error) => {
-                this.error = error;
-                this.loading = false;
-            },
-        });
-    }
-
+    
     addStopsToMap(stops: GTFSSearchStop[]) {
         this.layers = [
             tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

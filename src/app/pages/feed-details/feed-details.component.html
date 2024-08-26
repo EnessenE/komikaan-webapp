@@ -1,0 +1,23 @@
+<div class="container-fluid grid">
+    <div class="col-12">
+        <h1>Showing data for feed {{ selectedFeed }}</h1>
+        <p>Stops: {{ stops?.length }}</p>
+        <p>Routes: {{ routes?.length }}</p>
+    </div>
+    <div class="col-12">
+        <div
+            (window:resize)="onResize($event)"
+            class="leaflet stop-map-view"
+            leaflet
+            [leafletOptions]="options"
+            [leafletLayers]="layers"
+            [leafletLayersControl]="layersControl"
+            (leafletMapReady)="onMapReady($event)"
+        ></div>
+    </div>
+    <div class="col-12">
+        @for (route of routes; track route; let index = $index) {
+            <app-route [route]="route"></app-route>
+        }
+    </div>
+</div>

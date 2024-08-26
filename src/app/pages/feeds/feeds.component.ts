@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { Feed } from '../../models/feed';
 
 @Component({
     selector: 'app-feeds',
     standalone: true,
-    imports: [],
+    imports: [RouterLink],
     templateUrl: './feeds.component.html',
     styleUrl: './feeds.component.scss',
 })
@@ -21,7 +21,7 @@ export class FeedsComponent implements OnInit {
         private route: ActivatedRoute,
         private titleService: Title,
     ) {}
-    
+
     ngOnInit(): void {
         this.loading = true;
         this.apiService.GetFeeds().subscribe({

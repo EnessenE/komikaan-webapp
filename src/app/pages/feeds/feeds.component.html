@@ -29,7 +29,7 @@
         <tbody>
             @for (feed of feeds; track feed) {
                 <tr>
-                    <th scope="row">{{ feed.name }}</th>
+                    <th scope="row"><a routerLink="/feed/{{feed.name}}">{{ feed.name }}</a></th>
                     <td>{{ feed.downloadPending }}</td>
                     <td>{{ feed.lastAttempt }}</td>
                     <td>{{ feed.lastUpdated }}</td>

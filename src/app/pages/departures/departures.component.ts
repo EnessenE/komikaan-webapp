@@ -8,11 +8,12 @@ import { Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { RouteComponent } from '../../comps/route/route.component';
 
 @Component({
     selector: 'app-departures',
     standalone: true,
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe, ErrorComponent],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe, ErrorComponent, RouteComponent],
     templateUrl: './departures.component.html',
     styleUrl: './departures.component.scss',
 })
