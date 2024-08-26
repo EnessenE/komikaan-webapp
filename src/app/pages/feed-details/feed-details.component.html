@@ -16,8 +16,30 @@
         ></div>
     </div>
     <div class="col-12">
-        @for (route of routes; track route; let index = $index) {
-            <app-route [route]="route"></app-route>
-        }
+
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Short name</th>
+                    <th scope="col">Long name</th>
+                    <th scope="col">Agency</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Url</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (route of routes; track route; let index = $index) {
+                    <tr>
+                        <th scope="row">>{{ route.shortName }}</th>
+                        <td>{{ route.longName }}</td>
+                        <td>{{ route.agency }}</td>
+                        <td>{{ route.type }}</td>
+                        <td>{{ route.url }}</td>
+                    </tr>
+                } @empty {
+                    <p>No feeds loaded to display!</p>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

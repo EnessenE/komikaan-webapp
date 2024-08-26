@@ -3,7 +3,6 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { GTFSRoute } from '../../models/gtfsroute';
-import { GTFSStop } from '../../models/gtfsstop';
 import { RouteComponent } from '../../comps/route/route.component';
 import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { FeatureGroup, Map, LatLngBounds, latLng, Layer, tileLayer, featureGroup, circle, Popup } from 'leaflet';
@@ -54,7 +53,7 @@ export class FeedDetailsComponent implements OnInit {
         this.route.params.subscribe((params) => {
             this.selectedFeed = params['id'];
             this.titleService.setTitle(this.selectedFeed);
-            this.titleService.setTitle('Seaching for ' + this.selectedFeed);
+            this.titleService.setTitle('Feed ' + this.selectedFeed);
             this.apiService.GetFeedRoutes(this.selectedFeed).subscribe({
                 next: (data) => {
                     this.routes = data;
