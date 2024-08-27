@@ -22,18 +22,20 @@
                 <tr>
                     <th scope="col">Short name</th>
                     <th scope="col">Long name</th>
-                    <th scope="col">Agency</th>
                     <th scope="col">Type</th>
+                    <th scope="col">Agency</th>
+                    <th scope="col">Description</th>
                     <th scope="col">Url</th>
                 </tr>
             </thead>
             <tbody>
                 @for (route of routes; track route; let index = $index) {
                     <tr>
-                        <th scope="row">>{{ route.shortName }}</th>
+                        <th scope="row">{{ route.shortName }}</th>
                         <td>{{ route.longName }}</td>
-                        <td>{{ route.agency }}</td>
                         <td>{{ route.type }}</td>
+                        <td>{{ route.agency }}</td>
+                        <td>{{ route.description }}</td>
                         <td>{{ route.url }}</td>
                     </tr>
                 } @empty {
