@@ -19,6 +19,7 @@
                 <th scope="col">Currently importing</th>
                 <th scope="col">Last failed attempt</th>
                 <th scope="col">Last update</th>
+                <th scope="col">Last checked</th>
                 <th scope="col">Interval</th>
                 <th scope="col">Total agencies</th>
                 <th scope="col">Total routes</th>
@@ -31,8 +32,9 @@
                 <tr>
                     <th scope="row"><a routerLink="/feed/{{feed.name}}">{{ feed.name }}</a></th>
                     <td>{{ feed.downloadPending }}</td>
-                    <td>{{ feed.lastAttempt }}</td>
-                    <td>{{ feed.lastUpdated }}</td>
+                    <td>{{ feed.lastAttempt | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
+                    <td>{{ feed.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm'}}</td>
+                    <td>{{ feed.lastChecked | date: 'EEEE, MMMM d, y, HH:mm'}}</td>
                     <td>{{ feed.interval }}</td>
                     <td>{{ feed.agencies }}</td>
                     <td>{{ feed.routes }}</td>
