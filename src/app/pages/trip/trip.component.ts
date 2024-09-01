@@ -52,26 +52,7 @@ export class TripComponent {
     ) {}
 
     ngOnInit(): void {
-        this.loading = true;
-        var routeSub = this.route.params.subscribe((params) => {
-            this.trip = undefined;
-            this.selectedTrip = params['id'];
-            this.titleService.setTitle('Seaching for ' + this.selectedTrip);
-            this.apiService.GetTrip(params['id']).subscribe({
-                next: (data) => {
-                    this.loading = false;
-                    this.trip = data;
-                    if (this.trip.measurementTime){
-                        this.realTime = true;
-                    }
-                    else{
-                        this.realTime = false;
-                    }
-                    this.dataRetrieved();
-                    this.titleService.setTitle(this.trip.headsign + ' > ' + this.trip.shortname);
-                },
-            });
-        });
+        this.loadData();
     }
 
     map!: Map;
@@ -99,8 +80,39 @@ export class TripComponent {
         return new Date(dateString);
     }
 
+    refreshData() {
+        this.loadData();
+    }
+
+    loadData() {
+        this.trip = undefined;
+        this.loading = true;
+        var routeSub = this.route.params.subscribe((params) => {
+            this.trip = undefined;
+            this.selectedTrip = params['id'];
+            this.titleService.setTitle('Seaching for ' + this.selectedTrip);
+            this.apiService.GetTrip(params['id']).subscribe({
+                next: (data) => {
+                    this.loading = false;
+                    this.trip = data;
+                    if (this.trip.measurementTime) {
+                        this.realTime = true;
+                    } else {
+                        this.realTime = false;
+                    }
+                    this.dataRetrieved();
+                    this.titleService.setTitle(this.trip.headsign + ' > ' + this.trip.shortname);
+                },
+            });
+        });
+    }
+
     dataRetrieved() {
         var routeLine: LatLng[] = [];
+
+        this.markerLayers.eachLayer((layer) => {
+            this.markerLayers.removeLayer(layer);
+        });
         this.trip!.stops?.forEach((stop) => {
             var stopLayer = marker([stop.latitude, stop.longitude], {
                 // Workaround https://github.com/bluehalo/ngx-leaflet?tab=readme-ov-file#angular-cli-marker-workaround
@@ -144,12 +156,20 @@ export class TripComponent {
             this.markerLayers.addLayer(positionLayer);
             var positionLayer = circle([this.trip.latitude, this.trip.longitude], { radius: 100, color: 'blue' });
 
-            if (this.trip.targetStopName){
+            if (this.trip.targetStopName) {
                 var popup = new Popup();
-                popup.setContent('Currently going towards <a href="/stops/' + this.trip.targetStopId + '/' + this.trip.targetStopType + '">' + this.trip.targetStopName + '</a>');
+                popup.setContent(
+                    'Currently going towards <a href="/stops/' +
+                        this.trip.targetStopId +
+                        '/' +
+                        this.trip.targetStopType +
+                        '">' +
+                        this.trip.targetStopName +
+                        '</a>',
+                );
                 positionLayer.bindPopup(popup);
             }
-            
+
             this.markerLayers.addLayer(positionLayer);
         }
     }
@@ -164,7 +184,8 @@ export class TripComponent {
         setTimeout(() => {
             console.log('Fitting bounds to markerLayers...');
             this.map.fitBounds(this.markerLayers.getBounds());
-        }, 100);    }
+        }, 100);
+    }
 
     onResize(event: any) {
         this.invalidateMap();
