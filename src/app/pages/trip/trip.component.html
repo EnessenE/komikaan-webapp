@@ -5,6 +5,7 @@
                 Showing data for trip towards <span class="fst-italic">{{ trip?.headsign }}</span>
             </h1>
             <h2>Trip: {{ trip?.shortname }}</h2>
+            <h3>{{trip?.routeShortName}} - {{trip?.routeLongName}}</h3>
             <small>Internal mumbo jumbo: {{ selectedTrip }} - {{ trip?.dataOrigin }}</small>
             @if (realTime){
                 <p>Realtime: <span class="font-weight-bold" style="color: green">YES ❤️</span></p>
