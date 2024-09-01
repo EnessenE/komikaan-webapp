@@ -89,6 +89,7 @@ export class FeedDetailsComponent implements OnInit {
 
               stopLayer.bindPopup(popup);
               this.markerLayers.addLayer(stopLayer);
+              this.markerLayers.addLayer(stopLayer);
           });
       });
       this.layers.push(this.markerLayers);

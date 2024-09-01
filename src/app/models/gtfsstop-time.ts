@@ -1,5 +1,3 @@
-import { Time } from "@angular/common";
-
 export interface GTFSStopTime {
     tripId: string;
 
@@ -7,6 +5,7 @@ export interface GTFSStopTime {
     plannedDepartureTime?: Date | null;
     actualArrivalTime: Date;
     actualDepartureTime: Date;
+    realTime: boolean;
 
     stopHeadsign: string;
     headsign: string;

@@ -90,6 +90,12 @@
                                     [planned]="tripStop.plannedArrivalTime"
                                     [cancelled]="tripStop.cancelled"
                                 ></app-time-only-selection>
+                                @if (tripStop.realTime){
+                                    <p>Realtime: <span class="font-weight-bold" style="color: green">YES ❤️</span></p>
+                                }
+                                @else if (tripStop.realTime == false) {
+                                    <p>Realtime: <span class="font-weight-bold" style="color: red">NO (or not yet!) 💔</span></p>
+                                }
                             </div>
                             <div class="col-6">
                                 <p class="fw-bold">

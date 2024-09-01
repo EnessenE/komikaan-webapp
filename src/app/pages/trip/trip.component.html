@@ -6,6 +6,15 @@
             </h1>
             <h2>Trip: {{ trip?.shortname }}</h2>
             <small>Internal mumbo jumbo: {{ selectedTrip }} - {{ trip?.dataOrigin }}</small>
+            @if (realTime){
+                <p>Realtime: <span class="font-weight-bold" style="color: green">YES ❤️</span></p>
+            }
+            @else if (realTime == false) {
+                <p>Realtime: <span class="font-weight-bold" style="color: red">NO (or not yet!) 💔</span></p>
+            }
+            @else {
+                <p>Realtime? no clue.</p>
+            }
             <h1>Stops</h1>
             @if (loading) {
                 <div>
