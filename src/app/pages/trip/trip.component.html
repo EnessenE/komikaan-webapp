@@ -1,4 +1,5 @@
 <div class="container-fluid grid">
+    <button class="btn btn-primary" (click)="refreshData()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
     <div class="row">
         <div class="col-lg-6 col-12">
             <h1>
@@ -30,7 +31,7 @@
                 </div>
             }
             @for (tripStop of trip?.stops; track tripStop; let index = $index) {
-                @if (
+                <!-- @if (
                     trip!.stops![index - 1] != null &&
                     convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
                         convertToDate(trip!.stops![index - 1].actualArrivalTime.toString()).getDay()
@@ -38,7 +39,7 @@
                     <hr class="bg-danger border-2 border-top border-warning" />
 
                     <p>The next day!</p>
-                }
+                } -->
 
                 <div
                     class="row align-items-start stopbox"
@@ -132,4 +133,3 @@
         </div>
     </div>
 </div>
-<button class="btn btn-primary" (click)="refreshData()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>

@@ -63,16 +63,29 @@
             </div>
         }
         @for (tripStop of stop?.departures; track tripStop; let index = $index) {
-            @if (
-                index == 0 ||
-                (stop!.departures[index - 1] != null &&
-                    convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
-                        convertToDate(stop!.departures![index - 1].actualArrivalTime.toString()).getDay())
-            ) {
-                <hr class="bg-danger border-2 border-top border-warning" />
-
-                <p>{{ convertToDate(tripStop.actualArrivalTime.toString()) | date: 'yyyy-MM-dd' }}</p>
-            }
+            <!-- @if (tripStop.scheduleRelationship != 'SKIPPED') {
+                @if (
+                    index == 0 ||
+                    (stop!.departures[index - 1] != null &&
+                        tripStop.actualArrivalTime != null &&
+                        convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
+                            convertToDate(stop!.departures![index - 1].actualArrivalTime.toString()).getDay())
+                ) {
+                    <hr class="bg-danger border-2 border-top border-warning" />
+                    @if (tripStop.actualArrivalTime || tripStop.plannedDepartureTime) {
+                        <p>
+                            {{
+                                convertToDate((tripStop.actualArrivalTime ?? tripStop.plannedDepartureTime).toString())
+                                    | date: 'yyyy-MM-dd'
+                            }}
+                        </p>
+                    } @else {
+                        <p>Something went really wrong and no times are available</p>
+                    }
+                }
+            } @else {
+                <h1 style="color: red">SKIPPED</h1>
+            } -->
 
             <a routerLink="/trip/{{ tripStop.tripId }}">
                 <div
@@ -82,6 +95,7 @@
                     @if (tripStop.cancelled) {
                         <p>Rijdt niet</p>
                     }
+                    <p>{{ tripStop.scheduleRelationship }}</p>
                     <div class="col-12">
                         <div class="row">
                             <div class="col-2 text-right">
@@ -90,11 +104,24 @@
                                     [planned]="tripStop.plannedArrivalTime"
                                     [cancelled]="tripStop.cancelled"
                                 ></app-time-only-selection>
-                                @if (tripStop.realTime){
-                                    <p>Realtime: <span class="font-weight-bold" style="color: green">YES ❤️</span></p>
-                                }
-                                @else if (tripStop.realTime == false) {
-                                    <p>Realtime: <span class="font-weight-bold" style="color: red">NO (or not yet!) 💔</span></p>
+                                @if (tripStop.realTime) {
+                                    <p>
+                                        Realtime:
+                                        <span
+                                            class="font-weight-bold"
+                                            style="color: green"
+                                            >YES ❤️</span
+                                        >
+                                    </p>
+                                } @else if (tripStop.realTime == false) {
+                                    <p>
+                                        Realtime:
+                                        <span
+                                            class="font-weight-bold"
+                                            style="color: red"
+                                            >NO (or not yet!) 💔</span
+                                        >
+                                    </p>
                                 }
                             </div>
                             <div class="col-6">
@@ -108,7 +135,12 @@
                                         "
                                     >
                                         <span>[{{ tripStop.routeShortName }}]</span>
-                                        {{ tripStop.headsign ?? tripStop.stopHeadsign ?? tripStop.routeLongName ?? "Unknown route"}}</span
+                                        {{
+                                            tripStop.headsign ??
+                                                tripStop.stopHeadsign ??
+                                                tripStop.routeLongName ??
+                                                'Unknown route'
+                                        }}</span
                                     >
                                 </p>
                                 @if (
@@ -151,4 +183,3 @@
         }
     </div>
 </div>
-

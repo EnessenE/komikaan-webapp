@@ -9,6 +9,7 @@ import { GTFSSearchStop } from '../models/gtfssearchstop';
 import { Feed } from '../models/feed';
 import { GTFSShape } from '../models/gtfsshape';
 import { GTFSRoute } from '../models/gtfsroute';
+import { VehiclePosition } from '../models/vehicle-position';
 
 @Injectable({
     providedIn: 'root',
@@ -44,6 +45,10 @@ export class ApiService {
 
     GetFeedRoutes(feed: string): Observable<Array<GTFSRoute>> {
         return this.http.get<Array<GTFSRoute>>(environment.apiServer + '/v1/feeds/' + feed + '/routes');
+    }
+
+    GetFeedPositions(feed: string): Observable<Array<VehiclePosition>> {
+        return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + feed + '/positions');
     }
 
     GetStop(stopId: string, stopType: string): Observable<GTFSStop> {

@@ -21,7 +21,9 @@ export class FeedsComponent implements OnInit {
         private apiService: ApiService,
         private route: ActivatedRoute,
         private titleService: Title,
-    ) {}
+    ) {
+        this.titleService.setTitle("All feeds")
+    }
 
     ngOnInit(): void {
         this.loading = true;
