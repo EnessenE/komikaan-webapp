@@ -22,7 +22,6 @@ export class DeparturesComponent implements OnInit {
     selectedStop: string | undefined;
     loading: boolean = false;
     error: HttpErrorResponse | undefined;
-    new: any;
 
     constructor(
         private apiService: ApiService,

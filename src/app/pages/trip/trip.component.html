@@ -12,7 +12,7 @@
                 <p>Realtime: <span class="font-weight-bold" style="color: green">YES ❤️</span></p>
             }
             @else if (realTime == false) {
-                <p>Realtime: <span class="font-weight-bold" style="color: red">NO (or not yet!) 💔</span></p>
+                <!-- <p>Realtime: <span class="font-weight-bold" style="color: red">NO (or not yet!) 💔</span></p> -->
             }
             @else {
                 <p>Realtime? no clue.</p>
@@ -64,6 +64,7 @@
                                             [actual]="tripStop.actualArrivalTime"
                                             [planned]="tripStop.plannedArrivalTime"
                                             [cancelled]="tripStop.cancelled"
+                                            [scheduleRelationship]="tripStop.scheduleRelationship"
                                         ></app-time-only-selection>
                                         <br />
                                         <br />

@@ -72,7 +72,6 @@ export class TripComponent {
 
     layers: Layer[] = [
         tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
         }),
     ];
 
@@ -101,7 +100,12 @@ export class TripComponent {
                         this.realTime = false;
                     }
                     this.dataRetrieved();
-                    this.titleService.setTitle(this.trip.headsign + ' > ' + this.trip.shortname);
+                    if (this.trip.headsign){
+                        this.titleService.setTitle(this.trip.headsign);
+                    }
+                    else{
+                        this.titleService.setTitle(this.trip?.routeShortName + " - " + this.trip?.routeLongName);
+                    }
                 },
             });
         });

@@ -70,7 +70,6 @@ export class MainComponent implements OnInit {
 
     layers: Layer[] = [
         tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 5,
         }),
     ];
 
@@ -155,7 +154,6 @@ export class MainComponent implements OnInit {
     addStopsToMap(stops: GTFSSearchStop[]) {
         this.layers = [
             tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18,
             }),
         ];
         this.markerLayers.eachLayer((layer) => {

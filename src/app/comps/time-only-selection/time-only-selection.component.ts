@@ -15,4 +15,6 @@ export class TimeOnlySelectionComponent {
   actual: Date | null | undefined;
   @Input()
   cancelled: boolean | null | undefined;
+  @Input()
+  scheduleRelationship: string | null | undefined;
 }

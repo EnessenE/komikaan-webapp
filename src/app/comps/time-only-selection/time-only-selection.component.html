@@ -1,12 +1,14 @@
 <span>
-    @if (actual && actual != planned) {
-        <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span
-        >({{ actual | date: 'HH:mm:ss' }})
-    } @else {
-        @if (cancelled) {
-            <span class="major-info-change">{{ actual ?? planned }}</span>
+    @if (scheduleRelationship?.toLowerCase() != 'skipped' && !cancelled) {
+        @if (actual && actual != planned) {
+            <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span
+            >({{ actual | date: 'HH:mm:ss' }})
         } @else {
             {{ actual ?? planned | date: 'HH:mm:ss' }}
         }
+    } @else if (cancelled) {
+        <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span> CANCELLED
+    } @else {
+        <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span> SKIPPED
     }
 </span>
