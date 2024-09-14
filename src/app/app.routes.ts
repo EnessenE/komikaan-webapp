@@ -4,14 +4,20 @@ import { DeparturesComponent } from './pages/departures/departures.component';
 import { TripComponent } from './pages/trip/trip.component';
 import { FeedsComponent } from './pages/feeds/feeds.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { FeedDetailsComponent } from './pages/feed-details/feed-details.component';
 
 export const routes: Routes = [
     {
         path: 'stops/:id/:type',
         component: DeparturesComponent,
-    },{
+    },
+    {
         path: 'trip/:id',
         component: TripComponent,
+    },
+    {
+        path: 'feed/:id',
+        component: FeedDetailsComponent,
     },
     {
         path: 'feeds',

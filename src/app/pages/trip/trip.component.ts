@@ -4,8 +4,7 @@ import { ApiService } from '../../services/api.service';
 import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
 import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
 import { GTFSTrip } from '../../models/gtfstrip';
-import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
-import {ClipboardModule} from '@angular/cdk/clipboard';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import {
     FeatureGroup,
     Icon,
@@ -14,6 +13,7 @@ import {
     Layer,
     Map,
     Popup,
+    circle,
     featureGroup,
     icon,
     latLng,
@@ -23,11 +23,19 @@ import {
 } from 'leaflet';
 import { Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
+import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 
 @Component({
     selector: 'app-trip',
     standalone: true,
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, LeafletModule, ClipboardModule, DatePipe],
+    imports: [
+        TimeOnlySelectionComponent,
+        TrackSelectionComponent,
+        RouterLink,
+        LeafletModule,
+        ClipboardModule,
+        DatePipe
+    ],
     templateUrl: './trip.component.html',
     styleUrl: './trip.component.scss',
 })
@@ -35,6 +43,7 @@ export class TripComponent {
     trip: GTFSTrip | undefined;
     selectedTrip: string | undefined;
     loading: boolean = false;
+    realTime: boolean | undefined = undefined;
 
     constructor(
         private apiService: ApiService,
@@ -43,20 +52,7 @@ export class TripComponent {
     ) {}
 
     ngOnInit(): void {
-        this.loading = true;
-        var routeSub = this.route.params.subscribe((params) => {
-            this.trip = undefined;
-            this.selectedTrip = params['id'];
-            this.titleService.setTitle("Seaching for " + this.selectedTrip);
-            this.apiService.GetTrip(params['id']).subscribe({
-                next: (data) => {
-                    this.loading = false;
-                    this.trip = data;
-                    this.dataRetrieved();
-                    this.titleService.setTitle(this.trip.headsign + ' > ' + this.trip.shortname);
-                },
-            });
-        });
+        this.loadData();
     }
 
     map!: Map;
@@ -76,17 +72,51 @@ export class TripComponent {
 
     layers: Layer[] = [
         tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
         }),
     ];
 
-    
     convertToDate(dateString: string): Date {
         return new Date(dateString);
-      }
+    }
+
+    refreshData() {
+        this.loadData();
+    }
+
+    loadData() {
+        this.trip = undefined;
+        this.loading = true;
+        var routeSub = this.route.params.subscribe((params) => {
+            this.trip = undefined;
+            this.selectedTrip = params['id'];
+            this.titleService.setTitle('Seaching for ' + this.selectedTrip);
+            this.apiService.GetTrip(params['id']).subscribe({
+                next: (data) => {
+                    this.loading = false;
+                    this.trip = data;
+                    if (this.trip.measurementTime) {
+                        this.realTime = true;
+                    } else {
+                        this.realTime = false;
+                    }
+                    this.dataRetrieved();
+                    if (this.trip.headsign){
+                        this.titleService.setTitle(this.trip.headsign);
+                    }
+                    else{
+                        this.titleService.setTitle(this.trip?.routeShortName + " - " + this.trip?.routeLongName);
+                    }
+                },
+            });
+        });
+    }
 
     dataRetrieved() {
         var routeLine: LatLng[] = [];
+
+        this.markerLayers.eachLayer((layer) => {
+            this.markerLayers.removeLayer(layer);
+        });
         this.trip!.stops?.forEach((stop) => {
             var stopLayer = marker([stop.latitude, stop.longitude], {
                 // Workaround https://github.com/bluehalo/ngx-leaflet?tab=readme-ov-file#angular-cli-marker-workaround
@@ -112,6 +142,8 @@ export class TripComponent {
             routeLine.push(latLng(shape.latitude, shape.longitude));
         });
 
+        this.markLiveLocation();
+
         var lineColor = 'green';
 
         var line = polyline(routeLine, { color: lineColor });
@@ -122,6 +154,30 @@ export class TripComponent {
         this.invalidateMap();
     }
 
+    markLiveLocation() {
+        if (this.trip?.latitude && this.trip.longitude) {
+            var positionLayer = circle([this.trip.latitude, this.trip.longitude], { radius: 5, color: 'red' });
+            this.markerLayers.addLayer(positionLayer);
+            var positionLayer = circle([this.trip.latitude, this.trip.longitude], { radius: 100, color: 'blue' });
+
+            if (this.trip.targetStopName) {
+                var popup = new Popup();
+                popup.setContent(
+                    'Currently going towards <a href="/stops/' +
+                        this.trip.targetStopId +
+                        '/' +
+                        this.trip.targetStopType +
+                        '">' +
+                        this.trip.targetStopName +
+                        '</a>',
+                );
+                positionLayer.bindPopup(popup);
+            }
+
+            this.markerLayers.addLayer(positionLayer);
+        }
+    }
+
     onMapReady(map: Map) {
         this.map = map;
         this.markerLayers = featureGroup();
@@ -129,11 +185,13 @@ export class TripComponent {
 
     invalidateMap(): void {
         this.map?.invalidateSize();
-        this.map?.fitBounds(this.markerLayers.getBounds());
+        setTimeout(() => {
+            console.log('Fitting bounds to markerLayers...');
+            this.map.fitBounds(this.markerLayers.getBounds());
+        }, 100);
     }
 
     onResize(event: any) {
         this.invalidateMap();
     }
-
 }

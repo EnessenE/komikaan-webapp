@@ -1,11 +1,22 @@
 <div class="container-fluid grid">
+    <button class="btn btn-primary" (click)="refreshData()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
     <div class="row">
         <div class="col-lg-6 col-12">
             <h1>
                 Showing data for trip towards <span class="fst-italic">{{ trip?.headsign }}</span>
             </h1>
             <h2>Trip: {{ trip?.shortname }}</h2>
+            <h3>{{trip?.routeShortName}} - {{trip?.routeLongName}}</h3>
             <small>Internal mumbo jumbo: {{ selectedTrip }} - {{ trip?.dataOrigin }}</small>
+            @if (realTime){
+                <p>Realtime: <span class="font-weight-bold" style="color: green">YES ❤️</span></p>
+            }
+            @else if (realTime == false) {
+                <!-- <p>Realtime: <span class="font-weight-bold" style="color: red">NO (or not yet!) 💔</span></p> -->
+            }
+            @else {
+                <p>Realtime? no clue.</p>
+            }
             <h1>Stops</h1>
             @if (loading) {
                 <div>
@@ -20,7 +31,7 @@
                 </div>
             }
             @for (tripStop of trip?.stops; track tripStop; let index = $index) {
-                @if (
+                <!-- @if (
                     trip!.stops![index - 1] != null &&
                     convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
                         convertToDate(trip!.stops![index - 1].actualArrivalTime.toString()).getDay()
@@ -28,7 +39,7 @@
                     <hr class="bg-danger border-2 border-top border-warning" />
 
                     <p>The next day!</p>
-                }
+                } -->
 
                 <div
                     class="row align-items-start stopbox"
@@ -50,9 +61,10 @@
                                         tripStop.plannedArrivalTime != tripStop.plannedDepartureTime
                                     ) {
                                         <app-time-only-selection
-                                            [actual]="tripStop.actualArrivalTime"
-                                            [planned]="tripStop.plannedArrivalTime"
+                                            [actual]="tripStop.actualDepartureTime"
+                                            [planned]="tripStop.plannedDepartureTime"
                                             [cancelled]="tripStop.cancelled"
+                                            [scheduleRelationship]="tripStop.scheduleRelationship"
                                         ></app-time-only-selection>
                                         <br />
                                         <br />

@@ -9,7 +9,8 @@ export interface GTFSTripStop {
     stopHeadsign: string;
     stopType: string;
     cancelled: boolean;
-
+    scheduleRelationship: string;
+    
     longitude: number;
     latitude: number;
 
@@ -30,6 +31,22 @@ export interface GTFSTrip {
     direction: string;
     blockId: string;
     dataOrigin: string;
+
+    latitude?: number | null;
+    longitude?: number | null;
+    currentStatus?: string | null;
+    congestionLevel?: string | null;
+    occupancyStatus?: string | null;
+    occupancyPercentage?: number | null;
+    measurementTime?: string | null;
+
+    targetStopId?: string | null;
+    targetStopName?: string | null;
+    
+    targetStopType?: string | null;
+
+    routeShortName?: string | null;
+    routeLongName?: string | null;
 
     stops: GTFSTripStop[] | null;
     shapes: GTFSShape[] | null;

@@ -1,160 +1,169 @@
 <div class="container-fluid grid">
-    <div class="col-12">
-        <h1>Showing data for stop {{ stop?.name }}</h1>
-        <h2>Stop type: {{ stop?.stopType }}</h2>
-
-        <p>Description: {{ stop?.description }}</p>
-        <p>Zone: {{ stop?.zone }}</p>
-        <p>
-            This stop consists of <b>{{ stop?.mergedStops ?? 'an unknown amount of ' }}</b> merged stops.
-        </p>
-        <p>
-            <small>Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} - {{ stop?.parentStation }}</small>
-            <br />
-            <small>Last updated: {{ stop?.lastUpdated }}</small>
-        </p>
-        @if (stop?.relatedStops) {
-            <h2>Related stops:</h2>
-            @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
-                <div>
-                    <a routerLink="/stops/{{ relatedStop.id }}/{{ relatedStop.stopType }}"
-                        ><p>Related stop: {{ relatedStop?.name }}</p>
-                    </a>
-                    <p>Stop type: {{ relatedStop?.stopType }}</p>
-                </div>
-            } @empty {
-                <p>No related stops</p>
-            }
-        }
-
-        <h1>Routes on this stop</h1>
-
-        @if (loading) {
-            <div>
-                <div
-                    class="spinner-border"
-                    role="status"
-                >
-                    🚉
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Loading routes...</p>
+    @if (loading) {
+        <div class="col-12">
+            <h1>Loading data for stop {{ this.selectedStop }}</h1>
+            <div
+                class="spinner-border"
+                role="status"
+            >
+                🚉
+                <span class="visually-hidden">Loading stop related data...</span>
             </div>
-        }
+            <p>Loading stop related data...</p>
+        </div>
+    } @else {
+        <div class="col-12">
+            <h1>Showing data for stop {{ stop?.name }}</h1>
+            <h2>Stop type: {{ stop?.stopType }}</h2>
 
-        @for (route of stop?.routes; track route; let index = $index) {
-            <p class="fw-bold">
-                <span
-                    [style]="
-                        'max-height: 50vw; min-width:50vw; background-color: #' +
-                        route.color +
-                        '; color: #' +
-                        route.textColor
-                    "
-                >
-                    <span>[{{ route.agency }}]</span>
-                    <span> {{ route.shortName }}</span>
-                    - {{ route.longName }}
-                </span>
+            <p>Description: {{ stop?.description }}</p>
+            <p>Zone: {{ stop?.zone }}</p>
+            <p>
+                This stop consists of <b>{{ stop?.mergedStops ?? 'an unknown amount of ' }}</b> merged stops.
             </p>
-        }
-        <h1>Stops</h1>
-        @if (error) {
-            <app-error [httpErrorResponse]="error"></app-error>
-        }
-
-        @if (loading) {
-            <div>
-                <div
-                    class="spinner-border"
-                    role="status"
+            <p>
+                <small
+                    >Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} -
+                    {{ stop?.parentStation }}</small
                 >
-                    🚉
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Loading stops...</p>
-            </div>
-        }
-        @for (tripStop of stop?.departures; track tripStop; let index = $index) {
-            @if (
-                index == 0 ||
-                (stop!.departures[index - 1] != null &&
-                    convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
-                        convertToDate(stop!.departures![index - 1].actualArrivalTime.toString()).getDay())
-            ) {
-                <hr class="bg-danger border-2 border-top border-warning" />
-
-                <p>{{ convertToDate(tripStop.actualArrivalTime.toString()) | date: 'yyyy-MM-dd' }}</p>
+                <br />
+                <small>Last updated: {{ stop?.lastUpdated }}</small>
+            </p>
+            @if (stop?.relatedStops) {
+                <h2>Related stops:</h2>
+                @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
+                    <div>
+                        <a routerLink="/stops/{{ relatedStop.id }}/{{ relatedStop.stopType }}"
+                            ><p>Related stop: {{ relatedStop?.name }}</p>
+                        </a>
+                        <p>Stop type: {{ relatedStop?.stopType }}</p>
+                    </div>
+                } @empty {
+                    <p>No related stops</p>
+                }
             }
 
-            <a routerLink="/trip/{{ tripStop.tripId }}">
-                <div
-                    class="row align-items-start departurebox"
-                    [class]="tripStop.cancelled == true ? 'cancelled' : 'normal'"
-                >
-                    @if (tripStop.cancelled) {
-                        <p>Rijdt niet</p>
-                    }
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-2 text-right">
-                                <app-time-only-selection
-                                    [actual]="tripStop.actualArrivalTime"
-                                    [planned]="tripStop.plannedArrivalTime"
-                                    [cancelled]="tripStop.cancelled"
-                                ></app-time-only-selection>
-                            </div>
-                            <div class="col-6">
-                                <p class="fw-bold">
-                                    <span
-                                        [style]="
-                                            'max-height: 50vw; min-width:50vw; background-color: #' +
-                                            tripStop.routeColor +
-                                            '; color: #' +
-                                            tripStop.routeTextColor
-                                        "
-                                    >
-                                        <span>[{{ tripStop.routeShortName }}]</span>
-                                        {{ tripStop.headsign ?? tripStop.stopHeadsign ?? tripStop.routeLongName ?? "Unknown route"}}</span
-                                    >
-                                </p>
-                                @if (
-                                    tripStop.stopHeadsign &&
-                                    tripStop.stopHeadsign != '' &&
-                                    tripStop.stopHeadsign != tripStop.headsign &&
-                                    tripStop.headsign
-                                ) {
-                                    <p>
-                                        Headsign on this stop will be
-                                        <span class="fst-italic">[{{ tripStop.stopHeadsign }}]</span>
-                                    </p>
-                                }
-                                <small
-                                    >{{ tripStop.routeShortName }} - {{ tripStop.operator }} -
-                                    {{ tripStop.routeLongName }}
-                                    {{ tripStop.routeDesc }}
-                                </small>
-                            </div>
+            <h1>Routes on this stop</h1>
 
-                            <div class="col-4">
-                                <app-track-selection
-                                    [plannedTrack]="tripStop.plannedPlatform"
-                                    [actualTrack]="tripStop.actualPlatform"
-                                    [cancelled]="tripStop.cancelled"
-                                ></app-track-selection>
-                            </div>
-                            <div
-                                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
-                            >
-                                <!-- <small>Datasource: {{ tripStop.dataOrigin }} / {{tripStop.tripId}}</small> -->
+            @for (route of stop?.routes; track route; let index = $index) {
+                <app-route [route]="route"></app-route>
+            }
+            <h1>Stops</h1>
+            @if (error) {
+                <app-error [httpErrorResponse]="error"></app-error>
+            }
+            @for (tripStop of stop?.departures; track tripStop; let index = $index) {
+                <!-- @if (tripStop.scheduleRelationship != 'SKIPPED') {
+                @if (
+                    index == 0 ||
+                    (stop!.departures[index - 1] != null &&
+                        tripStop.actualArrivalTime != null &&
+                        convertToDate(tripStop.actualArrivalTime.toString()).getDay() !==
+                            convertToDate(stop!.departures![index - 1].actualArrivalTime.toString()).getDay())
+                ) {
+                    <hr class="bg-danger border-2 border-top border-warning" />
+                    @if (tripStop.actualArrivalTime || tripStop.plannedDepartureTime) {
+                        <p>
+                            {{
+                                convertToDate((tripStop.actualArrivalTime ?? tripStop.plannedDepartureTime).toString())
+                                    | date: 'yyyy-MM-dd'
+                            }}
+                        </p>
+                    } @else {
+                        <p>Something went really wrong and no times are available</p>
+                    }
+                }
+            } @else {
+                <h1 style="color: red">SKIPPED</h1>
+            } -->
+
+                <a routerLink="/trip/{{ tripStop.tripId }}">
+                    <div
+                        class="row align-items-start departurebox"
+                        [class]="tripStop.cancelled == true ? 'cancelled' : 'normal'"
+                    >
+                        @if (tripStop.cancelled) {
+                            <p>Rijdt niet</p>
+                        }
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-2 text-right">
+                                    <app-time-only-selection
+                                        [actual]="tripStop.actualArrivalTime"
+                                        [planned]="tripStop.plannedArrivalTime"
+                                        [cancelled]="tripStop.cancelled"
+                                        [scheduleRelationship]="tripStop.scheduleRelationship"
+                                    ></app-time-only-selection>
+                                    @if (tripStop.realTime) {
+                                        <p>
+                                            Realtime:
+                                            <span
+                                                class="font-weight-bold"
+                                                style="color: green"
+                                                >YES ❤️</span
+                                            >
+                                        </p>
+                                    }
+                                </div>
+                                <div class="col-6">
+                                    <p class="fw-bold">
+                                        <span
+                                            [style]="
+                                                'max-height: 50vw; min-width:50vw; background-color: #' +
+                                                tripStop.routeColor +
+                                                '; color: #' +
+                                                tripStop.routeTextColor
+                                            "
+                                        >
+                                            <span>[{{ tripStop.routeShortName }}]</span>
+                                            {{
+                                                tripStop.headsign ??
+                                                    tripStop.stopHeadsign ??
+                                                    tripStop.routeLongName ??
+                                                    'Unknown route'
+                                            }}</span
+                                        >
+                                    </p>
+                                    @if (
+                                        tripStop.stopHeadsign &&
+                                        tripStop.stopHeadsign != '' &&
+                                        tripStop.stopHeadsign != tripStop.headsign &&
+                                        tripStop.headsign
+                                    ) {
+                                        <p>
+                                            Headsign on this stop will be
+                                            <span class="fst-italic">[{{ tripStop.stopHeadsign }}]</span>
+                                        </p>
+                                    }
+                                    <small
+                                        >{{ tripStop.routeShortName }} - {{ tripStop.operator }} -
+                                        {{ tripStop.routeLongName }}
+                                        {{ tripStop.routeDesc }}
+                                    </small>
+                                </div>
+
+                                <div class="col-4">
+                                    <app-track-selection
+                                        [plannedTrack]="tripStop.plannedPlatform"
+                                        [actualTrack]="tripStop.actualPlatform"
+                                        [cancelled]="tripStop.cancelled"
+                                    ></app-track-selection>
+                                </div>
+                                <div
+                                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+                                >
+                                    <!-- <small>Datasource: {{ tripStop.dataOrigin }} / {{tripStop.tripId}}</small> -->
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div></a
-            >
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"></div>
-        } @empty {
-            <p>No known departures</p>
-        }
-    </div>
+                    </div></a
+                >
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+                ></div>
+            } @empty {
+                <p>No known departures</p>
+            }
+        </div>
+    }
 </div>
