@@ -61,8 +61,8 @@
                                         tripStop.plannedArrivalTime != tripStop.plannedDepartureTime
                                     ) {
                                         <app-time-only-selection
-                                            [actual]="tripStop.actualArrivalTime"
-                                            [planned]="tripStop.plannedArrivalTime"
+                                            [actual]="tripStop.actualDepartureTime"
+                                            [planned]="tripStop.plannedDepartureTime"
                                             [cancelled]="tripStop.cancelled"
                                             [scheduleRelationship]="tripStop.scheduleRelationship"
                                         ></app-time-only-selection>

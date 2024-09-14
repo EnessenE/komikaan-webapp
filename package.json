@@ -19,7 +19,6 @@
     "@angular/platform-browser": "^18.2.1",
     "@angular/platform-browser-dynamic": "^18.2.1",
     "@angular/router": "^18.2.1",
-    "@asymmetrik/ngx-leaflet": "^18.0.0",
     "@bluehalo/ngx-leaflet": "^18.0.2",
     "@bluehalo/ngx-leaflet-markercluster": "^18.0.1",
     "@ng-bootstrap/ng-bootstrap": "^17.0.0",

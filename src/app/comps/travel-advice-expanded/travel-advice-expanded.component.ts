@@ -4,7 +4,6 @@ import { DatePipe } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TrackSelectionComponent } from '../track-selection/track-selection.component';
 import { TimeSelectionComponent } from '../time-selection/time-selection.component';
-import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
 import {
     FeatureGroup,
     Icon,
@@ -20,6 +19,7 @@ import {
     polyline,
     tileLayer,
 } from 'leaflet';
+import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 
 @Component({
     selector: 'app-travel-advice-expanded',

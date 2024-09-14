@@ -9,6 +9,6 @@
     } @else if (cancelled) {
         <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span> CANCELLED
     } @else {
-        <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span> SKIPPED
+        <span class="major-info-change" style="background-color: red;">{{ planned | date: 'HH:mm:ss' }}</span> SKIPPED
     }
 </span>

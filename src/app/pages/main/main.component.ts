@@ -22,10 +22,10 @@ import {
     marker,
     tileLayer,
 } from 'leaflet';
-import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { GTFSStop } from '../../models/gtfsstop';
 import { debounceTime, Subject } from 'rxjs';
 import { GTFSSearchStop } from '../../models/gtfssearchstop';
+import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 
 @Component({
     selector: 'app-main',

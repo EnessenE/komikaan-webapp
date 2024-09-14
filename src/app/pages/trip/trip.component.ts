@@ -4,7 +4,6 @@ import { ApiService } from '../../services/api.service';
 import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
 import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
 import { GTFSTrip } from '../../models/gtfstrip';
-import { LeafletControlLayersConfig, LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import {
     FeatureGroup,
@@ -24,6 +23,7 @@ import {
 } from 'leaflet';
 import { Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
+import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 
 @Component({
     selector: 'app-trip',
@@ -34,7 +34,7 @@ import { DatePipe } from '@angular/common';
         RouterLink,
         LeafletModule,
         ClipboardModule,
-        DatePipe,
+        DatePipe
     ],
     templateUrl: './trip.component.html',
     styleUrl: './trip.component.scss',
