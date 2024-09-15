@@ -1,7 +1,7 @@
 # Stage 1: Compile and Build angular codebase
 
 # Use official node image as the base image
-FROM node:latest as build
+FROM node:20 as build
 
 # Set the working directory
 WORKDIR /usr/local/app/
@@ -18,7 +18,7 @@ RUN npm run build --prod
 # Stage 2: Serve app with nginx server
 
 # Use official nginx image as the base image
-FROM nginx:latest
+FROM nginx:mainline
 
 RUN rm -rvf /usr/share/nginx/html
 RUN dir -s
