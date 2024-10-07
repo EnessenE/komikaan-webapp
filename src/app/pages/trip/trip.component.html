@@ -58,6 +58,8 @@
                                     @if (
                                         tripStop.actualArrivalTime != tripStop.plannedArrivalTime ||
                                         tripStop.plannedDepartureTime != tripStop.actualDepartureTime ||
+                                        tripStop.plannedArrivalTime != tripStop.plannedDepartureTime ||
+                                        tripStop.actualArrivalTime == tripStop.actualDepartureTime
                                     ) {
                                         <app-time-only-selection
                                             [actual]="tripStop.actualDepartureTime"
