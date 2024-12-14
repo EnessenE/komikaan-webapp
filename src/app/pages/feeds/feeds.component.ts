@@ -7,10 +7,9 @@ import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-feeds',
-    standalone: true,
     imports: [RouterLink, DatePipe],
     templateUrl: './feeds.component.html',
-    styleUrl: './feeds.component.scss',
+    styleUrl: './feeds.component.scss'
 })
 export class FeedsComponent implements OnInit {
     feeds: Feed[] | undefined;

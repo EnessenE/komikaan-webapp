@@ -12,10 +12,9 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
 
 @Component({
     selector: 'app-feed-details',
-    standalone: true,
     imports: [RouterLink, LeafletModule, LeafletMarkerClusterModule, RouteComponent],
     templateUrl: './feed-details.component.html',
-    styleUrl: './feed-details.component.scss',
+    styleUrl: './feed-details.component.scss'
 })
 export class FeedDetailsComponent implements OnInit {
     loading: boolean = false;

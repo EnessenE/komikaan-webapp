@@ -7,7 +7,6 @@ import { TravelAdviceExpandedComponent } from '../travel-advice-expanded/travel-
 
 @Component({
     selector: 'app-travel-advice',
-    standalone: true,
     imports: [
         DatePipe,
         NgbTooltipModule,
@@ -16,7 +15,7 @@ import { TravelAdviceExpandedComponent } from '../travel-advice-expanded/travel-
         TravelAdviceExpandedComponent,
     ],
     templateUrl: './travel-advice.component.html',
-    styleUrl: './travel-advice.component.scss',
+    styleUrl: './travel-advice.component.scss'
 })
 export class TravelAdviceComponent implements OnInit{
     @Input()

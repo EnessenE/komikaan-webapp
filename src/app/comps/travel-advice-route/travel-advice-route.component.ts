@@ -7,10 +7,9 @@ import { TimeSelectionComponent } from '../time-selection/time-selection.compone
 
 @Component({
     selector: 'app-travel-advice-route',
-    standalone: true,
     imports: [DatePipe, NgbTooltipModule, NgbAccordionModule, TrackSelectionComponent, TimeSelectionComponent],
     templateUrl: './travel-advice-route.component.html',
-    styleUrl: './travel-advice-route.component.scss',
+    styleUrl: './travel-advice-route.component.scss'
 })
 export class TravelAdviceRouteComponent {
     @Input()

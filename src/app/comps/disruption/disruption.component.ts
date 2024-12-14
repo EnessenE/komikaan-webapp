@@ -5,10 +5,9 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-disruption',
-    standalone: true,
     imports: [DatePipe, NgbTooltipModule],
     templateUrl: './disruption.component.html',
-    styleUrl: './disruption.component.scss',
+    styleUrl: './disruption.component.scss'
 })
 export class DisruptionComponent {
     @Input()
