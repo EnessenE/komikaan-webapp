@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { GTFSRoute } from '../../models/gtfsroute';
-import { RouteComponent } from '../../comps/route/route.component';
-import { FeatureGroup, Map, LatLngBounds, latLng, Layer, tileLayer, featureGroup, circle, Popup, MarkerClusterGroupOptions, MarkerClusterGroup } from 'leaflet';
 import { GTFSSearchStop } from '../../models/gtfssearchstop';
 import { VehiclePosition } from '../../models/vehicle-position';
 import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster';
 import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
-import 'leaflet.markercluster';
-import L from 'leaflet';
+// Order is apparently important here. This should be imported after bluehalo-ngx-leaflet things
+import { FeatureGroup, Map, LatLngBounds, latLng, Layer, tileLayer, featureGroup, circle, Popup, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
+
 
 @Component({
     selector: 'app-feed-details',
@@ -50,13 +49,12 @@ export class FeedDetailsComponent implements OnInit {
         private route: ActivatedRoute,
         private titleService: Title,
     ) {
-        console.log('MarkerClusterGroup is loaded:', L.MarkerClusterGroup);
 
         this.layers = [
             tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             }),
         ];
-        
+
         this.clusterGroup = new MarkerClusterGroup({
             spiderfyOnMaxZoom: false,
             showCoverageOnHover: true,
