@@ -9,11 +9,12 @@ import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster'
 import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 // Order is apparently important here. This should be imported after bluehalo-ngx-leaflet things
 import { FeatureGroup, Map, LatLngBounds, latLng, Layer, tileLayer, featureGroup, circle, Popup, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
+import { LoadingComponent } from "../../comps/loading/loading.component";
 
 
 @Component({
     selector: 'app-feed-details',
-    imports: [LeafletModule, LeafletMarkerClusterModule],
+    imports: [LeafletModule, LeafletMarkerClusterModule, LoadingComponent],
     templateUrl: './feed-details.component.html',
     styleUrl: './feed-details.component.scss'
 })

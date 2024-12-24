@@ -2,13 +2,7 @@
     @if (loading) {
         <div class="col-12">
             <h1>Loading data for stop {{ this.selectedStop }}</h1>
-            <div
-                class="spinner-border"
-                role="status"
-            >
-                🚉
-                <span class="visually-hidden">Loading stop related data...</span>
-            </div>
+            <app-loading></app-loading>
             <p>Loading stop related data...</p>
         </div>
     } @else {

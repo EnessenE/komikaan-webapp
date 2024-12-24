@@ -9,10 +9,11 @@ import { DatePipe } from '@angular/common';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouteComponent } from '../../comps/route/route.component';
+import { LoadingComponent } from "../../comps/loading/loading.component";
 
 @Component({
     selector: 'app-departures',
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe, ErrorComponent, RouteComponent],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe, ErrorComponent, RouteComponent, LoadingComponent],
     templateUrl: './departures.component.html',
     styleUrl: './departures.component.scss'
 })
