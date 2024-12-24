@@ -4,10 +4,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-error',
-    standalone: true,
     imports: [],
     templateUrl: './error.component.html',
-    styleUrl: './error.component.scss',
+    styleUrl: './error.component.scss'
 })
 export class ErrorComponent  {
     @Input()

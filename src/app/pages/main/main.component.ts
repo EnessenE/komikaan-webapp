@@ -29,7 +29,6 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
 
 @Component({
     selector: 'app-main',
-    standalone: true,
     imports: [
         DatePipe,
         ErrorComponent,
@@ -42,7 +41,7 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
         LeafletModule,
     ],
     templateUrl: './main.component.html',
-    styleUrl: './main.component.scss',
+    styleUrl: './main.component.scss'
 })
 export class MainComponent implements OnInit {
     originStop: GTFSStop | undefined;

@@ -2,11 +2,10 @@ import { DatePipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-time-selection',
-  standalone: true,
-  imports: [DatePipe],
-  templateUrl: './time-selection.component.html',
-  styleUrl: './time-selection.component.scss'
+    selector: 'app-time-selection',
+    imports: [DatePipe],
+    templateUrl: './time-selection.component.html',
+    styleUrl: './time-selection.component.scss'
 })
 export class TimeSelectionComponent {
   @Input()

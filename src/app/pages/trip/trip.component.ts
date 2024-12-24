@@ -27,7 +27,6 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
 
 @Component({
     selector: 'app-trip',
-    standalone: true,
     imports: [
         TimeOnlySelectionComponent,
         TrackSelectionComponent,
@@ -37,7 +36,7 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
         DatePipe
     ],
     templateUrl: './trip.component.html',
-    styleUrl: './trip.component.scss',
+    styleUrl: './trip.component.scss'
 })
 export class TripComponent {
     trip: GTFSTrip | undefined;

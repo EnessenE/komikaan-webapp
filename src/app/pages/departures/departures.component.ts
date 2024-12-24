@@ -12,10 +12,9 @@ import { RouteComponent } from '../../comps/route/route.component';
 
 @Component({
     selector: 'app-departures',
-    standalone: true,
     imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe, ErrorComponent, RouteComponent],
     templateUrl: './departures.component.html',
-    styleUrl: './departures.component.scss',
+    styleUrl: './departures.component.scss'
 })
 export class DeparturesComponent implements OnInit {
     stop: GTFSStop | undefined;

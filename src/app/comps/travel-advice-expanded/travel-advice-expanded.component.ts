@@ -23,10 +23,9 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
 
 @Component({
     selector: 'app-travel-advice-expanded',
-    standalone: true,
     imports: [DatePipe, NgbTooltipModule, TrackSelectionComponent, TimeSelectionComponent, LeafletModule],
     templateUrl: './travel-advice-expanded.component.html',
-    styleUrl: './travel-advice-expanded.component.scss',
+    styleUrl: './travel-advice-expanded.component.scss'
 })
 export class TravelAdviceExpandedComponent {
     @Input()
