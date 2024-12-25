@@ -13,7 +13,7 @@ import { LoadingComponent } from "../../comps/loading/loading.component";
 
 @Component({
     selector: 'app-departures',
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, DatePipe, ErrorComponent, RouteComponent, LoadingComponent],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, ErrorComponent, RouteComponent, LoadingComponent],
     templateUrl: './departures.component.html',
     styleUrl: './departures.component.scss'
 })

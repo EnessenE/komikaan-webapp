@@ -1,4 +1,5 @@
 export interface Feed {
+    enabled: boolean | null,
     name: string,
     interval: Date,
     lastUpdated: Date,

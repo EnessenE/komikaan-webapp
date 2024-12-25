@@ -28,13 +28,12 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
 @Component({
     selector: 'app-trip',
     imports: [
-        TimeOnlySelectionComponent,
-        TrackSelectionComponent,
-        RouterLink,
-        LeafletModule,
-        ClipboardModule,
-        DatePipe
-    ],
+    TimeOnlySelectionComponent,
+    TrackSelectionComponent,
+    RouterLink,
+    LeafletModule,
+    ClipboardModule
+],
     templateUrl: './trip.component.html',
     styleUrl: './trip.component.scss'
 })

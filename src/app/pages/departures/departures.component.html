@@ -36,12 +36,15 @@
                     <p>No related stops</p>
                 }
             }
-
-            <h1>Routes on this stop</h1>
+        </div>
+        <div class="col-12 overflow-auto route-box">
+            <h1>{{ stop?.routes?.length ?? "0" }} routes on this stop</h1>
 
             @for (route of stop?.routes; track route; let index = $index) {
                 <app-route [route]="route"></app-route>
             }
+        </div>
+        <div class="col-12">
             <h1>Stops</h1>
             @if (error) {
                 <app-error [httpErrorResponse]="error"></app-error>

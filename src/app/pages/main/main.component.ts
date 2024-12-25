@@ -30,11 +30,8 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
 @Component({
     selector: 'app-main',
     imports: [
-        DatePipe,
         ErrorComponent,
         NgbTooltipModule,
-        DisruptionComponent,
-        TravelAdviceComponent,
         NgbAccordionModule,
         StopComponent,
         RouterLink,

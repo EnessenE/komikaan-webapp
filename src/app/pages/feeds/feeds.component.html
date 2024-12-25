@@ -15,8 +15,9 @@
     <table class="table table-striped table-hover ">
         <thead class="thead-dark">
             <tr>
+                <th scope="col">Enabled</th>
                 <th scope="col">Name</th>
-                <th scope="col">Currently importing</th>
+                <th scope="col">Waiting for import</th>
                 <th scope="col">Last failed attempt</th>
                 <th scope="col">Last update</th>
                 <th scope="col">Last checked</th>
@@ -30,8 +31,16 @@
         <tbody>
             @for (feed of feeds; track feed) {
                 <tr>
+                    <td>{{ feed.enabled ?? "Yes"}}</td>
                     <th scope="row"><a routerLink="/feed/{{feed.name}}">{{ feed.name }}</a></th>
-                    <td>{{ feed.downloadPending }}</td>
+                    <td>@if(feed.downloadPending)
+                        {
+                            <span style="color: orange">Yes</span>
+                        }
+                        @else {
+                            <span style="color: green">No</span>
+                        }
+                    </td>
                     <td>{{ feed.lastAttempt | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
                     <td>{{ feed.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm'}}</td>
                     <td>{{ feed.lastChecked | date: 'EEEE, MMMM d, y, HH:mm'}}</td>
