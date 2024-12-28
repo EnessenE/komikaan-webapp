@@ -1,7 +1,6 @@
 @if (error) {
     <app-error [httpErrorResponse]="error"></app-error>
 }
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-6">
@@ -36,9 +35,12 @@
 
         <div class="col-lg-6 col-6">
             <form class="form-inline my-2 my-lg-0">
+                <p>
+                    Hi! This site can show you departures from your nearby public transport stop. Feel free and try to find
+                    something in your area.
+                </p>
                 <p><b>For which station do you want to see departures?</b></p>
-                <small
-                    >To see our data sources: <a routerLink="/feeds">click here!</a></small>
+                <small>To see our data sources: <a routerLink="/feeds">click here!</a></small>
 
                 <input
                     class="form-control mr-sm-2"

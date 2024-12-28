@@ -1,18 +1,198 @@
 <div class="col-12 overflow-auto">
     @if (loading) {
         <div>
-            <div
-                class="spinner-border"
-                role="status"
-            >
-                🚉
-                <span class="visually-hidden">Loading...</span>
-            </div>
+            <app-loading></app-loading>
             <p>Loading feed data...</p>
         </div>
     }
+    <div [hidden]="!dataSource">
+        <table
+            mat-table
+            [dataSource]="dataSource"
+            matSort
+            class="mat-elevation-z8"
+        >
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by name"
+                >
+                    Name
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    <a routerLink="/feed/{{ element.name }}">{{ element.name }}</a>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="downloadPending">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by downloadPending"
+                >
+                    Queued for import?
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                @if (element.downloadPending) {
+                    <span style="color: blue">Yes</span>
+                } @else {
+                    <span style="color: green">No</span>
+                }
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="interval">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by interval"
+                >
+                    Interval
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.interval }}
+                </td>
+            </ng-container>
 
-    <table class="table table-striped table-hover ">
+            <ng-container matColumnDef="lastUpdated">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by lastUpdated"
+                >
+                    Last successfull update
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm' }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="lastChecked">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by lastChecked"
+                >
+                    Last checked
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.lastChecked | date: 'EEEE, MMMM d, y, HH:mm' }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="lastAttempt">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by lastAttempt"
+                >
+                    Last failed attempt
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.lastAttempt | date: 'EEEE, MMMM d, y, HH:mm' }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="agencies">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by agencies"
+                >
+                    Agencies
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.agencies }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="routes">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by routes"
+                >
+                    Routes
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.routes }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="stops">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by stops"
+                >
+                    Stops
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.stops }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="trips">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by trips"
+                >
+                    Trips
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.trips }}
+                </td>
+            </ng-container>
+            <tr
+                mat-header-row
+                *matHeaderRowDef="displayedColumns"
+            ></tr>
+            <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumns"
+            ></tr>
+        </table>
+    </div>
+
+    <!-- <table
+        class="table table-striped table-hover"
+        mat-table
+    >
         <thead class="thead-dark">
             <tr>
                 <th scope="col">Enabled</th>
@@ -31,19 +211,20 @@
         <tbody>
             @for (feed of feeds; track feed) {
                 <tr>
-                    <td>{{ feed.enabled ?? "Yes"}}</td>
-                    <th scope="row"><a routerLink="/feed/{{feed.name}}">{{ feed.name }}</a></th>
-                    <td>@if(feed.downloadPending)
-                        {
+                    <td>{{ feed.enabled ?? 'Yes' }}</td>
+                    <th scope="row">
+                        <a routerLink="/feed/{{ feed.name }}">{{ feed.name }}</a>
+                    </th>
+                    <td>
+                        @if (feed.downloadPending) {
                             <span style="color: orange">Yes</span>
-                        }
-                        @else {
+                        } @else {
                             <span style="color: green">No</span>
                         }
                     </td>
                     <td>{{ feed.lastAttempt | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
-                    <td>{{ feed.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm'}}</td>
-                    <td>{{ feed.lastChecked | date: 'EEEE, MMMM d, y, HH:mm'}}</td>
+                    <td>{{ feed.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
+                    <td>{{ feed.lastChecked | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
                     <td>{{ feed.interval }}</td>
                     <td>{{ feed.agencies }}</td>
                     <td>{{ feed.routes }}</td>
@@ -54,5 +235,5 @@
                 <p>No feeds loaded to display!</p>
             }
         </tbody>
-    </table>
+    </table> -->
 </div>

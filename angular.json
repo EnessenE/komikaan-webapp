@@ -33,10 +33,11 @@
                             }
                         ],
                         "styles": [
-                            "src/styles.scss",
-                            "node_modules/bootstrap/scss/bootstrap.scss",
-                            "node_modules/leaflet/dist/leaflet.css",
-                            "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
+                          "@angular/material/prebuilt-themes/azure-blue.css",
+                          "src/styles.scss",
+                          "node_modules/bootstrap/scss/bootstrap.scss",
+                          "node_modules/leaflet/dist/leaflet.css",
+                          "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
                         ],
                         "scripts": [
                             "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
@@ -110,10 +111,11 @@
                             }
                         ],
                         "styles": [
-                            "src/styles.scss",
-                            "node_modules/bootstrap/scss/bootstrap.scss",
-                            "node_modules/leaflet/dist/leaflet.css",
-                            "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
+                          "@angular/material/prebuilt-themes/azure-blue.css",
+                          "src/styles.scss",
+                          "node_modules/bootstrap/scss/bootstrap.scss",
+                          "node_modules/leaflet/dist/leaflet.css",
+                          "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
                         ],
                         "scripts": [
                             "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
