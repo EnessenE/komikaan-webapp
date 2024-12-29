@@ -40,6 +40,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     stops: GTFSSearchStop[] | undefined;
     vehiclePositions: VehiclePosition[] | undefined;
     onlyRealTime: boolean = false;
+    lastLoad: Date = new Date();
 
     map!: Map;
     markerLayers!: FeatureGroup;
@@ -119,9 +120,10 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
             this.titleService.setTitle(this.selectedFeed);
             this.titleService.setTitle('Feed ' + this.selectedFeed);
 
-            this.getFeedPositions();
+            this.getFeedPositions(true);
             this.intervalSubscription = interval(10000).subscribe(() => {
-                this.getFeedPositions();
+                // We don't want to fit to bounds after the first init as the user can positions it to whatever they care about
+                this.getFeedPositions(false);
             });
 
             if (!this.onlyRealTime) {
@@ -142,13 +144,16 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         });
     }
 
-    private getFeedPositions() {
+    private getFeedPositions(fitToBounds: boolean) {
+        console.log('Getting feed positions');
+        this.loading = true;
         this.apiService.GetFeedPositions(this.selectedFeed).subscribe({
             next: (data) => {
-                this.markerLayers = featureGroup();
+                this.clusterGroup.clearLayers();
                 this.vehiclePositions = data;
-                this.addVehiclesToMap(data);
+                this.addVehiclesToMap(data, fitToBounds);
                 this.loading = false;
+                this.lastLoad = new Date();
             },
             error: (err) => {
                 console.error('Error fetching feed positions:', err);
@@ -179,7 +184,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         this.invalidateMap();
     }
 
-    addVehiclesToMap(vehicles: VehiclePosition[]) {
+    addVehiclesToMap(vehicles: VehiclePosition[], fitToBounds: boolean) {
         vehicles.forEach((vehicle) => {
             var stopLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 40, color: 'green' });
 
@@ -195,10 +200,12 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
             this.clusterGroup.addLayer(stopLayer);
         });
         // Timeout due to timing bug on the initalization for an unknown reason.
-        setTimeout(() => {
-            console.log('Fitting bounds to markerLayers...');
-            this.map.fitBounds(this.clusterGroup.getBounds());
-        }, 100);
+        if (fitToBounds) {
+            setTimeout(() => {
+                console.log('Fitting bounds to markerLayers...');
+                this.map.fitBounds(this.clusterGroup.getBounds());
+            }, 100);
+        }
         console.log('bounds');
         this.invalidateMap();
     }

@@ -27,12 +27,20 @@
                 <app-loading></app-loading>
             }
         </p>
+        <p>
+            Last load:
+            @if (!loading) {
+                {{ lastLoad | date: 'EEEE, MMMM d, y, HH:mm:ss' }}
+            } @else {
+                <app-loading></app-loading>
+            }
+        </p>
     </div>
     <div class="col-12">
         <div
             (window:resize)="onResize($event)"
             class="leaflet"
-            [ngClass]="onlyRealTime ? 'realtime-only-map-view': 'stop-map-view'"
+            [ngClass]="onlyRealTime ? 'realtime-only-map-view' : 'stop-map-view'"
             leaflet
             [leafletOptions]="options"
             [leafletLayers]="layers"
