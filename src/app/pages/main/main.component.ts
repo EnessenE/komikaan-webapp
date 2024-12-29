@@ -89,6 +89,10 @@ export class MainComponent implements OnInit {
                     error: (error) => (this.error = error),
                 });
             });
+            
+        setTimeout(() => {
+            this.invalidateMap();
+        }, 100);
     }
 
     onSearchInputChangeOrigin(event: any) {
