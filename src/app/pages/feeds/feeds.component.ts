@@ -22,6 +22,7 @@ export class FeedsComponent implements OnInit, AfterViewInit {
     dataSource: MatTableDataSource<Feed, MatPaginator> = new MatTableDataSource();
     displayedColumns: string[] = [
         'name',
+        'realtime',
         'downloadPending',
         'interval',
         'lastUpdated',

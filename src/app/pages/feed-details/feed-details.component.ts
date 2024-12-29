@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { GTFSRoute } from '../../models/gtfsroute';
 import { GTFSSearchStop } from '../../models/gtfssearchstop';
@@ -8,22 +8,38 @@ import { VehiclePosition } from '../../models/vehicle-position';
 import { LeafletMarkerClusterModule } from '@bluehalo/ngx-leaflet-markercluster';
 import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 // Order is apparently important here. This should be imported after bluehalo-ngx-leaflet things
-import { FeatureGroup, Map, LatLngBounds, latLng, Layer, tileLayer, featureGroup, circle, Popup, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
-import { LoadingComponent } from "../../comps/loading/loading.component";
-
+import {
+    FeatureGroup,
+    Map,
+    LatLngBounds,
+    latLng,
+    Layer,
+    tileLayer,
+    featureGroup,
+    circle,
+    Popup,
+    MarkerClusterGroup,
+    MarkerClusterGroupOptions,
+} from 'leaflet';
+import { LoadingComponent } from '../../comps/loading/loading.component';
+import { CommonModule } from '@angular/common';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-feed-details',
-    imports: [LeafletModule, LeafletMarkerClusterModule, LoadingComponent],
+    imports: [LeafletModule, LeafletMarkerClusterModule, LoadingComponent, RouterModule, CommonModule],
     templateUrl: './feed-details.component.html',
-    styleUrl: './feed-details.component.scss'
+    styleUrl: './feed-details.component.scss',
 })
-export class FeedDetailsComponent implements OnInit {
+export class FeedDetailsComponent implements OnInit, OnDestroy {
+    private intervalSubscription: Subscription | undefined;
+
     loading: boolean = false;
     selectedFeed: string = 'Unknown';
     routes: GTFSRoute[] | undefined;
     stops: GTFSSearchStop[] | undefined;
     vehiclePositions: VehiclePosition[] | undefined;
+    onlyRealTime: boolean = false;
 
     map!: Map;
     markerLayers!: FeatureGroup;
@@ -36,7 +52,16 @@ export class FeedDetailsComponent implements OnInit {
     mapFitToBounds!: LatLngBounds;
 
     markerClusterOptions: MarkerClusterGroupOptions = {};
-    clusterGroup: MarkerClusterGroup;
+
+    clusterGroup: MarkerClusterGroup = new MarkerClusterGroup({
+        spiderfyOnMaxZoom: false,
+        showCoverageOnHover: true,
+        zoomToBoundsOnClick: true,
+        disableClusteringAtZoom: 13,
+        removeOutsideVisibleBounds: true,
+        animate: true,
+        chunkedLoading: true,
+    });
 
     options = {
         zoom: 13,
@@ -50,21 +75,34 @@ export class FeedDetailsComponent implements OnInit {
         private route: ActivatedRoute,
         private titleService: Title,
     ) {
-
-        this.layers = [
-            tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            }),
-        ];
-
-        this.clusterGroup = new MarkerClusterGroup({
-            spiderfyOnMaxZoom: false,
-            showCoverageOnHover: true,
-            zoomToBoundsOnClick: true,
-            disableClusteringAtZoom: 15,
-            removeOutsideVisibleBounds: true,
-            animate: true,
-            chunkedLoading: true,
-        });
+        var realtimeData = this.route.snapshot.queryParamMap.get('realtime');
+        if (realtimeData != null) {
+            // lmao what
+            this.onlyRealTime = Boolean(JSON.parse(realtimeData));
+            if (this.onlyRealTime) {
+                this.clusterGroup = new MarkerClusterGroup({
+                    spiderfyOnMaxZoom: false,
+                    showCoverageOnHover: true,
+                    zoomToBoundsOnClick: true,
+                    disableClusteringAtZoom: 5,
+                    removeOutsideVisibleBounds: true,
+                    animate: true,
+                    chunkedLoading: true,
+                });
+            } else {
+                this.clusterGroup = new MarkerClusterGroup({
+                    spiderfyOnMaxZoom: false,
+                    showCoverageOnHover: true,
+                    zoomToBoundsOnClick: true,
+                    disableClusteringAtZoom: 13,
+                    removeOutsideVisibleBounds: true,
+                    animate: true,
+                    chunkedLoading: true,
+                });
+            }
+        }
+        console.log('Realtime only: ' + this.onlyRealTime);
+        this.layers = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
     }
 
     ngOnInit(): void {
@@ -74,32 +112,48 @@ export class FeedDetailsComponent implements OnInit {
             this.markerLayers.removeLayer(layer);
         });
 
-        this.layers.push(this.clusterGroup)
+        this.layers.push(this.clusterGroup);
 
         this.route.params.subscribe((params) => {
             this.selectedFeed = params['id'];
             this.titleService.setTitle(this.selectedFeed);
             this.titleService.setTitle('Feed ' + this.selectedFeed);
-            this.apiService.GetFeedRoutes(this.selectedFeed).subscribe({
-                next: (data) => {
-                    this.routes = data;
-                    this.loading = false;
-                },
+
+            this.getFeedPositions();
+            this.intervalSubscription = interval(10000).subscribe(() => {
+                this.getFeedPositions();
             });
-            this.apiService.GetFeedPositions(this.selectedFeed).subscribe({
-                next: (data) => {
-                    this.vehiclePositions = data;
-                    this.addVehiclesToMap(data);
-                    this.loading = false;
-                },
-            });
-            this.apiService.GetFeedStops(this.selectedFeed).subscribe({
-                next: (data) => {
-                    this.stops = data;
-                    this.addStopsToMap(data);
-                    this.loading = false;
-                },
-            });
+
+            if (!this.onlyRealTime) {
+                this.apiService.GetFeedRoutes(this.selectedFeed).subscribe({
+                    next: (data) => {
+                        this.routes = data;
+                        this.loading = false;
+                    },
+                });
+                this.apiService.GetFeedStops(this.selectedFeed).subscribe({
+                    next: (data) => {
+                        this.stops = data;
+                        this.addStopsToMap(data);
+                        this.loading = false;
+                    },
+                });
+            }
+        });
+    }
+
+    private getFeedPositions() {
+        this.apiService.GetFeedPositions(this.selectedFeed).subscribe({
+            next: (data) => {
+                this.markerLayers = featureGroup();
+                this.vehiclePositions = data;
+                this.addVehiclesToMap(data);
+                this.loading = false;
+            },
+            error: (err) => {
+                console.error('Error fetching feed positions:', err);
+                this.loading = false;
+            },
         });
     }
 
@@ -127,10 +181,16 @@ export class FeedDetailsComponent implements OnInit {
 
     addVehiclesToMap(vehicles: VehiclePosition[]) {
         vehicles.forEach((vehicle) => {
-            var stopLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 100, color: "green" });
+            var stopLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 40, color: 'green' });
 
             var popup = new Popup();
-            popup.setContent(vehicle.id);
+            var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;
+            if (vehicle.tripId != undefined) {
+                popupText += `Trip: <a href='/trip/${vehicle.tripId}'> ${vehicle.tripId}</a>`;
+            } else {
+                popupText += `Trip: no trip configured`;
+            }
+            popup.setContent(popupText);
             stopLayer.bindPopup(popup);
             this.clusterGroup.addLayer(stopLayer);
         });
@@ -152,7 +212,14 @@ export class FeedDetailsComponent implements OnInit {
     invalidateMap(): void {
         this.map?.invalidateSize();
     }
+
     onResize(event: any) {
         this.invalidateMap();
+    }
+
+    ngOnDestroy() {
+        if (this.intervalSubscription) {
+            this.intervalSubscription.unsubscribe();
+        }
     }
 }

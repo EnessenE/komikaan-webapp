@@ -26,7 +26,26 @@
                     mat-cell
                     *matCellDef="let element"
                 >
-                    <a routerLink="/feed/{{ element.name }}">{{ element.name }}</a>
+                    <a routerLink="/feed/{{ element.name }}">{{ element.name }}</a
+                    >
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="realtime">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                >
+                    Real time only
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    <a
+                        [routerLink]="['/feed', element.name]"
+                        [queryParams]="{ realtime: true }"
+                        >Live only</a
+                    >
                 </td>
             </ng-container>
             <ng-container matColumnDef="downloadPending">
@@ -42,11 +61,11 @@
                     mat-cell
                     *matCellDef="let element"
                 >
-                @if (element.downloadPending) {
-                    <span style="color: blue">Yes</span>
-                } @else {
-                    <span style="color: green">No</span>
-                }
+                    @if (element.downloadPending) {
+                        <span style="color: blue">Yes</span>
+                    } @else {
+                        <span style="color: green">No</span>
+                    }
                 </td>
             </ng-container>
             <ng-container matColumnDef="interval">
@@ -188,52 +207,4 @@
             ></tr>
         </table>
     </div>
-
-    <!-- <table
-        class="table table-striped table-hover"
-        mat-table
-    >
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Enabled</th>
-                <th scope="col">Name</th>
-                <th scope="col">Waiting for import</th>
-                <th scope="col">Last failed attempt</th>
-                <th scope="col">Last update</th>
-                <th scope="col">Last checked</th>
-                <th scope="col">Interval</th>
-                <th scope="col">Total agencies</th>
-                <th scope="col">Total routes</th>
-                <th scope="col">Total stops</th>
-                <th scope="col">Total trips</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (feed of feeds; track feed) {
-                <tr>
-                    <td>{{ feed.enabled ?? 'Yes' }}</td>
-                    <th scope="row">
-                        <a routerLink="/feed/{{ feed.name }}">{{ feed.name }}</a>
-                    </th>
-                    <td>
-                        @if (feed.downloadPending) {
-                            <span style="color: orange">Yes</span>
-                        } @else {
-                            <span style="color: green">No</span>
-                        }
-                    </td>
-                    <td>{{ feed.lastAttempt | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
-                    <td>{{ feed.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
-                    <td>{{ feed.lastChecked | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
-                    <td>{{ feed.interval }}</td>
-                    <td>{{ feed.agencies }}</td>
-                    <td>{{ feed.routes }}</td>
-                    <td>{{ feed.stops }}</td>
-                    <td>{{ feed.trips }}</td>
-                </tr>
-            } @empty {
-                <p>No feeds loaded to display!</p>
-            }
-        </tbody>
-    </table> -->
 </div>
