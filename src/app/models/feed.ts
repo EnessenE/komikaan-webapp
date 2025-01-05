@@ -8,6 +8,8 @@ export interface Feed {
     downloadPending: boolean,
     agencies: number,
     routes: number,
+    stopTimes: number,
     stops: number,
     trips: number,
+    realTime: boolean,
 }

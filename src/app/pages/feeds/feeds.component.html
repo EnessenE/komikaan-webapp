@@ -26,14 +26,15 @@
                     mat-cell
                     *matCellDef="let element"
                 >
-                    <a routerLink="/feed/{{ element.name }}">{{ element.name }}</a
-                    >
+                    <a routerLink="/feed/{{ element.name }}">{{ element.name }}</a>
                 </td>
             </ng-container>
-            <ng-container matColumnDef="realtime">
+            <ng-container matColumnDef="realTime">
                 <th
-                    mat-header-cell
-                    *matHeaderCellDef
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                sortActionDescription="Sort by live"
                 >
                     Real time only
                 </th>
@@ -41,11 +42,16 @@
                     mat-cell
                     *matCellDef="let element"
                 >
-                    <a
-                        [routerLink]="['/feed', element.name]"
-                        [queryParams]="{ realtime: true }"
-                        >Live only</a
-                    >
+                    @if (element.realTime) {
+                        <a
+                            [routerLink]="['/feed', element.name]"
+                            [queryParams]="{ realtime: true }"
+                            >Live only</a
+                        >
+                    }
+                    @else {
+                        <span>No live data</span>
+                    }
                 </td>
             </ng-container>
             <ng-container matColumnDef="downloadPending">
@@ -179,6 +185,22 @@
                     *matCellDef="let element"
                 >
                     {{ element.stops }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="stopTimes">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by stoptimes"
+                >
+                    Stop times
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.stopTimes }}
                 </td>
             </ng-container>
             <ng-container matColumnDef="trips">

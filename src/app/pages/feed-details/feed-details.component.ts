@@ -44,6 +44,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
 
     map!: Map;
     markerLayers!: FeatureGroup;
+    vehicleLayers!: FeatureGroup;
 
     layersControl: LeafletControlLayersConfig = {
         baseLayers: {},
@@ -76,55 +77,27 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private titleService: Title,
     ) {
-        var realtimeData = this.route.snapshot.queryParamMap.get('realtime');
-        if (realtimeData != null) {
-            // lmao what
-            this.onlyRealTime = Boolean(JSON.parse(realtimeData));
-            if (this.onlyRealTime) {
-                this.clusterGroup = new MarkerClusterGroup({
-                    spiderfyOnMaxZoom: false,
-                    showCoverageOnHover: true,
-                    zoomToBoundsOnClick: true,
-                    disableClusteringAtZoom: 5,
-                    removeOutsideVisibleBounds: true,
-                    animate: true,
-                    chunkedLoading: true,
-                });
-            } else {
-                this.clusterGroup = new MarkerClusterGroup({
-                    spiderfyOnMaxZoom: false,
-                    showCoverageOnHover: true,
-                    zoomToBoundsOnClick: true,
-                    disableClusteringAtZoom: 13,
-                    removeOutsideVisibleBounds: true,
-                    animate: true,
-                    chunkedLoading: true,
-                });
-            }
-        }
-        console.log('Realtime only: ' + this.onlyRealTime);
         this.layers = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
     }
 
-    ngOnInit(): void {
-        this.loading = true;
-
-        this.markerLayers?.eachLayer((layer) => {
-            this.markerLayers.removeLayer(layer);
+    private startPositionLoop() {
+        this.intervalSubscription = interval(10000).subscribe(() => {
+            // We don't want to fit to bounds after the first init as the user can positions it to whatever they care about
+            this.getFeedPositions(false);
         });
+    }
 
-        this.layers.push(this.clusterGroup);
-
+    ngOnInit(): void {
         this.route.params.subscribe((params) => {
             this.selectedFeed = params['id'];
-            this.titleService.setTitle(this.selectedFeed);
             this.titleService.setTitle('Feed ' + this.selectedFeed);
-
             this.getFeedPositions(true);
-            this.intervalSubscription = interval(10000).subscribe(() => {
-                // We don't want to fit to bounds after the first init as the user can positions it to whatever they care about
-                this.getFeedPositions(false);
-            });
+
+            var realtimeData = this.route.snapshot.queryParamMap.get('realtime');
+            if (realtimeData != null) {
+                this.onlyRealTime = Boolean(JSON.parse(realtimeData));
+            } 
+            this.startPositionLoop();
 
             if (!this.onlyRealTime) {
                 this.apiService.GetFeedRoutes(this.selectedFeed).subscribe({
@@ -141,7 +114,15 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
                     },
                 });
             }
+            console.log('Realtime only: ' + this.onlyRealTime);
         });
+
+        this.loading = true;
+
+        this.markerLayers = featureGroup();
+        this.vehicleLayers = featureGroup();
+
+        this.layers.push(this.markerLayers, this.vehicleLayers, this.clusterGroup);
     }
 
     private getFeedPositions(fitToBounds: boolean) {

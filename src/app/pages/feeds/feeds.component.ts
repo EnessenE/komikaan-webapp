@@ -22,7 +22,7 @@ export class FeedsComponent implements OnInit, AfterViewInit {
     dataSource: MatTableDataSource<Feed, MatPaginator> = new MatTableDataSource();
     displayedColumns: string[] = [
         'name',
-        'realtime',
+        'realTime',
         'downloadPending',
         'interval',
         'lastUpdated',
@@ -31,7 +31,8 @@ export class FeedsComponent implements OnInit, AfterViewInit {
         'agencies',
         'routes',
         'stops',
-        'trips',
+        'stopTimes',
+        'trips'
     ];
 
     @ViewChild(MatSort) sort!: MatSort;
