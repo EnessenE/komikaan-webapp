@@ -74,7 +74,7 @@ export class MainComponent implements OnInit {
     ngOnInit(): void {
         this.searchInputSubject
             .pipe(
-                debounceTime(300), // Adjust the debounce time as needed (e.g., 300ms)
+                debounceTime(600), // Adjust the debounce time as needed (e.g., 300ms)
             )
             .subscribe((searchText) => {
                 this.loading = true;

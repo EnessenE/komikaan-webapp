@@ -36,15 +36,15 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
 
     loading: boolean = false;
     selectedFeed: string = 'Unknown';
+    realtimeLayerId: number = -1;
     routes: GTFSRoute[] | undefined;
     stops: GTFSSearchStop[] | undefined;
     vehiclePositions: VehiclePosition[] | undefined;
     onlyRealTime: boolean = false;
     lastLoad: Date = new Date();
-
+    vehiclesLayer!: FeatureGroup;
     map!: Map;
     markerLayers!: FeatureGroup;
-    vehicleLayers!: FeatureGroup;
 
     layersControl: LeafletControlLayersConfig = {
         baseLayers: {},
@@ -120,9 +120,9 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         this.loading = true;
 
         this.markerLayers = featureGroup();
-        this.vehicleLayers = featureGroup();
+        this.vehiclesLayer = featureGroup();
 
-        this.layers.push(this.markerLayers, this.vehicleLayers, this.clusterGroup);
+        this.layers.push(this.markerLayers, this.vehiclesLayer, this.clusterGroup);
     }
 
     private getFeedPositions(fitToBounds: boolean) {
@@ -130,7 +130,6 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         this.loading = true;
         this.apiService.GetFeedPositions(this.selectedFeed).subscribe({
             next: (data) => {
-                this.clusterGroup.clearLayers();
                 this.vehiclePositions = data;
                 this.addVehiclesToMap(data, fitToBounds);
                 this.loading = false;
@@ -166,8 +165,9 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     }
 
     addVehiclesToMap(vehicles: VehiclePosition[], fitToBounds: boolean) {
+        this.vehiclesLayer?.clearLayers();
         vehicles.forEach((vehicle) => {
-            var stopLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 40, color: 'green' });
+            var vehicleLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 40, color: 'green' });
 
             var popup = new Popup();
             var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;
@@ -177,9 +177,10 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
                 popupText += `Trip: no trip configured`;
             }
             popup.setContent(popupText);
-            stopLayer.bindPopup(popup);
-            this.clusterGroup.addLayer(stopLayer);
+            vehicleLayer.bindPopup(popup);
+            this.vehiclesLayer.addLayer(vehicleLayer);
         });
+        this.clusterGroup.removeLayer(this.vehiclesLayer);
         // Timeout due to timing bug on the initalization for an unknown reason.
         if (fitToBounds) {
             setTimeout(() => {
