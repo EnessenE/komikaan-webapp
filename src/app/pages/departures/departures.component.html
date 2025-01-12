@@ -38,7 +38,7 @@
             }
         </div>
         <div class="col-12 overflow-auto route-box">
-            <h1>{{ stop?.routes?.length ?? "0" }} routes on this stop</h1>
+            <h1>{{ stop?.routes?.length ?? '0' }} routes on this stop</h1>
 
             @for (route of stop?.routes; track route; let index = $index) {
                 <app-route [route]="route"></app-route>
@@ -85,12 +85,27 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-2 text-right">
-                                    <app-time-only-selection
-                                        [actual]="tripStop.actualArrivalTime"
-                                        [planned]="tripStop.plannedArrivalTime"
-                                        [cancelled]="tripStop.cancelled"
-                                        [scheduleRelationship]="tripStop.scheduleRelationship"
-                                    ></app-time-only-selection>
+                                    @if (
+                                        tripStop.actualArrivalTime != tripStop.plannedArrivalTime ||
+                                        tripStop.plannedDepartureTime != tripStop.actualDepartureTime ||
+                                        tripStop.plannedArrivalTime != tripStop.plannedDepartureTime ||
+                                        tripStop.actualArrivalTime == tripStop.actualDepartureTime
+                                    ) {
+                                        <app-time-only-selection
+                                            [actual]="tripStop.actualArrivalTime"
+                                            [planned]="tripStop.plannedArrivalTime"
+                                            [cancelled]="tripStop.cancelled"
+                                        ></app-time-only-selection>
+                                        <br />
+                                    }
+                                    <span class="fw-bold">
+                                        <app-time-only-selection
+                                            [actual]="tripStop.actualDepartureTime"
+                                            [planned]="tripStop.plannedDepartureTime"
+                                            [cancelled]="tripStop.cancelled"
+                                            [scheduleRelationship]="tripStop.scheduleRelationship"
+                                        ></app-time-only-selection
+                                    ></span>
                                     @if (tripStop.realTime) {
                                         <p>
                                             Realtime:
