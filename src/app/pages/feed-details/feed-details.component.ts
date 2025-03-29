@@ -88,6 +88,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.markerLayers = featureGroup();
         this.route.params.subscribe((params) => {
             this.selectedFeed = params['id'];
             this.titleService.setTitle('Feed ' + this.selectedFeed);
@@ -96,7 +97,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
             var realtimeData = this.route.snapshot.queryParamMap.get('realtime');
             if (realtimeData != null) {
                 this.onlyRealTime = Boolean(JSON.parse(realtimeData));
-            } 
+            }
             this.startPositionLoop();
 
             if (!this.onlyRealTime) {
@@ -119,7 +120,6 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
 
         this.loading = true;
 
-        this.markerLayers = featureGroup();
         this.vehiclesLayer = featureGroup();
 
         this.layers.push(this.markerLayers, this.vehiclesLayer, this.clusterGroup);
@@ -146,55 +146,49 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         stops.forEach((stop) => {
             stop.adjustedCoordinates.forEach((coordinate) => {
                 var stopLayer = circle([coordinate.latitude, coordinate.longitude], { radius: 25 });
-
                 var popup = new Popup();
                 popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
-
                 stopLayer.bindPopup(popup);
                 this.clusterGroup.addLayer(stopLayer);
             });
         });
-        this.layers.push(this.markerLayers);
-        // Timeout due to timing bug on the initalization for an unknown reason.
-        setTimeout(() => {
-            console.log('Fitting bounds to markerLayers...');
-            this.map.fitBounds(this.clusterGroup.getBounds());
-        }, 100);
-        console.log('bounds');
         this.invalidateMap();
+        console.log('Fitting bounds to markerLayers...');
+        this.map.fitBounds(this.clusterGroup.getBounds());
+        console.log('bounds');
     }
 
     addVehiclesToMap(vehicles: VehiclePosition[], fitToBounds: boolean) {
         this.vehiclesLayer?.clearLayers();
         vehicles.forEach((vehicle) => {
-            var vehicleLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 40, color: 'green' });
+            if (vehicle.longitude && vehicle.latitude) {
+                var vehicleLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 40, color: 'green' });
 
-            var popup = new Popup();
-            var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;
-            if (vehicle.tripId != undefined) {
-                popupText += `Trip: <a href='/trip/${vehicle.tripId}'> ${vehicle.tripId}</a>`;
+                var popup = new Popup();
+                var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;
+                if (vehicle.tripId != undefined) {
+                    popupText += `Trip: <a href='/trip/${vehicle.tripId}'> ${vehicle.tripId}</a>`;
+                } else {
+                    popupText += `Trip: no trip configured`;
+                }
+                popup.setContent(popupText);
+                vehicleLayer.bindPopup(popup);
+                this.vehiclesLayer.addLayer(vehicleLayer);
             } else {
-                popupText += `Trip: no trip configured`;
+                console.log('Vehicle with bad coordinates: ' + vehicle.id);
             }
-            popup.setContent(popupText);
-            vehicleLayer.bindPopup(popup);
-            this.vehiclesLayer.addLayer(vehicleLayer);
         });
         this.clusterGroup.removeLayer(this.vehiclesLayer);
         // Timeout due to timing bug on the initalization for an unknown reason.
         if (fitToBounds) {
-            setTimeout(() => {
-                console.log('Fitting bounds to markerLayers...');
-                this.map.fitBounds(this.clusterGroup.getBounds());
-            }, 100);
+            this.invalidateMap();
+            console.log('Fitting bounds to markerLayers...');
+            this.map.fitBounds(this.vehiclesLayer.getBounds());
         }
-        console.log('bounds');
-        this.invalidateMap();
     }
 
     onMapReady(map: Map) {
         this.map = map;
-        this.markerLayers = featureGroup();
         this.invalidateMap();
     }
 

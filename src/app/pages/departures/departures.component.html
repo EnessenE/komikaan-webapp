@@ -6,36 +6,61 @@
             <p>Loading stop related data...</p>
         </div>
     } @else {
-        <div class="col-12">
-            <h1>Showing data for stop {{ stop?.name }}</h1>
-            <h2>Stop type: {{ stop?.stopType }}</h2>
+        <div class="row">
+            <div class="col-6">
+                <h1>Showing data for stop {{ stop?.name }}</h1>
+                <h2>Stop type: {{ stop?.stopType }}</h2>
 
-            <p>Description: {{ stop?.description }}</p>
-            <p>Zone: {{ stop?.zone }}</p>
-            <p>
-                This stop consists of <b>{{ stop?.mergedStops ?? 'an unknown amount of ' }}</b> merged stops.
-            </p>
-            <p>
-                <small
-                    >Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} -
-                    {{ stop?.parentStation }}</small
-                >
-                <br />
-                <small>Last updated: {{ stop?.lastUpdated }}</small>
-            </p>
-            @if (stop?.relatedStops) {
-                <h2>Related stops:</h2>
-                @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
-                    <div>
-                        <a routerLink="/stops/{{ relatedStop.id }}/{{ relatedStop.stopType }}"
-                            ><p>Related stop: {{ relatedStop?.name }}</p>
-                        </a>
-                        <p>Stop type: {{ relatedStop?.stopType }}</p>
-                    </div>
-                } @empty {
-                    <p>No related stops</p>
+                <p>Description: {{ stop?.description }}</p>
+                <p>Zone: {{ stop?.zone }}</p>
+                <p>
+                    This stop consists of <b>{{ stop?.mergedStops?.length ?? 'an unknown amount of ' }}</b> merged
+                    stops.
+                </p>
+                <p>
+                    <small
+                        >Internal mumbo jumbo: {{ selectedStop }} - {{ stop?.dataOrigin }} -
+                        {{ stop?.parentStation }}</small
+                    >
+                    <br />
+                    <small>Last updated: {{ stop?.lastUpdated }}</small>
+                </p>
+                @if (stop?.relatedStops) {
+                    <h2>Related stops:</h2>
+                    @for (relatedStop of stop?.relatedStops; track relatedStop; let index = $index) {
+                        <div>
+                            <a routerLink="/stops/{{ relatedStop.id }}/{{ relatedStop.stopType }}"
+                                ><p>Related stop: {{ relatedStop?.name }}</p>
+                            </a>
+                            <p>Stop type: {{ relatedStop?.stopType }}</p>
+                        </div>
+                    } @empty {
+                        <p>No related stops</p>
+                    }
                 }
-            }
+            </div>
+            <div class="col-6">
+                <h1>Showing data for stop {{ stop?.name }}</h1>
+                @if (stop?.mergedStops) {
+                    <h2>Merged stops:</h2>
+                    <div class="col-12 overflow-auto route-box">
+                        <p>
+                            @for (mergedStop of stop?.mergedStops; track mergedStop; let index = $index) {
+                                {{ mergedStop?.name }}<br />
+                            }
+                        </p>
+                    </div>
+                    <div
+                        (window:resize)="onResize($event)"
+                        class="leaflet stop-map-view"
+                        leaflet
+                        [leafletOptions]="options"
+                        [leafletLayers]="layers"
+                        [leafletLayersControl]="layersControl"
+                        (leafletMapReady)="onMapReady($event)"
+                    ></div>
+                }
+            </div>
         </div>
         <div class="col-12 overflow-auto route-box">
             <h1>{{ stop?.routes?.length ?? '0' }} routes on this stop</h1>
