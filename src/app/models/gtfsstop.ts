@@ -10,7 +10,6 @@ export interface GTFSStop {
     longitude: number;
     latitude: number;
 
-    mergedStops: number;
     lastUpdated: Date;
 
     zone: string;
@@ -22,6 +21,7 @@ export interface GTFSStop {
 
     departures: GTFSStopTime[];
     relatedStops: GTFSStop[];
+    mergedStops: GTFSStop[];
     routes: GTFSRoute[];
 }
 export enum StopType {

@@ -72,6 +72,7 @@ export class MainComponent implements OnInit {
     constructor(private apiService: ApiService) {}
 
     ngOnInit(): void {
+        this.markerLayers = featureGroup();
         this.searchInputSubject
             .pipe(
                 debounceTime(600), // Adjust the debounce time as needed (e.g., 300ms)
@@ -114,6 +115,7 @@ export class MainComponent implements OnInit {
 
     getNearbyStops() {
         if (navigator.geolocation) {
+            this.loading = true;
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     if (position) {
@@ -130,7 +132,6 @@ export class MainComponent implements OnInit {
                         console.log('Got a location: ' + location);
 
                         this.location = location;
-                        this.loading = true;
                         this.apiService.NearbyStops(location).subscribe({
                             next: (data) => {
                                 this.foundStopsOrigin = data;
@@ -177,7 +178,6 @@ export class MainComponent implements OnInit {
             console.log('Fitting bounds to markerLayers...');
             this.map.fitBounds(this.markerLayers.getBounds());
         }, 100);
-        console.log('bounds');
         this.invalidateMap();
     }
 
@@ -202,7 +202,6 @@ export class MainComponent implements OnInit {
 
     onMapReady(map: Map) {
         this.map = map;
-        this.markerLayers = featureGroup();
         this.invalidateMap();
     }
 
