@@ -10,6 +10,7 @@ import { Feed } from '../models/feed';
 import { GTFSShape } from '../models/gtfsshape';
 import { GTFSRoute } from '../models/gtfsroute';
 import { VehiclePosition } from '../models/vehicle-position';
+import { NearbyData } from '../models/nearby-data';
 
 @Injectable({
     providedIn: 'root',
@@ -25,8 +26,8 @@ export class ApiService {
         return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/stops/search?filter=' + text);
     }
 
-    NearbyStops(location: { lat: number; lng: number }): Observable<Array<GTFSSearchStop>> {
-        return this.http.get<Array<GTFSSearchStop>>(
+    NearbyStops(location: { lat: number; lng: number }): Observable<NearbyData> {
+        return this.http.get<NearbyData>(
             environment.apiServer + '/v1/stops/nearby?longitude=' + location.lng + '&latitude=' + location.lat,
         );
     }

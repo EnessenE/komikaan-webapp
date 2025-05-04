@@ -26,25 +26,19 @@ import { GTFSStop } from '../../models/gtfsstop';
 import { debounceTime, Subject } from 'rxjs';
 import { GTFSSearchStop } from '../../models/gtfssearchstop';
 import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
+import { NearbyData } from '../../models/nearby-data';
 
 @Component({
     selector: 'app-main',
-    imports: [
-        ErrorComponent,
-        NgbTooltipModule,
-        NgbAccordionModule,
-        StopComponent,
-        RouterLink,
-        LeafletModule,
-    ],
+    imports: [ErrorComponent, NgbTooltipModule, NgbAccordionModule, StopComponent, RouterLink, LeafletModule],
     templateUrl: './main.component.html',
-    styleUrl: './main.component.scss'
+    styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit {
     originStop: GTFSStop | undefined;
     foundStopsOrigin: GTFSSearchStop[] | undefined;
     loading: boolean = false;
-    error: HttpErrorResponse | undefined;
+    error: any | undefined;
     searchInputSubject: Subject<string> = new Subject();
 
     location: { lat: number; lng: number } | undefined;
@@ -64,10 +58,7 @@ export class MainComponent implements OnInit {
         center: latLng(52.0907, 5.1214),
     };
 
-    layers: Layer[] = [
-        tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        }),
-    ];
+    layers: Layer[] = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
 
     constructor(private apiService: ApiService) {}
 
@@ -87,10 +78,13 @@ export class MainComponent implements OnInit {
                         this.foundStopsOrigin = data;
                         this.addStopsToMap(data);
                     },
-                    error: (error) => (this.error = error),
+                    error: (error) => {
+                        console.error(error);
+                        this.error = error;
+                    },
                 });
             });
-            
+
         setTimeout(() => {
             this.invalidateMap();
         }, 100);
@@ -134,9 +128,14 @@ export class MainComponent implements OnInit {
                         this.location = location;
                         this.apiService.NearbyStops(location).subscribe({
                             next: (data) => {
-                                this.foundStopsOrigin = data;
-                                this.addStopsToMap(this.foundStopsOrigin);
-                                this.loading = false;
+                                try {
+                                    this.foundStopsOrigin = data.stops;
+                                    this.addToMap(data);
+                                    this.loading = false;
+                                } catch (error) {
+                                    console.error(error);
+                                    this.error = error;
+                                }
                             },
                             error: (error) => {
                                 this.error = error;
@@ -151,12 +150,9 @@ export class MainComponent implements OnInit {
             alert('Geolocation is not supported by this browser.');
         }
     }
-    
+
     addStopsToMap(stops: GTFSSearchStop[]) {
-        this.layers = [
-            tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            }),
-        ];
+        this.layers = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
         this.markerLayers.eachLayer((layer) => {
             this.markerLayers.removeLayer(layer);
         });
@@ -171,6 +167,47 @@ export class MainComponent implements OnInit {
                 this.markerLayers.addLayer(stopLayer);
             });
         });
+        this.layers.push(this.markerLayers);
+        this.addDefaultMarkers();
+        // Timeout due to timing bug on the initalization for an unknown reason.
+        setTimeout(() => {
+            console.log('Fitting bounds to markerLayers...');
+            this.map.fitBounds(this.markerLayers.getBounds());
+        }, 100);
+        this.invalidateMap();
+    }
+
+    addToMap(nearbyData: NearbyData) {
+        this.layers = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
+        this.markerLayers.eachLayer((layer) => {
+            this.markerLayers.removeLayer(layer);
+        });
+        nearbyData.stops.forEach((stop) => {
+            stop.adjustedCoordinates.forEach((coordinate) => {
+                var stopLayer = circle([coordinate.latitude, coordinate.longitude], { radius: 100 });
+
+                var popup = new Popup();
+                popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
+
+                stopLayer.bindPopup(popup);
+                this.markerLayers.addLayer(stopLayer);
+            });
+        });
+        nearbyData.vehicles.forEach((vehicle) => {
+            var stopLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 50, color: "green" });
+
+            var popup = new Popup();
+            var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;
+            if (vehicle.tripId != undefined) {
+                popupText += `Trip: <a href='/trip/${vehicle.tripId}'> ${vehicle.tripId}</a>`;
+            } else {
+                popupText += `Trip: no trip configured`;
+            }
+            popup.setContent(popupText);
+            stopLayer.bindPopup(popup);
+            this.markerLayers.addLayer(stopLayer);
+        });
+
         this.layers.push(this.markerLayers);
         this.addDefaultMarkers();
         // Timeout due to timing bug on the initalization for an unknown reason.

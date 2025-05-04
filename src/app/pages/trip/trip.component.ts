@@ -27,15 +27,9 @@ import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet
 
 @Component({
     selector: 'app-trip',
-    imports: [
-    TimeOnlySelectionComponent,
-    TrackSelectionComponent,
-    RouterLink,
-    LeafletModule,
-    ClipboardModule
-],
+    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, LeafletModule, ClipboardModule],
     templateUrl: './trip.component.html',
-    styleUrl: './trip.component.scss'
+    styleUrl: './trip.component.scss',
 })
 export class TripComponent {
     trip: GTFSTrip | undefined;
@@ -50,6 +44,7 @@ export class TripComponent {
     ) {}
 
     ngOnInit(): void {
+        this.markerLayers = featureGroup();
         this.loadData();
     }
 
@@ -68,10 +63,7 @@ export class TripComponent {
         center: latLng(52.0907, 5.1214),
     };
 
-    layers: Layer[] = [
-        tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        }),
-    ];
+    layers: Layer[] = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
 
     convertToDate(dateString: string): Date {
         return new Date(dateString);
@@ -98,11 +90,10 @@ export class TripComponent {
                         this.realTime = false;
                     }
                     this.dataRetrieved();
-                    if (this.trip.headsign){
+                    if (this.trip.headsign) {
                         this.titleService.setTitle(this.trip.headsign);
-                    }
-                    else{
-                        this.titleService.setTitle(this.trip?.routeShortName + " - " + this.trip?.routeLongName);
+                    } else {
+                        this.titleService.setTitle(this.trip?.routeShortName + ' - ' + this.trip?.routeLongName);
                     }
                 },
             });
@@ -110,14 +101,13 @@ export class TripComponent {
     }
 
     dataRetrieved() {
-        var routeLine: LatLng[] = [];
-
-        this.markerLayers.eachLayer((layer) => {
-            this.markerLayers.removeLayer(layer);
-        });
-        this.trip!.stops?.forEach((stop) => {
-            var stopLayer = marker([stop.latitude, stop.longitude], {
-                // Workaround https://github.com/bluehalo/ngx-leaflet?tab=readme-ov-file#angular-cli-marker-workaround
+        const routeLine: LatLng[] = [];
+    
+        // Clear previous markers
+        this.markerLayers.clearLayers();
+    
+        this.trip?.stops?.forEach((stop) => {
+            const stopLayer = marker([stop.latitude, stop.longitude], {
                 icon: icon({
                     ...Icon.Default.prototype.options,
                     iconUrl: 'assets/marker-icon.png',
@@ -125,32 +115,50 @@ export class TripComponent {
                     shadowUrl: 'assets/marker-shadow.png',
                 }),
             });
-
-            var popup = new Popup();
-            popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
-
+    
+            const popup = new Popup();
+            popup.setContent(`<a href="/stops/${stop.id}/${stop.stopType}">${stop.name}</a>`);
             stopLayer.bindPopup(popup);
             this.markerLayers.addLayer(stopLayer);
-
-            if (!(this.trip?.shapes && this.trip?.shapes.length > 0)) {
-                routeLine.push(latLng(stop.latitude, stop.longitude));
+    
+            // If no shape data, fallback to stops for routing
+            if (!(this.trip?.shapes?.length)) {
+                if (stop.latitude != null && stop.longitude != null) {
+                    routeLine.push(latLng(stop.latitude, stop.longitude));
+                }
             }
         });
-        this.trip!.shapes?.forEach((shape) => {
-            routeLine.push(latLng(shape.latitude, shape.longitude));
+    
+        this.trip?.shapes?.forEach((shape) => {
+            if (shape.latitude != null && shape.longitude != null) {
+                routeLine.push(latLng(shape.latitude, shape.longitude));
+            }
         });
-
+    
         this.markLiveLocation();
-
-        var lineColor = 'green';
-
-        var line = polyline(routeLine, { color: lineColor });
-        this.layersControl.overlays[stop.name] = line;
+    
+        const lineColor = 'green';
+        const line = polyline(routeLine, { color: lineColor });
+    
+        // Add polyline to overlays and layers
+        this.layersControl.overlays['Route Line'] = line;
         this.layers.push(line);
-
         this.layers.push(this.markerLayers);
-        this.invalidateMap();
+    
+        this.invalidateMap(); // ensure map is valid and updated
+    
+        // Delay fitBounds to ensure map is ready
+        setTimeout(() => {
+            if (this.map && this.markerLayers.getLayers().length > 0) {
+                const bounds = this.markerLayers.getBounds();
+                this.map.fitBounds(bounds, { padding: [20, 20] });
+                console.log('Fitting bounds to markerLayers...');
+            } else {
+                console.warn('Map or markerLayers not ready for fitBounds');
+            }
+        }, 100);
     }
+    
 
     markLiveLocation() {
         if (this.trip?.latitude && this.trip.longitude) {
@@ -171,22 +179,17 @@ export class TripComponent {
                 );
                 positionLayer.bindPopup(popup);
             }
-
             this.markerLayers.addLayer(positionLayer);
         }
     }
 
     onMapReady(map: Map) {
         this.map = map;
-        this.markerLayers = featureGroup();
+        this.invalidateMap();
     }
 
     invalidateMap(): void {
         this.map?.invalidateSize();
-        setTimeout(() => {
-            console.log('Fitting bounds to markerLayers...');
-            this.map.fitBounds(this.markerLayers.getBounds());
-        }, 100);
     }
 
     onResize(event: any) {
