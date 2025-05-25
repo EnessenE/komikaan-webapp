@@ -11,6 +11,7 @@ import { GTFSShape } from '../models/gtfsshape';
 import { GTFSRoute } from '../models/gtfsroute';
 import { VehiclePosition } from '../models/vehicle-position';
 import { NearbyData } from '../models/nearby-data';
+import { Alert } from '../models/gtfsalert';
 
 @Injectable({
     providedIn: 'root',
@@ -48,6 +49,11 @@ export class ApiService {
         return this.http.get<Array<GTFSRoute>>(environment.apiServer + '/v1/feeds/' + feed + '/routes');
     }
 
+    // Add this new method for alerts
+    GetFeedAlerts(feed: string): Observable<Array<Alert>> {
+        return this.http.get<Array<Alert>>(environment.apiServer + '/v1/feeds/' + feed + '/alerts');
+    }
+    
     GetFeedPositions(feed: string): Observable<Array<VehiclePosition>> {
         return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + feed + '/positions');
     }

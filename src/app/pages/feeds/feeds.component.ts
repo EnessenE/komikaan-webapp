@@ -31,7 +31,8 @@ export class FeedsComponent implements OnInit, AfterViewInit {
         'agencies',
         'routes',
         'stops',
-        'stopTimes',
+        'alerts',
+        'vehicles',
         'trips'
     ];
 

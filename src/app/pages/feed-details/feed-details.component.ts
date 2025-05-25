@@ -24,6 +24,7 @@ import {
 import { LoadingComponent } from '../../comps/loading/loading.component';
 import { CommonModule } from '@angular/common';
 import { interval, Subscription } from 'rxjs';
+import { Alert } from '../../models/gtfsalert';
 
 @Component({
     selector: 'app-feed-details',
@@ -40,6 +41,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     routes: GTFSRoute[] | undefined;
     stops: GTFSSearchStop[] | undefined;
     vehiclePositions: VehiclePosition[] | undefined;
+    alerts: Alert[] | undefined;
     onlyRealTime: boolean = false;
     lastLoad: Date = new Date();
     vehiclesLayer!: FeatureGroup;
@@ -113,6 +115,18 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
                         this.addStopsToMap(data);
                         this.loading = false;
                     },
+                });
+                // Add this block to fetch alerts
+                this.apiService.GetFeedAlerts(this.selectedFeed).subscribe({
+                    next: (data) => {
+                        this.alerts = data;
+                        this.loading = false; // Set loading to false after all data is fetched
+                    },
+                    error: (err) => {
+                        console.error('Error fetching feed alerts:', err);
+                        this.alerts = []; // Set to empty array on error to avoid undefined issues in template
+                        this.loading = false;
+                    }
                 });
             }
             console.log('Realtime only: ' + this.onlyRealTime);

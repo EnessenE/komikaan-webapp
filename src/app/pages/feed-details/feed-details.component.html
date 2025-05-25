@@ -1,81 +1,120 @@
 <div class="container-fluid grid">
-    <div class="col-12">
-        <h1>Showing data for feed {{ selectedFeed }}</h1>
-        @if (!onlyRealTime) {
-            <p>
-                Stops:
-                @if (stops?.length) {
-                    {{ stops?.length }}
-                } @else {
-                    <app-loading></app-loading>
-                }
-            </p>
-            <p>
-                Routes:
-                @if (routes?.length) {
-                    {{ routes?.length }}
-                } @else {
-                    <app-loading></app-loading>
-                }
-            </p>
-        }
-        <p>
-            Realtime vehicles:
-            @if (vehiclePositions?.length || vehiclePositions != null) {
-                {{ vehiclePositions?.length }}
-            } @else {
-                <app-loading></app-loading>
-            }
-        </p>
-        <p>
-            Last load:
-            @if (!loading) {
-                {{ lastLoad | date: 'EEEE, MMMM d, y, HH:mm:ss' }}
-            } @else {
-                <app-loading></app-loading>
-            }
-        </p>
-    </div>
-    <div class="col-12">
-        <div
-            (window:resize)="onResize($event)"
-            class="leaflet"
-            [ngClass]="onlyRealTime ? 'realtime-only-map-view' : 'stop-map-view'"
-            leaflet
-            [leafletOptions]="options"
-            [leafletLayers]="layers"
-            [leafletLayersControl]="layersControl"
-            (leafletMapReady)="onMapReady($event)"
-        ></div>
-    </div>
-    @if (!onlyRealTime) {
+    <div class="row">
         <div class="col-12">
-            <table class="table table-striped table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Short name</th>
-                        <th scope="col">Long name</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Agency</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Url</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (route of routes; track route; let index = $index) {
-                        <tr>
-                            <th scope="row">{{ route.shortName }}</th>
-                            <td>{{ route.longName }}</td>
-                            <td>{{ route.type }}</td>
-                            <td>{{ route.agency }}</td>
-                            <td>{{ route.description }}</td>
-                            <td>{{ route.url }}</td>
-                        </tr>
-                    } @empty {
-                        <p>No feeds loaded to display!</p>
+            <h1>Showing data for feed {{ selectedFeed }}</h1>
+            @if (!onlyRealTime) {
+                <p>
+                    Stops:
+                    @if (stops?.length) {
+                        {{ stops?.length }}
+                    } @else {
+                        <app-loading></app-loading>
                     }
-                </tbody>
-            </table>
+                </p>
+                <p>
+                    Routes:
+                    @if (routes?.length) {
+                        {{ routes?.length }}
+                    } @else {
+                        <app-loading></app-loading>
+                    }
+                </p>
+            }
+            <p>
+                Realtime vehicles:
+                @if (vehiclePositions?.length || vehiclePositions != null) {
+                    {{ vehiclePositions?.length }}
+                } @else {
+                    <app-loading></app-loading>
+                }
+            </p>
+            <p>
+                Last load:
+                @if (!loading) {
+                    {{ lastLoad | date: 'EEEE, MMMM d, y, HH:mm:ss' }}
+                } @else {
+                    Loading!
+                }
+            </p>
         </div>
-    }
+        <div class="col-12">
+            <div
+                (window:resize)="onResize($event)"
+                class="leaflet"
+                [ngClass]="onlyRealTime ? 'realtime-only-map-view' : 'stop-map-view'"
+                leaflet
+                [leafletOptions]="options"
+                [leafletLayers]="layers"
+                [leafletLayersControl]="layersControl"
+                (leafletMapReady)="onMapReady($event)"
+            ></div>
+        </div>
+        @if (!onlyRealTime) {
+            <div class="col-6 overflow-auto route-box">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Short name</th>
+                            <th scope="col">Long name</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Agency</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Url</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (route of routes; track route; let index = $index) {
+                            <tr>
+                                <th scope="row">{{ route.shortName }}</th>
+                                <td>{{ route.longName }}</td>
+                                <td>{{ route.type }}</td>
+                                <td>{{ route.agency }}</td>
+                                <td>{{ route.description }}</td>
+                                <td>{{ route.url }}</td>
+                            </tr>
+                        } @empty {
+                            <p>No feeds loaded to display!</p>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- This second col-6 will now display alerts -->
+            <div class="col-6 overflow-auto route-box">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Header</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Cause</th>
+                            <th scope="col">Effect</th>
+                            <th scope="col">Severity</th>
+                            <th scope="col">URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (alert of alerts; track alert.id; let index = $index) {
+                            <tr>
+                                <td [innerHTML]="alert.headerText"></td> <!-- Use innerHTML if text contains HTML -->
+                                <td [innerHTML]="alert.descriptionText"></td>
+                                <td>{{ alert.cause }}</td>
+                                <td>{{ alert.effect }}</td>
+                                <td>{{ alert.severityLevel }}</td>
+                                <td>
+                                    @if(alert.url) {
+                                        <a [href]="alert.url" target="_blank">Link</a>
+                                    } @else {
+                                        N/A
+                                    }
+                                </td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="6">No alerts available for this feed.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 </div>

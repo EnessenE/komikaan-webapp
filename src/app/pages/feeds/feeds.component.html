@@ -187,20 +187,36 @@
                     {{ element.stops }}
                 </td>
             </ng-container>
-            <ng-container matColumnDef="stopTimes">
+            <ng-container matColumnDef="alerts">
                 <th
                     mat-header-cell
                     *matHeaderCellDef
                     mat-sort-header
-                    sortActionDescription="Sort by stoptimes"
+                    sortActionDescription="Sort by alerts"
                 >
-                    Stop times
+                    Alerts
                 </th>
                 <td
                     mat-cell
                     *matCellDef="let element"
                 >
-                    {{ element.stopTimes }}
+                    {{ element.alerts }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="vehicles">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by vehicles"
+                >
+                    Vehicles
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.vehicles }}
                 </td>
             </ng-container>
             <ng-container matColumnDef="trips">

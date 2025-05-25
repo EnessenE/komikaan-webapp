@@ -39,6 +39,7 @@ export interface GTFSTrip {
     occupancyStatus?: string | null;
     occupancyPercentage?: number | null;
     measurementTime?: string | null;
+    enrouteTo?: string | null;
 
     targetStopId?: string | null;
     targetStopName?: string | null;
