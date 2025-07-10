@@ -1,0 +1,34 @@
+<h1>Showing agencies for feed {{ selectedFeed }}</h1>
+<div class="container-fluid grid">
+    <div class="row">
+        <div class="col-12">
+            <div class="col-12 overflow-auto route-box">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">URL</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Timezone</th>
+                            <th scope="col">Last updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (agency of agencies; track agency; let index = $index) {
+                            <tr>                    
+
+                                <th scope="row">{{ agency.name }}</th>
+                                <td><a href="{{agency.url}}">{{ agency.url }}</a></td>
+                                <td>{{ agency.phone }}</td>
+                                <td>{{ agency.timezone }}</td>
+                                <td>{{ agency.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm' }}</td>
+                            </tr>
+                        } @empty {
+                            <p>No feeds loaded to display!</p>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

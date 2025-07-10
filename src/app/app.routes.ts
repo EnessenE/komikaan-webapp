@@ -5,6 +5,7 @@ import { TripComponent } from './pages/trip/trip.component';
 import { FeedsComponent } from './pages/feeds/feeds.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { FeedDetailsComponent } from './pages/feed-details/feed-details.component';
+import { AgenciesComponent } from './pages/agencies/agencies.component';
 
 export const routes: Routes = [
     {
@@ -18,6 +19,10 @@ export const routes: Routes = [
     {
         path: 'feed/:id',
         component: FeedDetailsComponent,
+    },
+    {
+        path: 'agencies/:id',
+        component: AgenciesComponent,
     },
     {
         path: 'feeds',

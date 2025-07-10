@@ -12,6 +12,7 @@ import { GTFSRoute } from '../models/gtfsroute';
 import { VehiclePosition } from '../models/vehicle-position';
 import { NearbyData } from '../models/nearby-data';
 import { Alert } from '../models/gtfsalert';
+import { GTFSAgency } from '../models/gtfsagency';
 
 @Injectable({
     providedIn: 'root',
@@ -47,6 +48,10 @@ export class ApiService {
 
     GetFeedRoutes(feed: string): Observable<Array<GTFSRoute>> {
         return this.http.get<Array<GTFSRoute>>(environment.apiServer + '/v1/feeds/' + feed + '/routes');
+    }
+
+    GetAgencies(feed: string): Observable<Array<GTFSAgency>> {
+        return this.http.get<Array<GTFSAgency>>(environment.apiServer + '/v1/feeds/' + feed + '/agencies');
     }
 
     // Add this new method for alerts

@@ -91,22 +91,6 @@
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="lastUpdated">
-                <th
-                    mat-header-cell
-                    *matHeaderCellDef
-                    mat-sort-header
-                    sortActionDescription="Sort by lastUpdated"
-                >
-                    Last successfull update
-                </th>
-                <td
-                    mat-cell
-                    *matCellDef="let element"
-                >
-                    {{ element.lastUpdated | date: 'EEEE, MMMM d, y, HH:mm' }}
-                </td>
-            </ng-container>
             <ng-container matColumnDef="lastChecked">
                 <th
                     mat-header-cell
@@ -123,20 +107,86 @@
                     {{ element.lastChecked | date: 'EEEE, MMMM d, y, HH:mm' }}
                 </td>
             </ng-container>
-            <ng-container matColumnDef="lastAttempt">
+
+            <ng-container matColumnDef="state">
                 <th
                     mat-header-cell
                     *matHeaderCellDef
                     mat-sort-header
-                    sortActionDescription="Sort by lastAttempt"
+                    sortActionDescription="Sort by state"
                 >
-                    Last failed attempt
+                    State
                 </th>
                 <td
                     mat-cell
                     *matCellDef="let element"
                 >
-                    {{ element.lastAttempt | date: 'EEEE, MMMM d, y, HH:mm' }}
+                    <b>{{ element.state }}</b>
+                </td>
+              </ng-container>
+            <ng-container matColumnDef="lastImportStart">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by lastImportStart"
+                >
+                    Import started at
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.lastImportStart | date: 'EEEE, MMMM d, y, HH:mm' }}
+                </td>
+              </ng-container>
+            <ng-container matColumnDef="lastImportSuccess">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by lastImportSuccess"
+                >
+                    Import succeeded at
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.lastImportSuccess | date: 'EEEE, MMMM d, y, HH:mm' }}
+                </td>
+              </ng-container>
+            <ng-container matColumnDef="lastImportFailure">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by lastImportFailure"
+                >
+                    Last import failure
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.lastImportFailure | date: 'EEEE, MMMM d, y, HH:mm' }}
+                </td>          
+              </ng-container>
+
+            <ng-container matColumnDef="lastCheckFailure">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    sortActionDescription="Sort by lastCheckFailure"
+                >
+                    lastCheckFailure
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                    {{ element.lastCheckFailure | date: 'EEEE, MMMM d, y, HH:mm' }}
                 </td>
             </ng-container>
             <ng-container matColumnDef="agencies">
@@ -152,7 +202,7 @@
                     mat-cell
                     *matCellDef="let element"
                 >
-                    {{ element.agencies }}
+                    <a routerLink="/agencies/{{ element.name }}">{{ element.agencies }}</a>
                 </td>
             </ng-container>
             <ng-container matColumnDef="routes">
