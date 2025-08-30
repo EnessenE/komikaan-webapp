@@ -46,7 +46,7 @@
                     <div class="col-12 overflow-auto route-box">
                         <p>
                             @for (mergedStop of stop?.mergedStops; track mergedStop; let index = $index) {
-                                {{ mergedStop?.name }} from <b>{{ mergedStop?.dataOrigin }}</b>, id: {{ mergedStop?.id }}<br />
+                                {{ mergedStop?.name }} from <b>{{ mergedStop?.dataOrigin }}</b>, id: {{ mergedStop?.id }}, parent: {{mergedStop?.parentStation}}<br />
                             }
                         </p>
                     </div>
