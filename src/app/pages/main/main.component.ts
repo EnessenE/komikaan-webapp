@@ -45,7 +45,8 @@ export class MainComponent implements OnInit {
 
     map!: Map;
     markerLayers!: FeatureGroup;
-
+    gettingLocation: boolean = false;
+    
     layersControl: LeafletControlLayersConfig = {
         baseLayers: {},
         overlays: {},
@@ -109,9 +110,11 @@ export class MainComponent implements OnInit {
 
     getNearbyStops() {
         if (navigator.geolocation) {
-            this.loading = true;
+            console.log('Getting current location');
+            this.gettingLocation = true;
             navigator.geolocation.getCurrentPosition(
-                (position) => {
+                (position) => {                        
+                    this.gettingLocation = false;
                     if (position) {
                         console.log(
                             'Latitude: ' + position.coords.latitude + 'Longitude: ' + position.coords.longitude,
@@ -126,6 +129,8 @@ export class MainComponent implements OnInit {
                         console.log('Got a location: ' + location);
 
                         this.location = location;
+                        this.loading = true;
+
                         this.apiService.NearbyStops(location).subscribe({
                             next: (data) => {
                                 try {
@@ -144,7 +149,10 @@ export class MainComponent implements OnInit {
                         });
                     }
                 },
-                (error) => console.log(error),
+                (error) => {
+                    this.gettingLocation = false;
+                    console.log(error)
+                },
             );
         } else {
             alert('Geolocation is not supported by this browser.');
@@ -194,7 +202,7 @@ export class MainComponent implements OnInit {
             });
         });
         nearbyData.vehicles.forEach((vehicle) => {
-            var stopLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 50, color: "green" });
+            var stopLayer = circle([vehicle.latitude, vehicle.longitude], { radius: 50, color: 'green' });
 
             var popup = new Popup();
             var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;

@@ -50,6 +50,10 @@
                     [value]="originStop?.name"
                     (input)="onSearchInputChangeOrigin($event)"
                 />
+                @if (gettingLocation)
+                {
+                    <p>Getting your location..........</p>
+                }
                 @if (loading) {
                     <div>
                         <div
