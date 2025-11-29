@@ -1,142 +1,164 @@
-import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../../services/api.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
-import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
-import { GTFSStop } from '../../models/gtfsstop';
 import { Title } from '@angular/platform-browser';
-import { DatePipe } from '@angular/common';
-import { ErrorComponent } from '../../comps/error/error.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RouteComponent } from '../../comps/route/route.component';
-import { LoadingComponent } from '../../comps/loading/loading.component';
-import { LeafletControlLayersConfig, LeafletModule } from '@bluehalo/ngx-leaflet';
+import { Subscription } from 'rxjs';
+import { NgbCollapseModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+
+// Leaflet
 import {
     FeatureGroup,
-    Icon,
-    LatLngBounds,
-    Layer,
     Map,
-    Popup,
     circle,
     featureGroup,
-    icon,
     latLng,
-    marker,
     tileLayer,
+    Layer,
 } from 'leaflet';
-import { GTFSSearchStop } from '../../models/gtfssearchstop';
+import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
+
+// Project Imports
+import { ApiService } from '../../services/api.service';
+import { GTFSStop } from '../../models/gtfsstop';
+import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
+import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
+import { LoadingComponent } from '../../comps/loading/loading.component';
+import { ErrorComponent } from '../../comps/error/error.component';
+import { RouteComponent } from '../../comps/route/route.component';
 
 @Component({
     selector: 'app-departures',
+    standalone: true,
     imports: [
+        CommonModule,
+        RouterLink,
+        LeafletModule,
+        NgbCollapseModule,
+        NgbTooltipModule,
         TimeOnlySelectionComponent,
         TrackSelectionComponent,
-        RouterLink,
-        ErrorComponent,
-        RouteComponent,
         LoadingComponent,
-        LeafletModule,
+        ErrorComponent,
+        RouteComponent
     ],
     templateUrl: './departures.component.html',
-    styleUrl: './departures.component.scss',
+    styleUrls: ['./departures.component.scss'],
 })
-export class DeparturesComponent implements OnInit {
+export class DeparturesComponent implements OnInit, OnDestroy {
     stop: GTFSStop | undefined;
-    selectedStop: string | undefined;
-    loading: boolean = false;
+    selectedStopId: string | undefined;
+    loading = false;
     error: HttpErrorResponse | undefined;
 
+    // UI States
+    isSourcesCollapsed = true;
+    isRoutesCollapsed = true;
+
+    private routeSub: Subscription | undefined;
+
+    // Map Config
     map!: Map;
-    markerLayers!: FeatureGroup;
-
-    layersControl: LeafletControlLayersConfig = {
-        baseLayers: {},
-        overlays: {},
-    };
-
-    mapFitToBounds!: LatLngBounds;
-
+    markerLayers: FeatureGroup = featureGroup();
     options = {
-        zoom: 13,
+        zoom: 15,
         center: latLng(52.0907, 5.1214),
+        zoomControl: false,
+        attributionControl: false
     };
-
-    layers: Layer[] = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
+    baseLayer = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    layers: Layer[] = [this.baseLayer, this.markerLayers];
+    layersControl: LeafletControlLayersConfig = { baseLayers: {}, overlays: {} };
 
     constructor(
         private apiService: ApiService,
         private route: ActivatedRoute,
-        private titleService: Title,
+        private titleService: Title
     ) {}
 
-    convertToDate(dateString: string): Date {
-        return new Date(dateString);
-    }
-
     ngOnInit(): void {
-        this.markerLayers = featureGroup();
+        this.routeSub = this.route.params.subscribe((params) => {
+            this.selectedStopId = params['id'];
+            // Reset collapse states on navigation
+            this.isSourcesCollapsed = true;
+            this.isRoutesCollapsed = true;
+            this.loadStopData(params['id'], params['type']);
+        });
+    }
+
+    ngOnDestroy(): void {
+        if (this.routeSub) this.routeSub.unsubscribe();
+    }
+
+    loadStopData(id: string, type: string): void {
         this.loading = true;
-        var routeSub = this.route.params.subscribe((params) => {
-            this.loading = true;
-            this.stop = undefined;
-            this.selectedStop = params['id'];
-            this.apiService.GetStop(params['id'], params['type']).subscribe({
-                next: (data) => {
-                    this.loading = false;
-                    this.stop = data as GTFSStop;
-                    this.titleService.setTitle(this.stop.name);
-                    this.addStopsToMap(this.stop.mergedStops);
-                },
-                error: (error) => {
-                    this.loading = false;
-                    this.error = error;
-                },
-            });
+        this.stop = undefined;
+        this.error = undefined;
+
+        this.apiService.GetStop(id, type).subscribe({
+            next: (data) => {
+                this.loading = false;
+                this.stop = data as GTFSStop;
+                this.titleService.setTitle(this.stop.name || 'Stop Details');
+                this.updateMapMarkers(this.stop.mergedStops && this.stop.mergedStops.length > 0 ? this.stop.mergedStops : [this.stop]);
+            },
+            error: (error) => {
+                this.loading = false;
+                this.error = error;
+            },
         });
     }
 
-    addStopsToMap(stops: GTFSStop[]) {
-        console.log("Adding stops")
-        this.layers = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')];
-        this.markerLayers.eachLayer((layer) => {
-            this.markerLayers.removeLayer(layer);
-        });
-        stops.forEach((stop) => {
-            if (stop.latitude && stop.longitude){
-            var stopLayer = circle([stop.latitude, stop.longitude], { radius: 100 });
-
-            var popup = new Popup();
-            popup.setContent(stop.name);
-
-            stopLayer.bindPopup(popup);
-            this.markerLayers.addLayer(stopLayer);
-            }
-            else{
-                console.log("No valid stop coordinates for: " + stop.name)
+    // --- Map Logic ---
+    updateMapMarkers(stops: GTFSStop[]): void {
+        this.markerLayers.clearLayers();
+        stops.forEach((s) => {
+            if (s.latitude && s.longitude) {
+                this.markerLayers.addLayer(
+                    circle([s.latitude, s.longitude], { radius: 30, color: '#3b82f6', fillOpacity: 0.5 })
+                        .bindPopup(`<strong>${s.name}</strong><br>${s.dataOrigin}`)
+                );
             }
         });
-        this.layers.push(this.markerLayers);
-
         setTimeout(() => {
-            console.log('Fitting bounds to markerLayers...');
-            this.markerLayers.eachLayer((aa) => {
-                console.log(aa)
-            });
-            this.map.fitBounds(this.markerLayers.getBounds());
-        }, 100);
-        this.invalidateMap();
+            if (this.map && this.markerLayers.getLayers().length > 0) {
+                this.map.fitBounds(this.markerLayers.getBounds(), { padding: [20, 20] });
+            }
+        }, 200);
     }
 
-    onMapReady(map: Map) {
+    onMapReady(map: Map): void {
         this.map = map;
-        this.invalidateMap();
+        this.map.invalidateSize();
     }
 
-    invalidateMap(): void {
+    onResize(): void {
         this.map?.invalidateSize();
     }
-    onResize(event: any) {
-        this.invalidateMap();
+
+    // --- UI Helpers ---
+
+    getStopTypeIcon(type: string | undefined): string {
+        const t = type?.toLowerCase() || '';
+        if (t.includes('bus')) return 'bi-bus-front';
+        if (t.includes('tram')) return 'bi-train-lightrail-front';
+        if (t.includes('metro') || t.includes('subway')) return 'bi-train-subway-front';
+        if (t.includes('rail') || t.includes('train')) return 'bi-train-front';
+        if (t.includes('ferry') || t.includes('boat')) return 'bi-water';
+        return 'bi-geo-alt';
+    }
+
+    getStopTypeColor(type: string | undefined): string {
+        const t = type?.toLowerCase() || '';
+        if (t.includes('bus')) return 'text-primary';
+        if (t.includes('tram')) return 'text-success';
+        if (t.includes('metro')) return 'text-warning';
+        if (t.includes('rail')) return 'text-info';
+        return 'text-secondary';
+    }
+
+    isNewDay(current: any, previous: any): boolean {
+        if (!previous || !current.actualArrivalTime) return false;
+        return new Date(current.actualArrivalTime).getDate() !== new Date(previous.actualArrivalTime).getDate();
     }
 }

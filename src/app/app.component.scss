@@ -1,27 +1,65 @@
-.header{
-    background-color: rgba(128, 128, 128, 0.137);
-    width: 100%
+// Variables
+$header-height: 70px;
+$blur-bg: rgba(255, 255, 255, 0.9);
+
+.app-header {
+    background-color: $blur-bg;
+    backdrop-filter: blur(10px); // Glass effect
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    min-height: $header-height;
+    z-index: 1050; // Ensure it sits above Leaflet maps
 }
 
-.rainbow {
-    text-align: center;
-    font-weight: 900;
+.navbar-brand {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif; // Or your preferred font
+    letter-spacing: -0.5px;
+    transition: color 0.2s;
+    
+    &:hover {
+        color: #3b82f6 !important; // Blue hover
+    }
 }
-.rainbow_text_animated {
-    background: linear-gradient(to right, #6666ff, #0099ff , #00ff00, #ff3399, #6666ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: rainbow_animation 6s ease-in-out infinite;
-    background-size: 400% 100%;
+
+// Rainbow Badge Animation
+.rainbow-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 0.35em 0.8em;
+    
+    // The Gradient
+    background: linear-gradient(
+        45deg, 
+        #ff0000, 
+        #ff7300, 
+        #fffb00, 
+        #48ff00, 
+        #00ffd5, 
+        #002bff, 
+        #7a00ff, 
+        #ff00c8, 
+        #ff0000
+    );
+    background-size: 400%;
+    
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    animation: rainbow_animation 10s linear infinite;
+    border: 1px solid rgba(255,255,255,0.5);
 }
 
 @keyframes rainbow_animation {
-    0%,100% {
-        background-position: 0 0;
-    }
+    0% { background-position: 0 0; }
+    50% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+}
 
-    50% {
-        background-position: 100% 0;
-    }
+// Vertical Divider customization
+.vr {
+    align-self: center;
+    height: 25px;
+    background-color: #dee2e6;
+    opacity: 1;
 }

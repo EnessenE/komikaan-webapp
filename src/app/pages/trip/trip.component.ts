@@ -1,198 +1,237 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ApiService } from '../../services/api.service';
-import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
-import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
-import { GTFSTrip } from '../../models/gtfstrip';
-import { ClipboardModule } from '@angular/cdk/clipboard';
-import {
-    FeatureGroup,
-    Icon,
-    LatLng,
-    LatLngBounds,
-    Layer,
-    Map,
-    Popup,
-    circle,
-    featureGroup,
-    icon,
-    latLng,
-    marker,
-    polyline,
-    tileLayer,
-} from 'leaflet';
 import { Title } from '@angular/platform-browser';
-import { DatePipe } from '@angular/common';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { Subscription } from 'rxjs';
+
+// Leaflet
+import {
+  FeatureGroup,
+  Icon,
+  LatLng,
+  Layer,
+  Map,
+  circle,
+  featureGroup,
+  icon,
+  latLng,
+  marker,
+  polyline,
+  tileLayer,
+} from 'leaflet';
 import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 
+// Project Imports
+import { ApiService } from '../../services/api.service';
+import { GTFSTrip, GTFSTripStop } from '../../models/gtfstrip';
+import { TimeOnlySelectionComponent } from '../../comps/time-only-selection/time-only-selection.component';
+import { TrackSelectionComponent } from '../../comps/track-selection/track-selection.component';
+import { LoadingComponent } from '../../comps/loading/loading.component';
+
 @Component({
-    selector: 'app-trip',
-    imports: [TimeOnlySelectionComponent, TrackSelectionComponent, RouterLink, LeafletModule, ClipboardModule],
-    templateUrl: './trip.component.html',
-    styleUrl: './trip.component.scss',
+  selector: 'app-trip',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    LeafletModule,
+    ClipboardModule,
+    TimeOnlySelectionComponent,
+    TrackSelectionComponent,
+    LoadingComponent
+  ],
+  templateUrl: './trip.component.html',
+  styleUrls: ['./trip.component.scss'],
 })
-export class TripComponent {
-    trip: GTFSTrip | undefined;
-    selectedTrip: string | undefined;
-    loading: boolean = false;
-    realTime: boolean | undefined = undefined;
+export class TripComponent implements OnInit, OnDestroy {
+  trip: GTFSTrip | undefined;
+  loading: boolean = false;
+  realTime: boolean | undefined = undefined;
+  showDetails = false;
 
-    constructor(
-        private apiService: ApiService,
-        private route: ActivatedRoute,
-        private titleService: Title,
-    ) {}
+  private routeSub: Subscription | undefined;
 
-    ngOnInit(): void {
-        this.markerLayers = featureGroup();
-        this.loadData();
+  // Map Config
+  map: Map | undefined;
+  markerLayers: FeatureGroup = featureGroup();
+  routeLineLayer: FeatureGroup = featureGroup();
+  
+  options = {
+    zoom: 12,
+    center: latLng(52.0907, 5.1214),
+    zoomControl: true,
+    attributionControl: false
+  };
+
+  baseLayer = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+  layers: Layer[] = [this.baseLayer, this.routeLineLayer, this.markerLayers];
+  
+  layersControl: LeafletControlLayersConfig = {
+    baseLayers: {},
+    overlays: {
+      'Stops & Vehicle': this.markerLayers,
+      'Route Line': this.routeLineLayer
+    },
+  };
+
+  constructor(
+    private apiService: ApiService,
+    private route: ActivatedRoute,
+    private titleService: Title,
+  ) {}
+
+  ngOnInit(): void {
+    this.routeSub = this.route.params.subscribe((params) => {
+      this.loadData(params['id']);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSub) this.routeSub.unsubscribe();
+  }
+
+  refreshData() {
+    if (this.trip?.id) {
+      this.loadData(this.trip.id);
     }
+  }
 
-    map!: Map;
-    markerLayers!: FeatureGroup;
+  loadData(tripId: string) {
+    this.trip = undefined;
+    this.loading = true;
+    
+    // Clear layers immediately
+    this.markerLayers.clearLayers();
+    this.routeLineLayer.clearLayers();
 
-    layersControl: LeafletControlLayersConfig = {
-        baseLayers: {},
-        overlays: {},
-    };
+    this.titleService.setTitle('Loading Trip...');
 
-    mapFitToBounds!: LatLngBounds;
+    this.apiService.GetTrip(tripId).subscribe({
+      next: (data) => {
+        this.loading = false;
+        this.trip = data;
+        this.realTime = !!this.trip.measurementTime;
 
-    options = {
-        zoom: 10,
-        center: latLng(52.0907, 5.1214),
-    };
+        const title = this.trip.headsign 
+          ? `${this.trip.routeShortName} to ${this.trip.headsign}`
+          : `Trip ${this.trip.routeShortName}`;
+        this.titleService.setTitle(title);
 
-    layers: Layer[] = [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {})];
+        // Draw data on map
+        this.drawMapFeatures();
+      },
+      error: (err) => {
+        console.error(err);
+        this.loading = false;
+      }
+    });
+  }
 
-    convertToDate(dateString: string): Date {
-        return new Date(dateString);
-    }
+  drawMapFeatures() {
+    const routePoints: LatLng[] = [];
 
-    refreshData() {
-        this.loadData();
-    }
+    // 1. Stops
+    if (this.trip?.stops) {
+      this.trip.stops.forEach((stop) => {
+        if (stop.latitude && stop.longitude) {
+          if (!this.trip?.shapes?.length) {
+            routePoints.push(latLng(stop.latitude, stop.longitude));
+          }
 
-    loadData() {
-        this.trip = undefined;
-        this.loading = true;
-        var routeSub = this.route.params.subscribe((params) => {
-            this.trip = undefined;
-            this.selectedTrip = params['id'];
-            this.titleService.setTitle('Seaching for ' + this.selectedTrip);
-            this.apiService.GetTrip(params['id']).subscribe({
-                next: (data) => {
-                    this.loading = false;
-                    this.trip = data;
-                    if (this.trip.measurementTime) {
-                        this.realTime = true;
-                    } else {
-                        this.realTime = false;
-                    }
-                    this.dataRetrieved();
-                    if (this.trip.headsign) {
-                        this.titleService.setTitle(this.trip.headsign);
-                    } else {
-                        this.titleService.setTitle(this.trip?.routeShortName + ' - ' + this.trip?.routeLongName);
-                    }
-                },
-            });
-        });
-    }
+          const stopMarker = marker([stop.latitude, stop.longitude], {
+            icon: icon({
+              iconUrl: 'assets/marker-icon.png',
+              shadowUrl: 'assets/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }),
+          });
 
-    dataRetrieved() {
-        const routeLine: LatLng[] = [];
-    
-        // Clear previous markers
-        this.markerLayers.clearLayers();
-    
-        this.trip?.stops?.forEach((stop) => {
-            const stopLayer = marker([stop.latitude, stop.longitude], {
-                icon: icon({
-                    ...Icon.Default.prototype.options,
-                    iconUrl: 'assets/marker-icon.png',
-                    iconRetinaUrl: 'assets/marker-icon-2x.png',
-                    shadowUrl: 'assets/marker-shadow.png',
-                }),
-            });
-    
-            const popup = new Popup();
-            popup.setContent(`<a href="/stops/${stop.id}/${stop.stopType}">${stop.name}</a>`);
-            stopLayer.bindPopup(popup);
-            this.markerLayers.addLayer(stopLayer);
-    
-            // If no shape data, fallback to stops for routing
-            if (!(this.trip?.shapes?.length)) {
-                if (stop.latitude != null && stop.longitude != null) {
-                    routeLine.push(latLng(stop.latitude, stop.longitude));
-                }
-            }
-        });
-    
-        this.trip?.shapes?.forEach((shape) => {
-            if (shape.latitude != null && shape.longitude != null) {
-                routeLine.push(latLng(shape.latitude, shape.longitude));
-            }
-        });
-    
-        this.markLiveLocation();
-    
-        const lineColor = 'green';
-        const line = polyline(routeLine, { color: lineColor });
-    
-        // Add polyline to overlays and layers
-        this.layersControl.overlays['Route Line'] = line;
-        this.layers.push(line);
-        this.layers.push(this.markerLayers);
-    
-        this.invalidateMap(); // ensure map is valid and updated
-    
-        // Delay fitBounds to ensure map is ready
-        setTimeout(() => {
-            if (this.map && this.markerLayers.getLayers().length > 0) {
-                const bounds = this.markerLayers.getBounds();
-                this.map.fitBounds(bounds, { padding: [20, 20] });
-                console.log('Fitting bounds to markerLayers...');
-            } else {
-                console.warn('Map or markerLayers not ready for fitBounds');
-            }
-        }, 100);
-    }
-    
-
-    markLiveLocation() {
-        if (this.trip?.latitude && this.trip.longitude) {
-            var positionLayer = circle([this.trip.latitude, this.trip.longitude], { radius: 5, color: 'red' });
-            this.markerLayers.addLayer(positionLayer);
-            var positionLayer = circle([this.trip.latitude, this.trip.longitude], { radius: 100, color: 'blue' });
-
-            if (this.trip.targetStopName) {
-                var popup = new Popup();
-                popup.setContent(
-                    'Currently going towards <a href="/stops/' +
-                        this.trip.targetStopId +
-                        '/' +
-                        this.trip.targetStopType +
-                        '">' +
-                        this.trip.targetStopName +
-                        '</a>',
-                );
-                positionLayer.bindPopup(popup);
-            }
-            this.markerLayers.addLayer(positionLayer);
+          stopMarker.bindPopup(`
+            <strong>${stop.name}</strong><br>
+            <a href="/stops/${stop.id}/${stop.stopType}">View Stop</a>
+          `);
+          
+          this.markerLayers.addLayer(stopMarker);
         }
+      });
     }
 
-    onMapReady(map: Map) {
-        this.map = map;
-        this.invalidateMap();
+    // 2. Route Line
+    if (this.trip?.shapes?.length) {
+      this.trip.shapes.forEach(s => {
+        if (s.latitude && s.longitude) {
+          routePoints.push(latLng(s.latitude, s.longitude));
+        }
+      });
     }
 
-    invalidateMap(): void {
-        this.map?.invalidateSize();
+    if (routePoints.length > 0) {
+      const line = polyline(routePoints, { color: '#3b82f6', weight: 4, opacity: 0.8 });
+      this.routeLineLayer.addLayer(line);
     }
 
-    onResize(event: any) {
-        this.invalidateMap();
+    // 3. Vehicle Position
+    if (this.trip?.latitude && this.trip?.longitude) {
+      const pulse = circle([this.trip.latitude, this.trip.longitude], { 
+        radius: 100, color: '#10b981', fillOpacity: 0.2, stroke: false 
+      });
+      const vehicle = circle([this.trip.latitude, this.trip.longitude], { 
+        radius: 15, color: '#10b981', fillOpacity: 1 
+      });
+
+      if (this.trip.targetStopName) {
+        vehicle.bindPopup(`Heading to: ${this.trip.targetStopName}`);
+      }
+      this.markerLayers.addLayer(pulse);
+      this.markerLayers.addLayer(vehicle);
     }
+
+    // Update bounds
+    this.updateMapBounds();
+  }
+
+  /**
+   * Leaflet init hook.
+   * Invalidating size here ensures the map renders tiles correctly
+   * based on the final container dimensions.
+   */
+  onMapReady(map: Map) {
+    this.map = map;
+    
+    // Slight delay to allow DOM layout to settle (Flexbox/Grid calculations)
+    setTimeout(() => {
+      this.map?.invalidateSize();
+      this.updateMapBounds();
+    }, 200);
+  }
+
+  updateMapBounds() {
+    if (!this.map) return;
+    
+    const hasLayers = this.markerLayers.getLayers().length > 0 || this.routeLineLayer.getLayers().length > 0;
+    
+    if (hasLayers) {
+      const group = featureGroup([this.markerLayers, this.routeLineLayer]);
+      const bounds = group.getBounds();
+      
+      if (bounds.isValid()) {
+        this.map.fitBounds(bounds, { padding: [50, 50] });
+      }
+    }
+  }
+
+  onResize() {
+    this.map?.invalidateSize();
+  }
+
+  isStopPassed(stop: GTFSTripStop): boolean {
+    const timeVal = stop.actualDepartureTime || stop.plannedDepartureTime;
+    if (!timeVal) return false;
+    const stopDate = new Date(timeVal);
+    const now = new Date();
+    return stopDate.getTime() < (now.getTime() - 120000);
+  }
 }

@@ -1,3 +1,113 @@
-.stop-map-view{
-    height: 50vh
+// Variables
+$sidebar-width: 400px;
+$primary-color: #3b82f6;
+$z-index-sidebar: 1000;
+$z-index-map: 1;
+
+:host {
+  display: block;
+  height: 100vh; // Take full viewport height
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+// 1. Sidebar Styles
+.sidebar-panel {
+  width: $sidebar-width;
+  height: 100%;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: $z-index-sidebar;
+  overflow-y: auto; // Allow scrolling inside sidebar
+
+  .sidebar-header {
+    margin-bottom: 1.5rem;
+    
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 0.25rem;
+    }
+  }
+}
+
+// 2. Map Styles
+.map-container {
+  flex-grow: 1;
+  position: relative;
+  z-index: $z-index-map;
+  height: 100%;
+
+  .leaflet-map {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+// 3. Card & Form Polish
+.search-card {
+  border: none;
+  border-radius: 12px;
+  
+  .form-control:focus {
+    box-shadow: none;
+    border-color: $primary-color;
+  }
+  
+  .input-group-text {
+    background: transparent;
+  }
+}
+
+// 4. List Results
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid #eee;
+  padding: 1rem;
+  transition: background-color 0.2s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+}
+
+.error-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  max-width: 300px;
+}
+
+// 5. Mobile Responsiveness
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar-panel {
+    width: 100%;
+    height: auto;
+    max-height: 50vh; // Take top half of screen on mobile
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .map-container {
+    height: 50vh; // Take bottom half
+  }
 }

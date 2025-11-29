@@ -1,20 +1,178 @@
-.departurebox {
-    background-color: white;
-    color: black;
+$bg-light: #f8f9fa;
+$border-color: #e9ecef;
+$hover-bg: #f1f5f9;
+
+:host {
+    display: block;
+    background-color: $bg-light;
+    min-height: 100vh;
+}
+
+// Map Card
+.map-card {
+    height: 200px;
+    width: 100%;
+    position: relative;
+    border: 1px solid $border-color;
+    .leaflet-map { height: 100%; width: 100%; }
+}
+
+// Header Typography
+.tracking-wider {
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+// Collapsible Buttons Active State
+.btn-outline-primary.active {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+.btn-outline-secondary.active {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+// Related Stops Cards
+.related-stop-card {
+    background: white;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    min-width: 250px;
+    flex: 1 0 auto;
+
     &:hover {
-        background-color: gray;
-        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        border-color: #3b82f6;
+        .bi-chevron-right { color: #3b82f6 !important; }
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        
+        &.text-primary-bg { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+        &.text-success-bg { background-color: rgba(25, 135, 84, 0.1); color: #198754; }
+        &.text-warning-bg { background-color: rgba(255, 193, 7, 0.15); color: #856404; }
+        &.text-info-bg { background-color: rgba(13, 202, 240, 0.1); color: #0dcaf0; }
+        &.text-secondary-bg { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; }
     }
 }
 
-a {
-    text-decoration: none;
+// Data Sources Table
+.table-sm {
+    th, td { padding: 0.5rem; }
+    tr:last-child td { padding-bottom: 0; }
 }
 
-.route-box {
-    max-height: 15vh;
+// Departure Board
+.departure-board { border: 1px solid $border-color; }
+
+.departure-row {
+    transition: background-color 0.2s;
+    cursor: pointer;
+    background-color: white;
+    flex-wrap: nowrap !important; // Enforce single line
+
+    &:hover { background-color: $hover-bg; }
+    
+    &.cancelled-row { 
+        background-color: #fff5f5; 
+        .destination-text { text-decoration: line-through; opacity: 0.7; }
+    }
 }
 
-.stop-map-view {
-    height: 20vh;
+// Columns
+.col-time { 
+    min-width: 50px; 
+    font-family: 'Roboto Mono', monospace; 
+    font-weight: 700; 
+    font-size: 1.1rem;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.col-badge {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
+    
+    .route-pill {
+        display: inline-block; 
+        padding: 4px 8px; 
+        border-radius: 6px; 
+        font-weight: 800; 
+        font-size: 0.95rem;
+        min-width: 40px; 
+        text-align: center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+}
+
+.col-destination {
+    min-width: 0; // Allows truncation
+    .destination-text { font-size: 1.05rem; }
+}
+
+.col-platform { min-width: 30px; }
+
+// --- PULSE ANIMATION ---
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #10b981; // Green
+    margin-top: 2px;
+}
+
+.pulse-dot {
+    display: inline-block; 
+    width: 8px; 
+    height: 8px; 
+    background-color: #10b981; 
+    border-radius: 50%; 
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.day-separator {
+    background: #e2e8f0; color: #475569; font-weight: bold; 
+    padding: 0.4rem 1rem; font-size: 0.8rem; text-transform: uppercase;
+}
+
+// Mobile Breakpoints
+@media (max-width: 576px) {
+    .departure-row { padding: 0.75rem 0.5rem !important; }
+    .col-time { min-width: 45px; font-size: 0.95rem; margin-right: 0.5rem !important; }
+    .col-badge {
+        min-width: 40px; margin-right: 0.75rem !important;
+        .route-pill { font-size: 0.85rem; padding: 2px 6px; min-width: 35px; }
+    }
+    .col-destination {
+        .destination-text { font-size: 0.95rem; }
+        .operator-text { font-size: 0.75rem; }
+        // Adjust badge size on mobile
+        .badge {
+            font-size: 0.65rem;
+            padding: 3px 6px;
+        }
+    }
+    .col-action { display: none; }
+    .related-stop-card { width: 100%; }
 }

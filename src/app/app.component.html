@@ -1,20 +1,36 @@
-<header class="header">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5 col-sm-6 col-12">
-                <p>
-                    <span style="font-size: 2em;"><a routerLink="/">komikaan.nl</a></span> <br />
-                    <small class="rainbow rainbow_text_animated">VERY ALPHA</small>
-                </p>
+<nav class="navbar sticky-top navbar-light app-header">
+    <div class="container-xl">
+        
+        <!-- LEFT: Brand & Badge -->
+        <div class="d-flex align-items-center gap-3">
+            <a routerLink="/" class="navbar-brand fw-bold fs-3 text-dark m-0 p-0">
+                komikaan.nl
+            </a>
+            <span class="badge rounded-pill rainbow-badge small">
+                VERY ALPHA
+            </span>
+        </div>
+
+        <!-- RIGHT: Tagline & Socials -->
+        <div class="d-flex align-items-center gap-3 text-end">
+            <!-- Hide tagline on very small screens to save space -->
+            <div class="d-none d-sm-block lh-sm text-muted" style="font-size: 0.75rem;">
+                Geen zorgen, je ziet er geweldig uit.<br>
+                <span class="opacity-75">In tegenstelling tot je reis met het ov.</span>
             </div>
-            <div class="col-md-7 col-sm-6 col-12">
-                <p>
-                    <small>Geen zorgen, je ziet er geweldig uit.</small> <br />
-                    <small>In tegenstelling tot je reis met de trein.</small> <br />
-                    <a href="https://github.com/EnessenE/komikaan">GitHub</a>
-                </p>
-            </div>
+
+            <div class="vr d-none d-sm-block mx-1"></div>
+
+            <a href="https://github.com/EnessenE/komikaan" 
+               target="_blank" 
+               class="btn btn-sm btn-outline-dark border-0 rounded-circle d-flex align-items-center justify-content-center"
+               style="width: 38px; height: 38px;"
+               title="View on GitHub">
+                <i class="bi bi-github fs-5"></i>
+            </a>
         </div>
     </div>
-</header>
-<router-outlet />
+</nav>
+
+<!-- Main Content -->
+<router-outlet></router-outlet>

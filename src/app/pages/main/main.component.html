@@ -1,89 +1,103 @@
-@if (error) {
-    <app-error [httpErrorResponse]="error"></app-error>
-}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-6">
-            <div
-                (window:resize)="onResize($event)"
-                class="leaflet stop-map-view"
-                leaflet
-                [leafletOptions]="options"
-                [leafletLayers]="layers"
-                [leafletLayersControl]="layersControl"
-                (leafletMapReady)="onMapReady($event)"
-            ></div>
-            <small>Your rough position is sent towards the API and checked against the database</small><br />
-            <button
-                type="button"
-                class="btn btn-info"
-                (click)="getNearbyStops()"
-            >
-                Search for nearby stops based on your location?
-            </button>
-            <!-- <button
-                type="button"
-                class="btn btn-info"
-                (click)="getAllStops()"
-            >
-                Search for ALL stops?
-            </button> -->
-            @if (location) {
-                <p>Got your location: {{ location.lat }} - {{ location.lng }}</p>
-            }
-        </div>
-
-        <div class="col-lg-6 col-6">
-            <form class="form-inline my-2 my-lg-0">
-                <p>
-                    Hi! This site can show you departures from your nearby public transport stop. Feel free and try to find
-                    something in your area.
-                </p>
-                <p><b>For which station do you want to see departures?</b></p>
-                <small>To see our data sources: <a routerLink="/feeds">click here!</a></small>
-
-                <input
-                    class="form-control mr-sm-2"
-                    type="search"
-                    placeholder="Amsterdam Centraal"
-                    aria-label="Search"
-                    [value]="originStop?.name"
-                    (input)="onSearchInputChangeOrigin($event)"
-                />
-                @if (gettingLocation)
-                {
-                    <p>Getting your location..........</p>
-                }
-                @if (loading) {
-                    <div>
-                        <div
-                            class="spinner-border"
-                            role="status"
-                        >
-                            🚉
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p>Searching for stops...</p>
-                    </div>
-                }
-                <div>
-                    <div class="dropdown">
-                        @for (stop of foundStopsOrigin; track stop) {
-                            <a routerLink="/stops/{{ stop.id }}/{{ stop.stopType }}">
-                                <button
-                                    type="button"
-                                    class="dropdown-item"
-                                >
-                                    <app-stop [stop]="stop"></app-stop></button
-                            ></a>
-                        } @empty {
-                            @if (foundStopsOrigin !== undefined && !loading) {
-                                <p>No relevant stops found</p>
-                            }
-                        }
-                    </div>
-                </div>
-            </form>
-        </div>
+<!-- Full Screen Layout Container -->
+<div class="app-container">
+  
+  <!-- Error Toast/Banner -->
+  @if (error) {
+    <div class="error-container">
+      <app-error [httpErrorResponse]="error"></app-error>
     </div>
+  }
+
+  <aside class="sidebar-panel">
+    <div class="sidebar-header">
+      <p class="text-muted">Find departures & track vehicles nearby.</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-card card shadow-sm">
+      <div class="card-body">
+        <label for="stopSearch" class="form-label fw-bold">Find a Station</label>
+        
+        <div class="input-group mb-3">
+          <span class="input-group-text bg-white border-end-0">
+             🔍
+          </span>
+          <input
+            id="stopSearch"
+            type="search"
+            class="form-control border-start-0 ps-0"
+            placeholder="E.g. Amsterdam Centraal"
+            [value]="originStop?.name || ''"
+            (input)="onSearchInputChange($event)"
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Geolocation Button -->
+        <button 
+          class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2"
+          (click)="getNearbyStops()"
+          [disabled]="gettingLocation">
+          @if(gettingLocation) {
+            <span class="spinner-border spinner-border-sm" role="status"></span>
+            <span>Locating...</span>
+          } @else {
+            <span>📍 Find Nearby Stops</span>
+          }
+        </button>
+        
+        @if (location) {
+          <small class="text-success d-block mt-2 text-center">
+            <i class="bi bi-check-circle-fill"></i> Location found
+          </small>
+        }
+      </div>
+    </div>
+
+    <!-- Results List -->
+    <div class="results-area mt-3">
+      @if (loading) {
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted">Searching the network...</p>
+        </div>
+      }
+
+      @if (foundStops && foundStops.length > 0) {
+        <h6 class="text-uppercase text-muted small fw-bold mb-2">Results</h6>
+        <div class="list-group shadow-sm">
+          @for (stop of foundStops; track stop.id) {
+            <a [routerLink]="['/stops', stop.id, stop.stopType]" 
+               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+               <div>
+                 <app-stop [stop]="stop"></app-stop>
+               </div>
+               <i class="bi bi-chevron-right text-muted"></i>
+            </a>
+          }
+        </div>
+      } @else if (foundStops !== undefined && !loading) {
+        <div class="alert alert-light text-center mt-3">
+          No stops found. Try a different name.
+        </div>
+      }
+      
+      <div class="mt-4 text-center">
+         <small><a routerLink="/feeds" class="text-muted text-decoration-none">View Data Sources</a></small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Map Background -->
+  <main class="map-container">
+    <div
+      class="leaflet-map"
+      leaflet
+      [leafletOptions]="options"
+      [leafletLayers]="layers"
+      [leafletLayersControl]="layersControl"
+      (leafletMapReady)="onMapReady($event)"
+      (window:resize)="onResize()">
+    </div>
+  </main>
 </div>

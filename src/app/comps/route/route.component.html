@@ -1,14 +1,22 @@
-<p class="fw-bold">
-    <span
-        [style]="
-            'max-height: 50vw; min-width:50vw; background-color: #' +
-            route.color +
-            '; color: #' +
-            route.textColor
-        "
-    >
-        <span>[{{ route.agency }}]</span>
-        <span> {{ route.shortName }}</span>
-        - {{ route.longName }}
-    </span>
-</p>
+<div class="route-badge shadow-sm"
+     [style.background-color]="'#' + (route.color || 'e9ecef')"
+     [style.color]="'#' + (route.textColor || '212529')"
+     [ngbTooltip]="detailsTip"
+     placement="top"
+     container="body">
+    
+    <span class="route-text">{{ route.shortName }} / {{ route.longName }}</span>
+
+</div>
+
+<ng-template #detailsTip>
+    <div class="text-start small">
+        <div class="fw-bold mb-1">{{ route.agency }}</div>
+        <div>{{ route.longName }}</div>
+        @if(route.description) {
+            <div class="mt-1 text-white-50 fst-italic" style="font-size: 0.75rem">
+                {{ route.description }}
+            </div>
+        }
+    </div>
+</ng-template>
