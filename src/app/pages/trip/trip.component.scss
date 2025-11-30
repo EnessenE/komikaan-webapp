@@ -11,8 +11,6 @@ $bg-light: #f8f9fa;
 // --- LAYOUT ---
 
 .timeline-column { 
-    // On desktop, the timeline scrolls while map sticks. 
-    // On mobile, this will just sit below the map.
     position: relative;
     z-index: 2;
     background: white;
@@ -27,23 +25,20 @@ $bg-light: #f8f9fa;
 
 .sticky-map-wrapper {
     width: 100%;
-    
-    // Default (Mobile): Fixed height, not sticky
     height: 50vh; 
     
     .leaflet-map { 
         height: 100%; 
         width: 100%; 
-        background: #ddd; // Placeholder color
+        background: #ddd; 
     }
 }
 
-// Desktop: Sticky Full Height
 @media (min-width: 992px) {
     .sticky-map-wrapper {
         position: sticky;
         top: 0;
-        height: 100vh; // Full height on desktop
+        height: 100vh;
     }
 }
 
@@ -53,13 +48,21 @@ $bg-light: #f8f9fa;
 
 .timeline-item {
     display: flex;
+    align-items: stretch; 
     
     .time-col {
-        width: 60px;
-        padding-top: 0;
+        width: 75px; 
         margin-right: 15px;
         flex-shrink: 0;
-        .actual-time { font-family: 'Roboto Mono', monospace; font-size: 1rem; }
+        font-size: 0.9rem;
+        
+        // Slight padding to align text baseline with dots
+        padding-top: 3px; 
+        padding-bottom: 3px; 
+        
+        .time-block {
+            line-height: 1.2;
+        }
     }
 
     .graphic-col {
@@ -67,6 +70,8 @@ $bg-light: #f8f9fa;
         position: relative;
         flex-shrink: 0;
         margin-right: 15px;
+        padding-top: 5px; 
+        padding-bottom: 5px; 
         
         .dot {
             width: 14px;
@@ -75,28 +80,49 @@ $bg-light: #f8f9fa;
             border: 3px solid $primary-color;
             border-radius: 50%;
             z-index: 2;
-            margin-top: 4px; 
             transition: all 0.3s;
+            box-sizing: border-box;
 
             &.current {
                 background-color: $primary-color;
                 transform: scale(1.3);
                 box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
             }
+
+            &.small-dot {
+                width: 6px;
+                height: 6px;
+                border: none;
+                background-color: $primary-color;
+                margin-top: 0;
+            }
         }
 
         .line {
             position: absolute;
-            top: 18px; 
-            bottom: -4px; 
             width: 2px;
             background-color: $primary-color;
             z-index: 1;
+            left: 50%;
+            transform: translateX(-50%);
+            
+            // Default: Line runs from top dot, through bottom dot, downwards to next item
+            top: 5px; 
+            bottom: -30px; 
+        }
+    }
+
+    // --- Handling the Last Item Line ---
+    &.last-item {
+        .graphic-col .line {
+            // For the last item, the line must stop at the bottom dot
+            bottom: 5px; 
         }
     }
 
     .info-col {
         flex-grow: 1;
+        
         .stop-card {
             transition: transform 0.2s, background-color 0.2s;
             background-color: $bg-light;
@@ -108,15 +134,26 @@ $bg-light: #f8f9fa;
         }
     }
 
+    // --- Passed State Logic ---
     &.passed {
+        // Gray out the times
         .time-col { opacity: 0.6; }
+        
+        // Gray out the graphic elements
         .graphic-col {
             .dot { border-color: $passed-color; background-color: $passed-color; }
             .line { background-color: $passed-color; }
+            .small-dot { background-color: $passed-color; }
         }
+        
+        // Info Column remains fully visible, BUT we remove the boldness
         .info-col {
-            opacity: 0.7;
-            .fw-bold { font-weight: normal !important; }
+            opacity: 1; 
+            
+            // Override the bootstrap .fw-bold class
+            .fw-bold {
+                font-weight: normal !important;
+            }
         }
     }
 }

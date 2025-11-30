@@ -94,8 +94,7 @@
         <!-- MAIN CONTENT -->
         <div class="container-fluid px-0">
             <div class="row g-0">
-                <!-- MAP COLUMN (Order 2 on Desktop, Order 1 on Mobile) -->
-                <!-- We define it FIRST in DOM so it renders, then use order-lg-last to push it right on desktop -->
+                <!-- MAP COLUMN -->
                 <div class="col-lg-7 col-xl-8 map-column order-1 order-lg-last">
                     <div class="sticky-map-wrapper">
                         <div
@@ -110,7 +109,7 @@
                     </div>
                 </div>
 
-                <!-- TIMELINE COLUMN (Order 1 on Desktop, Order 2 on Mobile) -->
+                <!-- TIMELINE COLUMN -->
                 <div class="col-lg-5 col-xl-4 bg-white border-end timeline-column order-2 order-lg-first">
                     <div class="p-3 p-lg-4">
                         <h5 class="fw-bold text-muted text-uppercase small mb-4 ms-2">Route Timeline</h5>
@@ -118,35 +117,46 @@
                         <div class="timeline">
                             @for (stop of trip.stops; track i; let i = $index; let last = $last) {
                                 <div
-                                    class="timeline-item"
+                                    class="timeline-item pb-4"
                                     [class.passed]="isStopPassed(stop)"
+                                    [class.last-item]="last"
                                 >
-                                    <!-- Time -->
-                                     
-                                    <div class="time-col text-end">
-                                        <app-time-only-selection
-                                            [actual]="stop.actualArrivalTime"
-                                            [planned]="stop.plannedArrivalTime"
-                                            [cancelled]="stop.cancelled"
-                                            [scheduleRelationship]="stop.scheduleRelationship"
-                                        ></app-time-only-selection>
+                                    <!-- Time (Flex Column) -->
+                                    <div class="time-col text-end d-flex flex-column justify-content-between">
+                                        <!-- Arrival -->
+                                        <div class="time-block top">
+                                            <app-time-only-selection
+                                                [actual]="stop.actualArrivalTime"
+                                                [planned]="stop.plannedArrivalTime"
+                                                [cancelled]="stop.cancelled"
+                                                [scheduleRelationship]="stop.scheduleRelationship"
+                                            ></app-time-only-selection>
+                                        </div>
+
+                                        <!-- Status Badge -->
                                         @if (stop.cancelled || stop.scheduleRelationship != 'Scheduled') {
-                                            <span class="badge bg-danger">{{stop.scheduleRelationship}}</span>
+                                            <div class="my-1 d-flex justify-content-end">
+                                                <span class="badge bg-danger">{{stop.scheduleRelationship}}</span>
+                                            </div>
                                         }
-                                        <app-time-only-selection
-                                            [actual]="stop.actualDepartureTime"
-                                            [planned]="stop.plannedDepartureTime"
-                                            [cancelled]="stop.cancelled"
-                                            [scheduleRelationship]="stop.scheduleRelationship"
-                                        ></app-time-only-selection>
+
+                                        <!-- Departure -->
+                                        <div class="time-block bottom">
+                                            <app-time-only-selection
+                                                [actual]="stop.actualDepartureTime"
+                                                [planned]="stop.plannedDepartureTime"
+                                                [cancelled]="stop.cancelled"
+                                                [scheduleRelationship]="stop.scheduleRelationship"
+                                            ></app-time-only-selection>
+                                        </div>
                                     </div>
 
-                                    <!-- Graphic -->
-                                    <div class="graphic-col d-flex flex-column align-items-center">
-                                        <div
-                                            class="line"
-                                            [class.d-none]="last"
-                                        ></div>
+                                    <!-- Graphic (Flex Column) -->
+                                    <div class="graphic-col d-flex flex-column align-items-center justify-content-between">
+                                        <!-- Line -->
+                                        <div class="line"></div>
+                                        
+                                        <!-- Arrival Dot -->
                                         <div
                                             class="dot shadow-sm"
                                             [class.current]="
@@ -154,28 +164,32 @@
                                                 (i === 0 || (trip.stops && isStopPassed(trip.stops[i - 1])))
                                             "
                                         ></div>
+
+                                        <!-- Departure Dot (Small) -->
+                                        <div class="dot small-dot"></div>
                                     </div>
 
-                                    <!-- Info -->
-                                    <div class="info-col pb-4">
-                                        <div class="card border-0 shadow-sm p-2 mb-1 stop-card">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <a
-                                                        [routerLink]="['/stops', stop.id, stop.stopType]"
-                                                        class="fw-bold text-dark text-decoration-none stretched-link"
-                                                    >
-                                                        {{ stop.name }}
-                                                    </a>
-
-                                                    @if (stop.stopHeadsign && stop.stopHeadsign !== trip.headsign) {
-                                                        <div class="small text-info mt-1">
-                                                            <i class="bi bi-display"></i> {{ stop.stopHeadsign }}
-                                                        </div>
-                                                    }
+                                    <!-- Info (Card) -->
+                                    <div class="info-col">
+                                        <div class="card border-0 shadow-sm p-2 stop-card h-100">
+                                            <div class="d-flex justify-content-between align-items-start h-100">
+                                                <div class="d-flex flex-column justify-content-between h-100">
+                                                    <div>
+                                                        <a
+                                                            [routerLink]="['/stops', stop.id, stop.stopType]"
+                                                            class="fw-bold text-dark text-decoration-none stretched-link"
+                                                        >
+                                                            {{ stop.name }}
+                                                        </a>
+                                                        @if (stop.stopHeadsign && stop.stopHeadsign !== trip.headsign) {
+                                                            <div class="small text-info mt-1">
+                                                                <i class="bi bi-display"></i> {{ stop.stopHeadsign }}
+                                                            </div>
+                                                        }
+                                                    </div>
                                                 </div>
 
-                                                <div class="d-flex flex-column align-items-end z-20 position-relative">
+                                                <div class="d-flex flex-column align-items-end justify-content-between z-20 position-relative h-100">
                                                     <app-track-selection
                                                         [plannedTrack]="stop.plannedPlatform"
                                                         [actualTrack]="stop.actualPlatform"
@@ -184,7 +198,7 @@
                                                     </app-track-selection>
 
                                                     <button
-                                                        class="btn btn-link btn-sm text-muted p-0 mt-1"
+                                                        class="btn btn-link btn-sm text-muted p-0"
                                                         [cdkCopyToClipboard]="stop.name"
                                                         title="Copy Name"
                                                     >

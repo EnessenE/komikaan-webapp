@@ -31,6 +31,7 @@ import { StopComponent } from '../../comps/stop/stop.component';
 import { GTFSStop } from '../../models/gtfsstop';
 import { GTFSSearchStop } from '../../models/gtfssearchstop';
 import { NearbyData } from '../../models/nearby-data';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-main',
@@ -82,9 +83,10 @@ export class MainComponent implements OnInit, OnDestroy {
 
   layers: Layer[] = [this.baseLayer, this.markerLayers];
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private titleService: Title) {}
 
   ngOnInit(): void {
+    this.titleService.setTitle("komikaan.nl - Search")
     // Search Debounce Logic
     this.searchSubscription = this.searchInputSubject
       .pipe(debounceTime(500))
