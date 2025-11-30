@@ -1,5 +1,4 @@
 <div class="container-fluid app-container p-0">
-    
     <!-- Loading -->
     @if (loading) {
         <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-5">
@@ -9,19 +8,20 @@
     }
 
     @if (!loading && trip) {
-        
         <!-- HEADER -->
         <header class="bg-white shadow-sm border-bottom z-10 position-relative">
             <div class="container-fluid px-lg-5 py-3">
                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-                    
                     <!-- Left: Route Info -->
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <span class="badge bg-primary rounded px-3 py-2 fs-5">
                                 {{ trip.routeShortName }}
                             </span>
-                            <h1 class="h3 fw-bold mb-0 text-truncate" style="max-width: 80vw;">
+                            <h1
+                                class="h3 fw-bold mb-0 text-truncate"
+                                style="max-width: 80vw"
+                            >
                                 {{ trip.headsign }}
                             </h1>
                         </div>
@@ -34,22 +34,32 @@
                     <div class="d-flex flex-column align-items-end">
                         <div class="d-flex gap-2 mb-2">
                             @if (realTime) {
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success d-flex align-items-center gap-2">
+                                <span
+                                    class="badge bg-success bg-opacity-10 text-success border border-success d-flex align-items-center gap-2"
+                                >
                                     <span class="pulse-dot"></span> Live
                                 </span>
                             } @else {
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary border">Scheduled Data</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border"
+                                    >Scheduled Data</span
+                                >
                             }
-                            @if(trip.congestionLevel) {
+                            @if (trip.congestionLevel) {
                                 <span class="badge bg-warning text-dark border">{{ trip.congestionLevel }}</span>
                             }
                         </div>
-                        
+
                         <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-primary" (click)="refreshData()">
+                            <button
+                                class="btn btn-sm btn-outline-primary"
+                                (click)="refreshData()"
+                            >
                                 <i class="bi bi-arrow-clockwise"></i> Refresh
                             </button>
-                            <button class="btn btn-sm btn-outline-secondary" (click)="showDetails = !showDetails">
+                            <button
+                                class="btn btn-sm btn-outline-secondary"
+                                (click)="showDetails = !showDetails"
+                            >
                                 <i class="bi bi-info-circle"></i> Info
                             </button>
                         </div>
@@ -59,10 +69,22 @@
                 @if (showDetails) {
                     <div class="mt-3 p-3 bg-light rounded border small">
                         <div class="row">
-                            <div class="col-md-3"><strong>Trip ID:</strong> <br> <span class="font-monospace text-muted">{{ trip.id }}</span></div>
-                            <div class="col-md-3"><strong>Service ID:</strong> <br> <span class="font-monospace text-muted">{{ trip.serviceId }}</span></div>
-                            <div class="col-md-3"><strong>Data Origin:</strong> <br> {{ trip.dataOrigin }}</div>
-                            <div class="col-md-3"><strong>Last Update:</strong> <br> {{ trip.measurementTime ? (trip.measurementTime | date:'HH:mm:ss') : '-' }}</div>
+                            <div class="col-md-3">
+                                <strong>Trip ID:</strong> <br />
+                                <span class="font-monospace text-muted">{{ trip.id }}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Service ID:</strong> <br />
+                                <span class="font-monospace text-muted">{{ trip.serviceId }}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Data Origin:</strong> <br />
+                                {{ trip.dataOrigin }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Last Update:</strong> <br />
+                                {{ trip.measurementTime ? (trip.measurementTime | date: 'HH:mm:ss') : '-' }}
+                            </div>
                         </div>
                     </div>
                 }
@@ -72,19 +94,19 @@
         <!-- MAIN CONTENT -->
         <div class="container-fluid px-0">
             <div class="row g-0">
-                
                 <!-- MAP COLUMN (Order 2 on Desktop, Order 1 on Mobile) -->
                 <!-- We define it FIRST in DOM so it renders, then use order-lg-last to push it right on desktop -->
                 <div class="col-lg-7 col-xl-8 map-column order-1 order-lg-last">
                     <div class="sticky-map-wrapper">
-                        <div class="leaflet-map"
-                             leaflet
-                             [leafletOptions]="options"
-                             [leafletLayers]="layers"
-                             [leafletLayersControl]="layersControl"
-                             (leafletMapReady)="onMapReady($event)"
-                             (window:resize)="onResize()">
-                        </div>
+                        <div
+                            class="leaflet-map"
+                            leaflet
+                            [leafletOptions]="options"
+                            [leafletLayers]="layers"
+                            [leafletLayersControl]="layersControl"
+                            (leafletMapReady)="onMapReady($event)"
+                            (window:resize)="onResize()"
+                        ></div>
                     </div>
                 </div>
 
@@ -92,31 +114,46 @@
                 <div class="col-lg-5 col-xl-4 bg-white border-end timeline-column order-2 order-lg-first">
                     <div class="p-3 p-lg-4">
                         <h5 class="fw-bold text-muted text-uppercase small mb-4 ms-2">Route Timeline</h5>
-                        
+
                         <div class="timeline">
                             @for (stop of trip.stops; track i; let i = $index; let last = $last) {
-                                <div class="timeline-item" [class.passed]="isStopPassed(stop)">
-                                    
+                                <div
+                                    class="timeline-item"
+                                    [class.passed]="isStopPassed(stop)"
+                                >
                                     <!-- Time -->
+                                     
                                     <div class="time-col text-end">
-                                        @if(stop.cancelled) {
-                                            <span class="badge bg-danger">Canc</span>
-                                        } @else {
-                                            <div class="actual-time fw-bold">
-                                                {{ (stop.actualDepartureTime || stop.plannedDepartureTime) | date:'HH:mm' }}
-                                            </div>
-                                            @if(stop.actualDepartureTime && stop.actualDepartureTime !== stop.plannedDepartureTime) {
-                                                <div class="planned-time text-muted text-decoration-line-through small">
-                                                    {{ stop.plannedDepartureTime | date:'HH:mm' }}
-                                                </div>
-                                            }
+                                        <app-time-only-selection
+                                            [actual]="stop.actualArrivalTime"
+                                            [planned]="stop.plannedArrivalTime"
+                                            [cancelled]="stop.cancelled"
+                                            [scheduleRelationship]="stop.scheduleRelationship"
+                                        ></app-time-only-selection>
+                                        @if (stop.cancelled || stop.scheduleRelationship != 'Scheduled') {
+                                            <span class="badge bg-danger">{{stop.scheduleRelationship}}</span>
                                         }
+                                        <app-time-only-selection
+                                            [actual]="stop.actualDepartureTime"
+                                            [planned]="stop.plannedDepartureTime"
+                                            [cancelled]="stop.cancelled"
+                                            [scheduleRelationship]="stop.scheduleRelationship"
+                                        ></app-time-only-selection>
                                     </div>
 
                                     <!-- Graphic -->
                                     <div class="graphic-col d-flex flex-column align-items-center">
-                                        <div class="line" [class.d-none]="last"></div>
-                                        <div class="dot shadow-sm" [class.current]="!isStopPassed(stop) && (i === 0 || (trip.stops && isStopPassed(trip.stops[i-1])))"></div>
+                                        <div
+                                            class="line"
+                                            [class.d-none]="last"
+                                        ></div>
+                                        <div
+                                            class="dot shadow-sm"
+                                            [class.current]="
+                                                !isStopPassed(stop) &&
+                                                (i === 0 || (trip.stops && isStopPassed(trip.stops[i - 1])))
+                                            "
+                                        ></div>
                                     </div>
 
                                     <!-- Info -->
@@ -124,27 +161,33 @@
                                         <div class="card border-0 shadow-sm p-2 mb-1 stop-card">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <a [routerLink]="['/stops', stop.id, stop.stopType]" class="fw-bold text-dark text-decoration-none stretched-link">
+                                                    <a
+                                                        [routerLink]="['/stops', stop.id, stop.stopType]"
+                                                        class="fw-bold text-dark text-decoration-none stretched-link"
+                                                    >
                                                         {{ stop.name }}
                                                     </a>
-                                                    
-                                                    @if(stop.stopHeadsign && stop.stopHeadsign !== trip.headsign) {
+
+                                                    @if (stop.stopHeadsign && stop.stopHeadsign !== trip.headsign) {
                                                         <div class="small text-info mt-1">
                                                             <i class="bi bi-display"></i> {{ stop.stopHeadsign }}
                                                         </div>
                                                     }
                                                 </div>
-                                                
+
                                                 <div class="d-flex flex-column align-items-end z-20 position-relative">
-                                                    <app-track-selection 
-                                                        [plannedTrack]="stop.plannedPlatform" 
+                                                    <app-track-selection
+                                                        [plannedTrack]="stop.plannedPlatform"
                                                         [actualTrack]="stop.actualPlatform"
-                                                        [cancelled]="stop.cancelled">
+                                                        [cancelled]="stop.cancelled"
+                                                    >
                                                     </app-track-selection>
-                                                    
-                                                    <button class="btn btn-link btn-sm text-muted p-0 mt-1" 
-                                                            [cdkCopyToClipboard]="stop.name" 
-                                                            title="Copy Name">
+
+                                                    <button
+                                                        class="btn btn-link btn-sm text-muted p-0 mt-1"
+                                                        [cdkCopyToClipboard]="stop.name"
+                                                        title="Copy Name"
+                                                    >
                                                         <i class="bi bi-copy"></i>
                                                     </button>
                                                 </div>
@@ -158,7 +201,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     }

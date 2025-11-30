@@ -49,6 +49,7 @@ export class TripComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   realTime: boolean | undefined = undefined;
   showDetails = false;
+  currentTripId: string = "";
 
   private routeSub: Subscription | undefined;
 
@@ -83,7 +84,8 @@ export class TripComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.routeSub = this.route.params.subscribe((params) => {
-      this.loadData(params['id']);
+      this.currentTripId = params['id'];
+      this.loadData(this.currentTripId);
     });
   }
 
@@ -92,8 +94,8 @@ export class TripComponent implements OnInit, OnDestroy {
   }
 
   refreshData() {
-    if (this.trip?.id) {
-      this.loadData(this.trip.id);
+    if (this.currentTripId) {
+      this.loadData(this.currentTripId);
     }
   }
 
