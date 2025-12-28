@@ -1,5 +1,5 @@
 <div style="background-color: red">
-	<h1>Something went wrong!</h1>
-	<p>{{ httpErrorResponse.message }}</p>
+	<h1>Something went wrong! - {{ httpErrorResponse.status }}</h1>
+	<p>Calling {{ httpErrorResponse.url }} failed</p>
 	<small>No real error page was built yet, so enjoy this red banner.</small>
 </div>

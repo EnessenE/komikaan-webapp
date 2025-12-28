@@ -3,6 +3,7 @@ import { GTFSStopTime } from './gtfsstop-time';
 
 export interface GTFSStop {
     id: string;
+    primaryStop: string;
     code: string;
     name: string;
     description: string;

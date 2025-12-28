@@ -24,4 +24,5 @@ export interface GTFSRoute {
 })
 export class RouteComponent {
   @Input() route!: GTFSRoute;
+  @Input() minimal: boolean = false;
 }

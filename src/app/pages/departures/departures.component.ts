@@ -7,15 +7,7 @@ import { Subscription } from 'rxjs';
 import { NgbCollapseModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 // Leaflet
-import {
-    FeatureGroup,
-    Map,
-    circle,
-    featureGroup,
-    latLng,
-    tileLayer,
-    Layer,
-} from 'leaflet';
+import { FeatureGroup, Map, circle, featureGroup, latLng, tileLayer, Layer } from 'leaflet';
 import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 
 // Project Imports
@@ -30,24 +22,15 @@ import { RouteComponent } from '../../comps/route/route.component';
 @Component({
     selector: 'app-departures',
     standalone: true,
-    imports: [
-        CommonModule,
-        RouterLink,
-        LeafletModule,
-        NgbCollapseModule,
-        NgbTooltipModule,
-        TimeOnlySelectionComponent,
-        TrackSelectionComponent,
-        LoadingComponent,
-        ErrorComponent,
-        RouteComponent
-    ],
+    imports: [CommonModule, RouterLink, LeafletModule, NgbCollapseModule, NgbTooltipModule, TimeOnlySelectionComponent, TrackSelectionComponent, LoadingComponent, ErrorComponent, RouteComponent],
     templateUrl: './departures.component.html',
     styleUrls: ['./departures.component.scss'],
 })
 export class DeparturesComponent implements OnInit, OnDestroy {
     stop: GTFSStop | undefined;
     selectedStopId: string | undefined;
+    selectedType: string | undefined;
+    selectedDataOrigin: string | undefined;
     loading = false;
     error: HttpErrorResponse | undefined;
 
@@ -64,7 +47,7 @@ export class DeparturesComponent implements OnInit, OnDestroy {
         zoom: 15,
         center: latLng(52.0907, 5.1214),
         zoomControl: false,
-        attributionControl: false
+        attributionControl: false,
     };
     baseLayer = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     layers: Layer[] = [this.baseLayer, this.markerLayers];
@@ -73,16 +56,18 @@ export class DeparturesComponent implements OnInit, OnDestroy {
     constructor(
         private apiService: ApiService,
         private route: ActivatedRoute,
-        private titleService: Title
+        private titleService: Title,
     ) {}
 
     ngOnInit(): void {
         this.routeSub = this.route.params.subscribe((params) => {
             this.selectedStopId = params['id'];
+            this.selectedType = params['type'];
+            this.selectedDataOrigin = params['dataOrigin'];
             // Reset collapse states on navigation
             this.isSourcesCollapsed = true;
             this.isRoutesCollapsed = true;
-            this.loadStopData(params['id'], params['type']);
+            this.loadStopData();
         });
     }
 
@@ -90,22 +75,40 @@ export class DeparturesComponent implements OnInit, OnDestroy {
         if (this.routeSub) this.routeSub.unsubscribe();
     }
 
-    loadStopData(id: string, type: string): void {
+    loadStopData(): void {
         this.loading = true;
         this.stop = undefined;
         this.error = undefined;
 
-        this.apiService.GetStop(id, type).subscribe({
-            next: (data) => {
+        const callback = {
+            next: (data: GTFSStop) => {
                 this.loading = false;
-                this.stop = data as GTFSStop;
+                this.stop = data;
                 this.titleService.setTitle(this.stop.name || 'Stop Details');
                 this.updateMapMarkers(this.stop.mergedStops && this.stop.mergedStops.length > 0 ? this.stop.mergedStops : [this.stop]);
             },
-            error: (error) => {
+            error: (error: any) => {
                 this.loading = false;
                 this.error = error;
             },
+        };
+
+        if (this.selectedType != undefined && this.selectedStopId != undefined) {
+            this.apiService.GetStop(this.selectedStopId, this.selectedType).subscribe(callback);
+        } else if (this.selectedDataOrigin != undefined && this.selectedStopId != undefined) {
+            this.apiService.GetExactStop(this.selectedDataOrigin, this.selectedStopId).subscribe(callback);
+        } else {
+            alert('No route type was select, but also no data origin was set for searching! Uh. Try again?');
+        }
+    }
+
+    uniqueRoutes() {
+        const seen = new Set<string>();
+        return this.stop!.routes.filter((route) => {
+            const key = route.shortName?.toLowerCase();
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
         });
     }
 
@@ -114,10 +117,7 @@ export class DeparturesComponent implements OnInit, OnDestroy {
         this.markerLayers.clearLayers();
         stops.forEach((s) => {
             if (s.latitude && s.longitude) {
-                this.markerLayers.addLayer(
-                    circle([s.latitude, s.longitude], { radius: 30, color: '#3b82f6', fillOpacity: 0.5 })
-                        .bindPopup(`<strong>${s.name}</strong><br>${s.dataOrigin}`)
-                );
+                this.markerLayers.addLayer(circle([s.latitude, s.longitude], { radius: 30, color: '#3b82f6', fillOpacity: 0.5 }).bindPopup(`<strong>${s.name}</strong><br>${s.dataOrigin}`));
             }
         });
         setTimeout(() => {

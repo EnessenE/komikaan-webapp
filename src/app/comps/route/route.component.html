@@ -1,20 +1,25 @@
-<div class="route-badge shadow-sm"
-     [style.background-color]="'#' + (route.color || 'e9ecef')"
-     [style.color]="'#' + (route.textColor || '212529')"
-     [ngbTooltip]="detailsTip"
-     placement="top"
-     container="body">
-    
-    <span class="route-text">{{ route.shortName }} / {{ route.longName }}</span>
-
+<div
+    class="route-badge shadow-sm"
+    [style.background-color]="'#' + (route.color || 'e9ecef')"
+    [style.color]="'#' + (route.textColor || '212529')"
+    [ngbTooltip]="minimal ? null : detailsTip"
+    placement="top"
+    container="body"
+>
+    <span class="route-text">
+        {{ route.shortName }}@if (!minimal) { / {{ route.longName }} }
+    </span>
 </div>
 
 <ng-template #detailsTip>
     <div class="text-start small">
         <div class="fw-bold mb-1">{{ route.agency }}</div>
         <div>{{ route.longName }}</div>
-        @if(route.description) {
-            <div class="mt-1 text-white-50 fst-italic" style="font-size: 0.75rem">
+        @if (route.description) {
+            <div
+                class="mt-1 text-white-50 fst-italic"
+                style="font-size: 0.75rem"
+            >
                 {{ route.description }}
             </div>
         }

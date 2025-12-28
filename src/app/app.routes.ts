@@ -13,6 +13,10 @@ export const routes: Routes = [
         component: DeparturesComponent,
     },
     {
+        path: 'stops/exact/:dataOrigin/:id',
+        component: DeparturesComponent,
+    },
+    {
         path: 'trip/:id',
         component: TripComponent,
     },

@@ -67,6 +67,10 @@ export class ApiService {
         return this.http.get<GTFSStop>(environment.apiServer + '/v1/stops/' + stopId + '/' + stopType);
     }
 
+    GetExactStop(dataOrigin: string, stopId: string): Observable<GTFSStop> {
+        return this.http.get<GTFSStop>(environment.apiServer + '/v1/stops/exact/' + dataOrigin + '/' + stopId);
+    }
+
     GetTrip(trip: string): Observable<GTFSTrip> {
         return this.http.get<GTFSTrip>(environment.apiServer + '/v1/trips/' + trip);
     }
