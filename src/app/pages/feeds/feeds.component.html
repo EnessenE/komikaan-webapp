@@ -29,6 +29,23 @@
                     <a routerLink="/feed/{{ element.name }}">{{ element.name }}</a>
                 </td>
             </ng-container>
+            <ng-container matColumnDef="credits">
+                <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                sortActionDescription="Sort by credits"
+                >
+                    Credits
+                </th>
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                >
+                      <span [innerHTML]="element.credits"></span>
+
+                </td>
+            </ng-container>
             <ng-container matColumnDef="realTime">
                 <th
                 mat-header-cell

@@ -1,6 +1,7 @@
 export interface Feed {
     enabled: boolean | null,
     name: string,
+    credits: string,
     interval: Date,
     lastChecked: Date,
     state: string,
