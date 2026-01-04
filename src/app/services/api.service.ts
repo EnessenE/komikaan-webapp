@@ -29,9 +29,7 @@ export class ApiService {
     }
 
     NearbyStops(location: { lat: number; lng: number }): Observable<NearbyData> {
-        return this.http.get<NearbyData>(
-            environment.apiServer + '/v1/stops/nearby?longitude=' + location.lng + '&latitude=' + location.lat,
-        );
+        return this.http.get<NearbyData>(environment.apiServer + '/v1/stops/nearby?longitude=' + location.lng + '&latitude=' + location.lat);
     }
 
     GetFeeds(): Observable<Array<Feed>> {
@@ -58,13 +56,17 @@ export class ApiService {
     GetFeedAlerts(feed: string): Observable<Array<Alert>> {
         return this.http.get<Array<Alert>>(environment.apiServer + '/v1/feeds/' + feed + '/alerts');
     }
-    
+
     GetFeedPositions(feed: string): Observable<Array<VehiclePosition>> {
         return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + feed + '/positions');
     }
 
     GetStop(stopId: string, stopType: string): Observable<GTFSStop> {
         return this.http.get<GTFSStop>(environment.apiServer + '/v1/stops/' + stopId + '/' + stopType);
+    }
+
+    GetAlerts(stopId: string, stopType: string): Observable<Array<Alert>> {
+        return this.http.get<Array<Alert>>(environment.apiServer + '/v1/stops/' + stopId + '/' + stopType + '/alerts');
     }
 
     GetExactStop(dataOrigin: string, stopId: string): Observable<GTFSStop> {

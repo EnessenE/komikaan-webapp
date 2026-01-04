@@ -18,6 +18,7 @@ import { TrackSelectionComponent } from '../../comps/track-selection/track-selec
 import { LoadingComponent } from '../../comps/loading/loading.component';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { RouteComponent } from '../../comps/route/route.component';
+import { Alert } from '../../models/gtfsalert';
 
 @Component({
     selector: 'app-departures',
@@ -33,6 +34,10 @@ export class DeparturesComponent implements OnInit, OnDestroy {
     selectedDataOrigin: string | undefined;
     loading = false;
     error: HttpErrorResponse | undefined;
+
+    alerts: Alert[] | undefined;
+    alertFailure: HttpErrorResponse | undefined;
+    alertsLoading: boolean = true; // <-- NEW: Add this property
 
     // UI States
     isSourcesCollapsed = true;
@@ -86,6 +91,17 @@ export class DeparturesComponent implements OnInit, OnDestroy {
                 this.stop = data;
                 this.titleService.setTitle(this.stop.name || 'Stop Details');
                 this.updateMapMarkers(this.stop.mergedStops && this.stop.mergedStops.length > 0 ? this.stop.mergedStops : [this.stop]);
+                this.alertsLoading = true;
+                this.apiService.GetAlerts(this.stop.primaryStop, this.stop.stopType).subscribe({
+                    next: (alertsData) => {
+                        this.alertsLoading = false;
+                        this.alerts = alertsData;
+                    },
+                    error: (alertsError: any) => {
+                        this.alertFailure = alertsError;
+                        console.error('Error fetching alerts:', alertsError);
+                    },
+                });
             },
             error: (error: any) => {
                 this.loading = false;
@@ -160,5 +176,81 @@ export class DeparturesComponent implements OnInit, OnDestroy {
     isNewDay(current: any, previous: any): boolean {
         if (!previous || !current.actualArrivalTime) return false;
         return new Date(current.actualArrivalTime).getDate() !== new Date(previous.actualArrivalTime).getDate();
+    }
+
+    /**
+     * Determines the Bootstrap border class based on the alert's cause.
+     */
+    getAlertStripeClass(alert: Alert): string {
+        switch (alert.cause?.toUpperCase()) {
+            case 'STRIKE':
+            case 'ACCIDENT':
+            case 'MEDICAL_EMERGENCY':
+                return 'border-left-danger';
+            case 'CONSTRUCTION':
+            case 'MAINTENANCE':
+                return 'border-left-warning';
+            case 'HOLIDAY':
+                return 'border-left-info';
+            default:
+                return 'border-left-primary';
+        }
+    }
+
+    /**
+     * Determines the Bootstrap Icon class based on the alert's cause.
+     */
+    getAlertIcon(alert: Alert): string {
+        switch (alert.cause?.toUpperCase()) {
+            case 'STRIKE':
+                return 'bi-megaphone-fill';
+            case 'CONSTRUCTION':
+            case 'MAINTENANCE':
+                return 'bi-cone-striped';
+            case 'ACCIDENT':
+                return 'bi-car-front-fill';
+            case 'HOLIDAY':
+                return 'bi-calendar-event-fill';
+            case 'MEDICAL_EMERGENCY':
+                return 'bi-heart-pulse-fill';
+            default:
+                return 'bi-exclamation-triangle-fill';
+        }
+    }
+
+    /**
+     * NEW: Formats the activePeriods string into a human-readable format.
+     * Assumes the string is a JSON array of objects with 'start' and 'end' properties.
+     */
+    formatActivePeriods(periods: string): string | null {
+        if (!periods) return null;
+
+        try {
+            const parsedPeriods = JSON.parse(periods);
+            if (!Array.isArray(parsedPeriods) || parsedPeriods.length === 0) {
+                return null;
+            }
+
+            const period = parsedPeriods[0]; // Assuming we only show the first period for simplicity
+            const start = new Date(period.start);
+            const end = period.end ? new Date(period.end) : null;
+
+            const options: Intl.DateTimeFormatOptions = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            };
+
+            if (end) {
+                return `Active from ${start.toLocaleString(undefined, options)} to ${end.toLocaleString(undefined, options)}`;
+            } else {
+                return `Active from ${start.toLocaleString(undefined, options)}`;
+            }
+        } catch (e) {
+            console.error('Error parsing activePeriods:', e);
+            return null; // Don't show anything if the format is invalid
+        }
     }
 }
