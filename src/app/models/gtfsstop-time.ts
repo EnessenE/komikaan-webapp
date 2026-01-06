@@ -27,4 +27,8 @@ export interface GTFSStopTime {
     routeTextColor: string;
 
     cancelled: boolean;
+
+    startsBefore: boolean;
+    startsFrom: string;
+    endsAt: string;
 }

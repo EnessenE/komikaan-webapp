@@ -288,22 +288,22 @@
 
                                         <!-- Meta Details -->
                                         <div class="d-flex flex-column gap-2 mb-3">
-                                            @if (formatActivePeriods(alert.activePeriods); as formattedPeriod) {
-                                                <div class="alert-meta d-flex align-items-center gap-2">
-                                                    <i class="bi bi-clock"></i>
-                                                    <span>{{ formattedPeriod }}</span>
-                                                </div>
-                                            }
-                                            @if (alert.cause) {
+                                            @if (alert.cause && alert.cause !== 'UnknownCause') {
                                                 <div class="alert-meta">
                                                     <span class="meta-label">Cause:</span>
                                                     {{ alert.cause }}
                                                 </div>
                                             }
-                                            @if (alert.effect) {
+                                            @if (alert.effect && alert.effect !== 'UnknownEffect') {
                                                 <div class="alert-meta">
                                                     <span class="meta-label">Effect:</span>
                                                     {{ alert.effect }}
+                                                </div>
+                                            }
+                                            @if (alert.severityLevel && alert.severityLevel !== 'UnknownSeverity') {
+                                                <div class="alert-meta">
+                                                    <span class="meta-label">Severity:</span>
+                                                    {{ alert.severityLevel }}
                                                 </div>
                                             }
                                         </div>
@@ -359,7 +359,7 @@
                                 [class.cancelled-row]="trip.cancelled"
                             >
                                 <!-- 1. Time -->
-                                <div class="col-time d-flex flex-column align-items-start justify-content-center me-2">
+                                <div class="col-time d-flex flex-column align-items-start justify-content-center me-3">
                                     @if (trip.cancelled) {
                                         <span
                                             class="badge bg-danger mb-1"
@@ -378,11 +378,11 @@
                                             [scheduleRelationship]="trip.scheduleRelationship"
                                         ></app-time-only-selection>
 
-                                        <!-- PROMINENT REALTIME INDICATOR -->
+                                        <!-- REFINED REALTIME INDICATOR -->
                                         @if (trip.realTime) {
                                             <div class="live-indicator">
                                                 <span class="pulse-dot"></span>
-                                                <span class="d-none d-sm-inline">Live</span>
+                                                <span class="live-text d-none d-sm-inline">Live</span>
                                             </div>
                                         }
                                     }
@@ -401,12 +401,12 @@
 
                                 <!-- 3. Destination -->
                                 <div class="col-destination flex-grow-1 text-truncate">
+                                    <!-- Main Destination & Badges -->
                                     <div class="d-flex align-items-center flex-wrap gap-2">
                                         <span class="fw-bold text-truncate destination-text">
                                             {{ trip.headsign || trip.stopHeadsign || trip.routeLongName }}
                                         </span>
 
-                                        <!-- ALTERNATIVE HEADSIGN BADGE -->
                                         @if (trip.stopHeadsign && trip.stopHeadsign !== trip.headsign) {
                                             <span
                                                 class="badge bg-info text-dark d-flex align-items-center gap-1 shadow-sm"
@@ -418,8 +418,29 @@
                                         }
                                     </div>
 
-                                    <div class="text-muted small text-truncate operator-text">
-                                        {{ trip.operator }}
+                                    <!-- Meta Sub-line: Operator, Starts From, Ends At -->
+                                    <div class="destination-subline small text-muted text-truncate mt-1">
+                                        <span>{{ trip.operator }}</span>
+                                        @if (trip.startsFrom) {
+                                            <span
+                                                class="ms-3 d-inline-flex align-items-center gap-1"
+                                                title="This service starts its journey at {{ trip.startsFrom }}"
+                                            >
+                                                <i class="bi bi-box-arrow-in-right"></i>
+                                                Starts from:
+                                                <strong>{{ trip.startsFrom }}</strong>
+                                            </span>
+                                        }
+                                        @if (trip.endsAt) {
+                                            <span
+                                                class="ms-3 d-inline-flex align-items-center gap-1"
+                                                title="This service terminates at {{ trip.endsAt }}" style="color: red"
+                                            >
+                                                <i class="bi bi-flag-fill"></i>
+                                                Ends at:
+                                                <strong style="color: red">{{ trip.endsAt }}</strong>
+                                            </span>
+                                        }
                                     </div>
                                 </div>
 
@@ -445,6 +466,7 @@
                         }
                     </div>
                 </div>
+                <!-- [END OF DEPARTURE BOARD SECTION] -->
             </div>
         </main>
     }

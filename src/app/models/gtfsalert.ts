@@ -13,5 +13,5 @@ export interface Alert {
     descriptionText: string;
     ttsHeaderText: string;
     ttsDescriptionText: string;
-    severityLevel: number; // Or string
+    severityLevel: string; // Or string
 }

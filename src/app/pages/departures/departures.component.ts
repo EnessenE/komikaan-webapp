@@ -218,39 +218,4 @@ export class DeparturesComponent implements OnInit, OnDestroy {
         }
     }
 
-    /**
-     * NEW: Formats the activePeriods string into a human-readable format.
-     * Assumes the string is a JSON array of objects with 'start' and 'end' properties.
-     */
-    formatActivePeriods(periods: string): string | null {
-        if (!periods) return null;
-
-        try {
-            const parsedPeriods = JSON.parse(periods);
-            if (!Array.isArray(parsedPeriods) || parsedPeriods.length === 0) {
-                return null;
-            }
-
-            const period = parsedPeriods[0]; // Assuming we only show the first period for simplicity
-            const start = new Date(period.start);
-            const end = period.end ? new Date(period.end) : null;
-
-            const options: Intl.DateTimeFormatOptions = {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-            };
-
-            if (end) {
-                return `Active from ${start.toLocaleString(undefined, options)} to ${end.toLocaleString(undefined, options)}`;
-            } else {
-                return `Active from ${start.toLocaleString(undefined, options)}`;
-            }
-        } catch (e) {
-            console.error('Error parsing activePeriods:', e);
-            return null; // Don't show anything if the format is invalid
-        }
-    }
 }
