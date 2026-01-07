@@ -9,7 +9,8 @@ export interface GTFSTripStop {
     stopHeadsign: string;
     stopType: string;
     cancelled: boolean;
-    scheduleRelationship: string;
+    stopScheduleRelationship: string;
+    tripScheduleRelationship: string;
     
     longitude: number;
     latitude: number;

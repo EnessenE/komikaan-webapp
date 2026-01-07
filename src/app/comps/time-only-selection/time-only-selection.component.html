@@ -1,14 +1,21 @@
 <span>
-    @if (scheduleRelationship?.toLowerCase() != 'skipped' && !cancelled) {
+    @if (tripScheduleRelationship?.toLowerCase() == 'skipped' || tripScheduleRelationship?.toLowerCase() == 'canceled' 
+         || stopScheduleRelationship?.toLowerCase() == 'skipped' || stopScheduleRelationship?.toLowerCase() == 'canceled') {
+        <!-- Block for skipped or other states -->
+        <span
+            class="major-info-change"
+            style="background-color: rgba(255, 0, 0, 0.1)"
+        >
+            {{ planned | date: 'HH:mm:ss' }}
+        </span>
+    } @else {
+        <!-- Block for normally scheduled -->
         @if (actual && planned && (actual | date: 'HH:mm:ss') !== (planned | date: 'HH:mm:ss')) {
-            <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span><br>
+            <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span>
+            <br />
             {{ actual | date: 'HH:mm:ss' }}
         } @else {
-            {{ (actual ?? planned) | date: 'HH:mm:ss' }}
+            {{ actual ?? planned | date: 'HH:mm:ss' }}
         }
-    } @else if (cancelled) {
-        <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span> CANCELLED
-    } @else {
-        <span class="major-info-change" style="background-color:rgba(255, 0, 0, 0.1);">{{ planned | date: 'HH:mm:ss' }}</span>
     }
 </span>

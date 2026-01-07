@@ -15,7 +15,8 @@ export interface GTFSStopTime {
     dataOrigin: string;
     
     operator: string;
-    scheduleRelationship: string;
+    tripScheduleRelationship: string;
+    stopScheduleRelationship: string;
 
     plannedPlatform: string;
     actualPlatform: string;

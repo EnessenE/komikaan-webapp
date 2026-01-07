@@ -13,7 +13,7 @@ export class TimeOnlySelectionComponent {
   @Input()
   actual: Date | null | undefined;
   @Input()
-  cancelled: boolean | null | undefined;
+  tripScheduleRelationship: string | null | undefined;
   @Input()
-  scheduleRelationship: string | null | undefined;
+  stopScheduleRelationship: string | null | undefined;
 }

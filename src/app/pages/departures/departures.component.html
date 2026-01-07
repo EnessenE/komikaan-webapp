@@ -360,12 +360,15 @@
                             >
                                 <!-- 1. Time -->
                                 <div class="col-time d-flex flex-column align-items-start justify-content-center me-3">
-                                    @if (trip.cancelled) {
+                                    @if (
+                                        (trip.tripScheduleRelationship && (trip.tripScheduleRelationship.toLocaleLowerCase() == 'canceled' || trip.tripScheduleRelationship.toLocaleLowerCase() == 'skipped')) ||
+                                        (trip.stopScheduleRelationship && (trip.stopScheduleRelationship.toLocaleLowerCase() == 'canceled' || trip.stopScheduleRelationship.toLocaleLowerCase() == 'skipped'))
+                                    ) {
                                         <span
                                             class="badge bg-danger mb-1"
                                             style="font-size: 0.6rem"
                                         >
-                                            Canc
+                                            Cancelled
                                         </span>
                                         <span class="text-decoration-line-through text-muted small">
                                             {{ trip.plannedDepartureTime | date: 'HH:mm' }}
@@ -374,8 +377,8 @@
                                         <app-time-only-selection
                                             [actual]="trip.actualDepartureTime"
                                             [planned]="trip.plannedDepartureTime"
-                                            [cancelled]="trip.cancelled"
-                                            [scheduleRelationship]="trip.scheduleRelationship"
+                                            [tripScheduleRelationship]="trip.tripScheduleRelationship"
+                                            [stopScheduleRelationship]="trip.stopScheduleRelationship"
                                         ></app-time-only-selection>
 
                                         <!-- REFINED REALTIME INDICATOR -->
@@ -434,7 +437,8 @@
                                         @if (trip.endsAt) {
                                             <span
                                                 class="ms-3 d-inline-flex align-items-center gap-1"
-                                                title="This service terminates at {{ trip.endsAt }}" style="color: red"
+                                                title="This service terminates at {{ trip.endsAt }}"
+                                                style="color: red"
                                             >
                                                 <i class="bi bi-flag-fill"></i>
                                                 Ends at:
