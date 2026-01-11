@@ -1,0 +1,105 @@
+<!-- Full Screen Layout Container -->
+<div class="app-container">
+
+  <!-- Error Toast/Banner -->
+  @if (error) {
+    <div class="error-container">
+      <app-error [httpErrorResponse]="error"></app-error>
+    </div>
+  }
+
+  <aside class="sidebar-panel">
+    <div class="sidebar-header">
+      <h1 class="h4">Coverage Map</h1>
+      <p class="text-muted">Explore the geographic coverage of different data sources and stop types.</p>
+    </div>
+
+    <!-- Filtering Section -->
+    <div class="filter-card card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title fw-bold mb-3">Filter Coverage</h5>
+
+        <!-- Filter by Data Origin -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Data Origin</label>
+          <div class="filter-box border rounded p-2">
+            @if (loading) {
+              <small class="text-muted">Loading origins...</small>
+            }
+            @for(origin of dataOrigins; track origin) {
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [id]="'origin-' + origin"
+                  [checked]="isOriginSelected(origin)"
+                  (change)="toggleOrigin(origin)"
+                  [disabled]="loading">
+                <label class="form-check-label" [for]="'origin-' + origin">
+                  {{ origin }}
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Filter by Stop Type -->
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Stop Type</label>
+          <div class="filter-box border rounded p-2">
+            @if (loading) {
+              <small class="text-muted">Loading stop types...</small>
+            }
+            @for(stopType of stopTypes; track stopType) {
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [id]="'stopType-' + stopType"
+                  [checked]="isStopTypeSelected(stopType)"
+                  (change)="toggleStopType(stopType)"
+                  [disabled]="loading">
+                <label class="form-check-label" [for]="'stopType-' + stopType">
+                  {{ stopType }}
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- NEW: Auto-fit Map Checkbox -->
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="autoFitCheck"
+            [checked]="autoFitMap"
+            (change)="toggleAutoFit()">
+          <label class="form-check-label" for="autoFitCheck">Auto-fit map to selection</label>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <small><a routerLink="/feeds" class="text-muted text-decoration-none">View Data Sources</a></small>
+    </div>
+  </aside>
+
+  <!-- Map Background -->
+  <main class="map-container">
+    @if (loading) {
+      <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Loading coverage data...</p>
+      </div>
+    }
+    <div
+      class="leaflet-map"
+      leaflet
+      [leafletOptions]="options"
+      (leafletMapReady)="onMapReady($event)">
+    </div>
+  </main>
+</div>

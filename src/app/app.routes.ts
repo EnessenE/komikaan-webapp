@@ -6,6 +6,7 @@ import { FeedsComponent } from './pages/feeds/feeds.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { FeedDetailsComponent } from './pages/feed-details/feed-details.component';
 import { AgenciesComponent } from './pages/agencies/agencies.component';
+import { CoverageComponent } from './pages/coverage/coverage.component';
 
 export const routes: Routes = [
     {
@@ -31,6 +32,10 @@ export const routes: Routes = [
     {
         path: 'feeds',
         component: FeedsComponent,
+    },
+    {
+        path: 'coverage',
+        component: CoverageComponent,
     },
     {
         path: '',

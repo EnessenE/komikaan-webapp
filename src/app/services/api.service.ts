@@ -13,6 +13,7 @@ import { VehiclePosition } from '../models/vehicle-position';
 import { NearbyData } from '../models/nearby-data';
 import { Alert } from '../models/gtfsalert';
 import { GTFSAgency } from '../models/gtfsagency';
+import { CoverageData } from '../models/coverage-data';
 
 @Injectable({
     providedIn: 'root',
@@ -77,7 +78,7 @@ export class ApiService {
         return this.http.get<GTFSTrip>(environment.apiServer + '/v1/trips/' + trip);
     }
 
-    GetPossibility(origin: string, destination: string): Observable<JourneyResult> {
-        return this.http.get<JourneyResult>(environment.apiServer + '/v1/Disruption/' + origin + '/' + destination);
+    GetCoverage(): Observable<Array<CoverageData>> {
+        return this.http.get<Array<CoverageData>>(environment.apiServer + '/v1/feeds/coverage');
     }
 }
