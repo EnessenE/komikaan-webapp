@@ -121,7 +121,7 @@ export class DeparturesComponent implements OnInit, OnDestroy {
     uniqueRoutes() {
         const seen = new Set<string>();
         return this.stop!.routes.filter((route) => {
-            const key = route.shortName?.toLowerCase();
+            const key = route?.shortName?.toLowerCase();
             if (!key || seen.has(key)) return false;
             seen.add(key);
             return true;
@@ -155,7 +155,7 @@ export class DeparturesComponent implements OnInit, OnDestroy {
     // --- UI Helpers ---
 
     getStopTypeIcon(type: string | undefined): string {
-        const t = type?.toLowerCase() || '';
+        const t = type?.toString()?.toLowerCase() || '';
         if (t.includes('bus')) return 'bi-bus-front';
         if (t.includes('tram')) return 'bi-train-lightrail-front';
         if (t.includes('metro') || t.includes('subway')) return 'bi-train-subway-front';
@@ -164,8 +164,9 @@ export class DeparturesComponent implements OnInit, OnDestroy {
         return 'bi-geo-alt';
     }
 
-    getStopTypeColor(type: string | undefined): string {
-        const t = type?.toLowerCase() || '';
+    getStopTypeColor(type: string | "a"): string {
+        console.log('Getting color for type:', type);
+        const t = type?.toString()?.toLowerCase() || '';
         if (t.includes('bus')) return 'text-primary';
         if (t.includes('tram')) return 'text-success';
         if (t.includes('metro')) return 'text-warning';
