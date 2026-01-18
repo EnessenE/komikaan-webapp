@@ -137,12 +137,12 @@
                                         </div>
 
                                         <!-- Status Badge -->
-                                        @if (stop.tripScheduleRelationship?.toLowerCase() != 'scheduled') {
+                                        @if (stop?.tripScheduleRelationship?.toLowerCase() != 'scheduled') {
                                             <div class="my-1 d-flex justify-content-end">
                                                 <span class="badge bg-danger">{{ stop.tripScheduleRelationship }}</span>
                                             </div>
                                         }
-                                        @if (stop.tripScheduleRelationship?.toLowerCase() == 'scheduled' && stop.stopScheduleRelationship?.toLowerCase() != 'scheduled') {
+                                        @if (stop?.tripScheduleRelationship?.toLowerCase() == 'scheduled' && stop?.stopScheduleRelationship?.toLowerCase() != 'scheduled') {
                                             <div class="my-1 d-flex justify-content-end">
                                                 <span class="badge bg-danger">{{ stop.stopScheduleRelationship }}</span>
                                             </div>

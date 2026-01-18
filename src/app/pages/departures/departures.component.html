@@ -313,7 +313,8 @@
                                             <span class="text-muted">
                                                 Source:
                                                 <strong>{{ alert.dataOrigin }}</strong>
-                                                | Last Updated: {{ alert.lastUpdated | date: 'dd/MM/yyyy HH:mm' }}
+                                                | Start: {{ alert.startTime | date: 'dd/MM/yyyy HH:mm' }}
+                                                | End: {{ alert.endTime | date: 'dd/MM/yyyy HH:mm' }}
                                             </span>
 
                                             @if (alert.url) {
