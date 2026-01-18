@@ -16,9 +16,9 @@
     @for (routePart of travelAdvice.route; track routePart; let index = $index) {
         <div
             class="row align-items-start"
-            [class]="routePart.cancelled == true ? 'cancelled' : 'normal'"
+            [class]="routePart.canceled == true ? 'canceled' : 'normal'"
         >
-            @if (routePart.cancelled) {
+            @if (routePart.canceled) {
                 <p>Rijdt niet</p>
             }
             <p>
@@ -31,7 +31,7 @@
                         <app-time-selection
                             [actual]="routePart.actualDeparture"
                             [planned]="routePart.plannedDeparture"
-                            [cancelled]="routePart.cancelled"
+                            [canceled]="routePart.canceled"
                         ></app-time-selection>
                     </div>
                     <div class="col-6">
@@ -44,7 +44,7 @@
                         <app-track-selection
                             [plannedTrack]="routePart.plannedDepartureTrack"
                             [actualTrack]="routePart.actualDepartureTrack"
-                            [cancelled]="routePart.cancelled"
+                            [canceled]="routePart.canceled"
                         ></app-track-selection>
                     </div>
                     <div
@@ -57,7 +57,7 @@
                                     class="smaller-text"
                                     [actual]="stop.actualDeparture"
                                     [planned]="stop.plannedDeparture"
-                                    [cancelled]="false"
+                                    [canceled]="false"
                                 ></app-time-selection>
                             </div>
 
@@ -71,7 +71,7 @@
                                     class="smaller-text"
                                     [plannedTrack]="stop.plannedDepartureTrack"
                                     [actualTrack]="stop.actualDepartureTrack"
-                                    [cancelled]="false"
+                                    [canceled]="false"
                                 ></app-track-selection>
                             </div>
                         }
@@ -87,7 +87,7 @@
                         <app-time-selection
                             [actual]="routePart.actualArrival"
                             [planned]="routePart.plannedArrival"
-                            [cancelled]="routePart.cancelled"
+                            [canceled]="routePart.canceled"
                         ></app-time-selection>
                     </div>
                     <div class="col-6">
@@ -97,7 +97,7 @@
                         <app-track-selection
                             [plannedTrack]="routePart.plannedArrivalTrack"
                             [actualTrack]="routePart.actualArrivalTrack"
-                            [cancelled]="routePart.cancelled"
+                            [canceled]="routePart.canceled"
                         ></app-track-selection>
                     </div>
                 </div>

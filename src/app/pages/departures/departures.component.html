@@ -356,7 +356,7 @@
                             <a
                                 [routerLink]="['/trip', trip.tripId]"
                                 class="departure-row d-flex align-items-center p-3 border-bottom text-decoration-none text-dark"
-                                [class.cancelled-row]="trip.cancelled"
+                                [class.canceled-row]="trip.canceled"
                             >
                                 <!-- 1. Time -->
                                 <div class="col-time d-flex flex-column align-items-start justify-content-center me-3">
@@ -368,7 +368,7 @@
                                             class="badge bg-danger mb-1"
                                             style="font-size: 0.6rem"
                                         >
-                                            Cancelled
+                                            canceled
                                         </span>
                                         <span class="text-decoration-line-through text-muted small">
                                             {{ trip.plannedDepartureTime | date: 'HH:mm' }}
@@ -453,7 +453,7 @@
                                     <app-track-selection
                                         [plannedTrack]="trip.plannedPlatform"
                                         [actualTrack]="trip.actualPlatform"
-                                        [cancelled]="trip.cancelled"
+                                        [canceled]="trip.canceled"
                                     ></app-track-selection>
                                 </div>
 

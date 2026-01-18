@@ -12,5 +12,5 @@ export class TrackSelectionComponent {
     @Input()
     actualTrack: string | null | undefined;
     @Input()
-    cancelled: boolean = false;
+    canceled: boolean = false;
 }

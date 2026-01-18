@@ -76,7 +76,7 @@ export class TravelAdviceExpandedComponent {
                 routeLine.push(latLng(stop.latitude, stop.longitude));
             });
             var lineColor = 'green';
-            if (routePart.cancelled) {
+            if (routePart.canceled) {
                 lineColor = 'red';
             }
             var line = polyline(routeLine, { color: lineColor });

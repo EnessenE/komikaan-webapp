@@ -8,7 +8,7 @@ export interface GTFSTripStop {
     platformCode: string;
     stopHeadsign: string;
     stopType: string;
-    cancelled: boolean;
+    canceled: boolean;
     stopScheduleRelationship: string;
     tripScheduleRelationship: string;
     

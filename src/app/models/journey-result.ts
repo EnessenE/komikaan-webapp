@@ -37,7 +37,7 @@ export interface RoutePart {
     arrivalStation: string;
 
     type: string;
-    cancelled: boolean;
+    canceled: boolean;
     alternativeTransport: boolean;
     realisticTransfer: boolean;
 

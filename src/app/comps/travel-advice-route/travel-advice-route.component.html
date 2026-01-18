@@ -3,7 +3,7 @@
     @if (
         !(travelAdvice.route[index - 1] && travelAdvice.route[index - 1].arrivalStation === routePart.departureStation)
     ) {
-        @if (routePart.cancelled) {
+        @if (routePart.canceled) {
             &nbsp;<del class="major-info-change">{{ routePart.departureStation }}</del
             >&nbsp;
         } @else {
@@ -14,16 +14,16 @@
     <app-track-selection
         [plannedTrack]="routePart.plannedDepartureTrack"
         [actualTrack]="routePart.actualDepartureTrack"
-        [cancelled]="routePart.cancelled"
+        [canceled]="routePart.canceled"
     ></app-track-selection>
 
     <app-time-selection
         [actual]="routePart.actualDeparture"
         [planned]="routePart.plannedDeparture"
-        [cancelled]="routePart.cancelled"
+        [canceled]="routePart.canceled"
     ></app-time-selection>
 
-    <span [class]="routePart.cancelled == true ? 'cancellation' : 'normal'">
+    <span [class]="routePart.canceled == true ? 'cancellation' : 'normal'">
         @if (routePart.alternativeTransport) {
             <span
                 style="color: brown"
@@ -55,17 +55,17 @@
     <app-time-selection
         [actual]="routePart.actualArrival"
         [planned]="routePart.plannedArrival"
-        [cancelled]="routePart.cancelled"
+        [canceled]="routePart.canceled"
     ></app-time-selection>
 
-    @if (routePart.cancelled) {
+    @if (routePart.canceled) {
         &nbsp;<del class="major-info-change">{{ routePart.arrivalStation }}</del
         >&nbsp;
     } @else {
         <app-track-selection
             [plannedTrack]="routePart.plannedArrivalTrack"
             [actualTrack]="routePart.actualArrivalTrack"
-            [cancelled]="routePart.cancelled"
+            [canceled]="routePart.canceled"
         ></app-track-selection>
 
         {{ routePart.arrivalStation }}

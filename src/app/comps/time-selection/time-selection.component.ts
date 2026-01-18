@@ -13,5 +13,5 @@ export class TimeSelectionComponent {
   @Input()
   actual: Date | null | undefined;
   @Input()
-  cancelled: boolean | null | undefined;
+  canceled: boolean | null | undefined;
 }
