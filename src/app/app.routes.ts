@@ -7,6 +7,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { FeedDetailsComponent } from './pages/feed-details/feed-details.component';
 import { AgenciesComponent } from './pages/agencies/agencies.component';
 import { CoverageComponent } from './pages/coverage/coverage.component';
+import { FeedAlertsComponent } from './app/pages/feed-alerts/feed-alerts.component';
 
 export const routes: Routes = [
     {
@@ -28,6 +29,10 @@ export const routes: Routes = [
     {
         path: 'agencies/:id',
         component: AgenciesComponent,
+    },
+    {
+        path: 'alerts/:id',
+        component: FeedAlertsComponent,
     },
     {
         path: 'feeds',

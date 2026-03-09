@@ -58,6 +58,24 @@ export class ApiService {
         return this.http.get<Array<Alert>>(environment.apiServer + '/v1/feeds/' + feed + '/alerts');
     }
 
+    GetFeedAlertsWithPagination(feed: string, limit?: number, offset?: number): Observable<Array<Alert>> {
+        let url = environment.apiServer + '/v1/feeds/' + feed + '/alerts';
+        const params: string[] = [];
+        
+        if (limit !== undefined) {
+            params.push('limit=' + limit);
+        }
+        if (offset !== undefined) {
+            params.push('offset=' + offset);
+        }
+        
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+        
+        return this.http.get<Array<Alert>>(url);
+    }
+
     GetFeedPositions(feed: string): Observable<Array<VehiclePosition>> {
         return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + feed + '/positions');
     }

@@ -267,7 +267,7 @@
                     mat-cell
                     *matCellDef="let element"
                 >
-                    {{ element.alerts }}
+                    <a routerLink="/alerts/{{ element.name }}">{{ element.alerts }}</a>
                 </td>
             </ng-container>
             <ng-container matColumnDef="vehicles">

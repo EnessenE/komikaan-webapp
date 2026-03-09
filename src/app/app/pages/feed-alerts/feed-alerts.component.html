@@ -1,0 +1,70 @@
+<div class="alerts-container">
+  <h1>Alerts for {{ dataOrigin }}</h1>
+  <p>Back to <a routerLink="/feeds/">feeds</a></p>
+  <div *ngIf="!error && !loading" class="pagination-controls">
+    <button 
+      [disabled]="offset === 0" 
+      (click)="changePage(offset - limit)">
+      Previous
+    </button>
+    
+    <span>Page: {{ (offset / limit) + 1 }}</span>
+    
+    <button 
+      [disabled]="alerts.length < limit" 
+      (click)="changePage(offset + limit)">
+      Next
+    </button>
+  </div>
+
+  <div *ngIf="error">
+    <app-error [httpErrorResponse]="error"></app-error>
+  </div>
+
+  <div *ngIf="!error && loading" class="loading">Loading alerts...</div>
+
+  <div *ngIf="!error && !loading && alerts.length === 0" class="no-alerts">
+    <p>No alerts found for this feed.</p>
+  </div>
+
+  <div *ngIf="!error && !loading && alerts.length > 0" class="alerts-list">
+    <div *ngFor="let alert of alerts" class="alert-card">
+      <div class="alert-header">
+        <h3>{{ alert.headerText || 'No header' }}</h3>
+        <span class="severity" [ngClass]="'severity-' + (alert.severityLevel || 'unknown')">
+          {{ alert.severityLevel || 'Unknown' }}
+        </span>
+      </div>
+
+      <div class="alert-details">
+        <p *ngIf="alert.descriptionText" class="description">{{ alert.descriptionText }}</p>
+        <p *ngIf="alert.cause" class="cause"><strong>Cause:</strong> {{ alert.cause }}</p>
+        <p *ngIf="alert.effect" class="effect"><strong>Effect:</strong> {{ alert.effect }}</p>
+        <p *ngIf="alert.url" class="url">
+          <strong>More info:</strong> <a [href]="alert.url" target="_blank">{{ alert.url }}</a>
+        </p>
+      </div>
+
+      <div class="alert-meta">
+        <span class="date">Created: {{ alert.created | date:'medium' }}</span>
+        <span class="date">Updated: {{ alert.lastUpdated | date:'medium' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!error && !loading" class="pagination-controls">
+    <button 
+      [disabled]="offset === 0" 
+      (click)="changePage(offset - limit)">
+      Previous
+    </button>
+    
+    <span>Page: {{ (offset / limit) + 1 }}</span>
+    
+    <button 
+      [disabled]="alerts.length < limit" 
+      (click)="changePage(offset + limit)">
+      Next
+    </button>
+  </div>
+</div>
