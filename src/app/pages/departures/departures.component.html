@@ -15,8 +15,6 @@
     }
 
     @if (!loading && stop) {
-        <!-- HEADER SECTION -->
-        <!-- HEADER SECTION -->
         <header class="bg-white shadow-sm mb-4 pt-4 pb-3">
             <div class="container-xl">
                 <div class="row g-4">
@@ -52,6 +50,7 @@
                                 <app-route
                                     [route]="route"
                                     [minimal]="true"
+                                    [navigable]="false"
                                 ></app-route>
                             }
                         </div>

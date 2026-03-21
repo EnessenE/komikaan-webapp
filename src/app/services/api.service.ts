@@ -9,6 +9,7 @@ import { GTFSSearchStop } from '../models/gtfssearchstop';
 import { Feed } from '../models/feed';
 import { GTFSShape } from '../models/gtfsshape';
 import { GTFSRoute } from '../models/gtfsroute';
+import { GTFSRouteDetails } from '../models/gtfsroute-details';
 import { VehiclePosition } from '../models/vehicle-position';
 import { NearbyData } from '../models/nearby-data';
 import { Alert } from '../models/gtfsalert';
@@ -94,6 +95,10 @@ export class ApiService {
 
     GetTrip(trip: string): Observable<GTFSTrip> {
         return this.http.get<GTFSTrip>(environment.apiServer + '/v1/trips/' + trip);
+    }
+
+    GetRoute(dataOrigin: string, routeId: string): Observable<GTFSRouteDetails> {
+        return this.http.get<GTFSRouteDetails>(environment.apiServer + '/v1/routes/' + encodeURIComponent(dataOrigin) + '/' + encodeURIComponent(routeId));
     }
 
     GetCoverage(): Observable<Array<CoverageData>> {

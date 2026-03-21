@@ -1,15 +1,37 @@
-<div
-    class="route-badge shadow-sm"
-    [style.background-color]="'#' + (route.color || 'e9ecef')"
-    [style.color]="'#' + (route.textColor || '212529')"
-    [ngbTooltip]="minimal ? null : detailsTip"
-    placement="top"
-    container="body"
->
-    <span class="route-text">
-        {{ route.shortName }}@if (!minimal) { / {{ route.longName }} }
-    </span>
-</div>
+@if (isNavigable) {
+    <a
+        class="route-badge route-link shadow-sm text-decoration-none"
+        [routerLink]="['/routes', route.dataOrigin, routeKey]"
+        [style.background-color]="'#' + (route.color || 'e9ecef')"
+        [style.color]="'#' + (route.textColor || '212529')"
+        [ngbTooltip]="minimal ? null : detailsTip"
+        placement="top"
+        container="body"
+        [attr.aria-label]="'Open route ' + (route.shortName || route.longName || routeKey)"
+    >
+        <span class="route-chip">
+            <span class="route-text">
+                {{ route.shortName }}@if (!minimal) { / {{ route.longName }} }
+            </span>
+            <i class="bi bi-arrow-up-right-circle-fill route-icon"></i>
+        </span>
+    </a>
+} @else {
+    <div
+        class="route-badge shadow-sm"
+        [style.background-color]="'#' + (route.color || 'e9ecef')"
+        [style.color]="'#' + (route.textColor || '212529')"
+        [ngbTooltip]="minimal ? null : detailsTip"
+        placement="top"
+        container="body"
+    >
+        <span class="route-chip">
+            <span class="route-text">
+                {{ route.shortName }}@if (!minimal) { / {{ route.longName }} }
+            </span>
+        </span>
+    </div>
+}
 
 <ng-template #detailsTip>
     <div class="text-start small">

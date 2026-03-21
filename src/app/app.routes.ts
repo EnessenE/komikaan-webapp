@@ -8,6 +8,7 @@ import { FeedDetailsComponent } from './pages/feed-details/feed-details.componen
 import { AgenciesComponent } from './pages/agencies/agencies.component';
 import { CoverageComponent } from './pages/coverage/coverage.component';
 import { FeedAlertsComponent } from './app/pages/feed-alerts/feed-alerts.component';
+import { RouteDetailsComponent } from './pages/route-details/route-details.component';
 
 export const routes: Routes = [
     {
@@ -21,6 +22,10 @@ export const routes: Routes = [
     {
         path: 'trip/:id',
         component: TripComponent,
+    },
+    {
+        path: 'routes/:dataOrigin/:id',
+        component: RouteDetailsComponent,
     },
     {
         path: 'feed/:id',
