@@ -6,16 +6,16 @@
             class="major-info-change"
             style="background-color: rgba(255, 0, 0, 0.1)"
         >
-            {{ planned | date: 'HH:mm:ss' }}
+            {{ formatTime(planned) }}
         </span>
     } @else {
         <!-- Block for normally scheduled -->
-        @if (actual && planned && (actual | date: 'HH:mm:ss') !== (planned | date: 'HH:mm:ss')) {
-            <span class="major-info-change">{{ planned | date: 'HH:mm:ss' }}</span>
+        @if (hasDisplayedDelay()) {
+            <span class="major-info-change">{{ formatTime(planned) }}</span>
             <br />
-            {{ actual | date: 'HH:mm:ss' }}
+            {{ formatTime(actual) }}
         } @else {
-            {{ actual ?? planned | date: 'HH:mm:ss' }}
+            {{ formatTime(actual ?? planned) }}
         }
     }
 </span>

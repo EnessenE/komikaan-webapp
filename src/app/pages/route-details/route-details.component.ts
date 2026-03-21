@@ -48,6 +48,8 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
     timetableStops: TimetableStop[] = [];
     timetableTrips: TimetableTrip[] = [];
     timetableLookup: TimetableLookup = {};
+    timetableLoading = false;
+    selectedDate = new Date().toISOString().split('T')[0];
 
     options = {
         zoom: 12,
@@ -212,6 +214,28 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
         const t = this.timetableLookup[stopId]?.[tripId];
         if (!t) return '—';
         return t.substring(0, 5); // "HH:mm:ss" → "HH:mm"
+    }
+
+    get minDate(): string { return this.routeDetails?.firstRun ?? ''; }
+    get maxDate(): string { return this.routeDetails?.lastRun ?? ''; }
+
+    onDateChange(date: string): void {
+        if (!date || !this.routeDetails) return;
+        this.selectedDate = date;
+        const routeKey = this.routeDetails.id || this.routeDetails.shortName;
+        this.timetableLoading = true;
+        this.apiService.GetTimetable(this.routeDetails.dataOrigin, routeKey, date).subscribe({
+            next: (rows) => {
+                if (this.routeDetails) this.routeDetails = { ...this.routeDetails, timetable: rows };
+                try { this.buildTimetable(); } catch (e) { console.error(e); }
+                this.timetableLoading = false;
+            },
+            error: () => {
+                if (this.routeDetails) this.routeDetails = { ...this.routeDetails, timetable: [] };
+                try { this.buildTimetable(); } catch (e) { /* empty */ }
+                this.timetableLoading = false;
+            },
+        });
     }
 
     onMapReady(map: LeafletMap): void {

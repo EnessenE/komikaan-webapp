@@ -10,6 +10,7 @@ import { Feed } from '../models/feed';
 import { GTFSShape } from '../models/gtfsshape';
 import { GTFSRoute } from '../models/gtfsroute';
 import { GTFSRouteDetails } from '../models/gtfsroute-details';
+import { GTFSRouteTimetableRow } from '../models/gtfsroute-timetable-row';
 import { VehiclePosition } from '../models/vehicle-position';
 import { NearbyData } from '../models/nearby-data';
 import { Alert } from '../models/gtfsalert';
@@ -99,6 +100,12 @@ export class ApiService {
 
     GetRoute(dataOrigin: string, routeId: string): Observable<GTFSRouteDetails> {
         return this.http.get<GTFSRouteDetails>(environment.apiServer + '/v1/routes/' + encodeURIComponent(dataOrigin) + '/' + encodeURIComponent(routeId));
+    }
+
+    GetTimetable(dataOrigin: string, routeId: string, date: string): Observable<GTFSRouteTimetableRow[]> {
+        return this.http.get<GTFSRouteTimetableRow[]>(
+            environment.apiServer + '/v1/routes/' + encodeURIComponent(dataOrigin) + '/' + encodeURIComponent(routeId) + '/timetable?date=' + encodeURIComponent(date),
+        );
     }
 
     GetCoverage(): Observable<Array<CoverageData>> {

@@ -76,6 +76,106 @@
             </div>
         </header>
 
+        <!-- Timetable — full width, above map/stops -->
+        <section class="timetable-section">
+            <div class="container-fluid px-4 px-lg-5">
+                <!-- Toolbar: title, date range info, date picker -->
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+                    <div>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <h2 class="h4 fw-bold mb-0">Timetable</h2>
+                            @if (timetableStops.length > 0) {
+                                <span class="badge bg-light text-dark border">
+                                    {{ timetableTrips.length }} trips &middot; {{ timetableStops.length }} stops
+                                </span>
+                            }
+                        </div>
+                        @if (routeDetails.firstRun || routeDetails.lastRun) {
+                            <p class="text-muted small mb-0 mt-1">
+                                @if (routeDetails.firstRun) {
+                                    <span>First run: <strong>{{ routeDetails.firstRun | date: 'dd MMM yyyy' : 'UTC' }}</strong></span>
+                                }
+                                @if (routeDetails.firstRun && routeDetails.lastRun) {
+                                    <span class="mx-2">&middot;</span>
+                                }
+                                @if (routeDetails.lastRun) {
+                                    <span>Last run: <strong>{{ routeDetails.lastRun | date: 'dd MMM yyyy' : 'UTC' }}</strong></span>
+                                }
+                            </p>
+                        }
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        @if (timetableLoading) {
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        }
+                        <label class="form-label mb-0 text-muted small fw-bold" for="ttDate">Date</label>
+                        <input
+                            id="ttDate"
+                            type="date"
+                            class="form-control form-control-sm tt-date-input"
+                            [value]="selectedDate"
+                            [min]="minDate"
+                            [max]="maxDate"
+                            (input)="onDateChange($any($event.target).value)"
+                        />
+                    </div>
+                </div>
+
+                @if (timetableStops.length > 0 && timetableTrips.length > 0) {
+                    <div class="timetable-scroll" [class.tt-loading]="timetableLoading">
+                        <table class="timetable-table">
+                            <thead>
+                                <tr>
+                                    <th class="tt-stop-col tt-head-stop">Stop</th>
+                                    @for (trip of timetableTrips; track trip.id) {
+                                        <th class="tt-trip-col">
+                                            <div class="tt-trip-headsign" [title]="trip.headsign">
+                                                {{ trip.headsign || '—' }}
+                                            </div>
+                                            @if (trip.firstDeparture) {
+                                                <div class="tt-trip-time">{{ trip.firstDeparture.substring(0, 5) }}</div>
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (stop of timetableStops; track stop.id) {
+                                    <tr>
+                                        <td class="tt-stop-col">
+                                            <a
+                                                [routerLink]="['/stops', stop.id, routeDetails!.type]"
+                                                class="tt-stop-name text-decoration-none"
+                                                [title]="stop.name"
+                                            >
+                                                {{ stop.name }}
+                                            </a>
+                                        </td>
+                                        @for (trip of timetableTrips; track trip.id) {
+                                            <td
+                                                class="tt-cell"
+                                                [class.tt-cell-empty]="getCell(stop.id, trip.id) === '\u2014'"
+                                            >
+                                                {{ getCell(stop.id, trip.id) }}
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                } @else if (!timetableLoading) {
+                    <p class="text-muted small py-3">
+                        <i class="bi bi-calendar-x me-1"></i>
+                        No trips found for this date. Try selecting another date.
+                    </p>
+                }
+            </div>
+        </section>
+
         <main class="container-fluid px-0 route-main">
             <div class="row g-0">
                 <div class="col-lg-7 col-xl-8 map-column order-1 order-lg-last">
@@ -140,67 +240,5 @@
                 </div>
             </div>
         </main>
-
-        <!-- Classic Bus Schedule Timetable -->
-        @if (timetableStops.length > 0 && timetableTrips.length > 0) {
-            <section class="timetable-section">
-                <div class="container-xl">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <h2 class="h4 fw-bold mb-0">Timetable</h2>
-                        <span class="badge bg-light text-dark border">
-                            {{ timetableTrips.length }} trips &middot; {{ timetableStops.length }} stops
-                        </span>
-                    </div>
-                    <p class="text-muted small mb-3">
-                        Static GTFS schedule &mdash; showing up to 100 trips ordered by departure at the first stop.
-                        Scroll horizontally to see all trips.
-                    </p>
-
-                    <div class="timetable-scroll">
-                        <table class="timetable-table">
-                            <thead>
-                                <tr>
-                                    <!-- sticky stop-name header cell -->
-                                    <th class="tt-stop-col tt-head-stop">Stop</th>
-                                    @for (trip of timetableTrips; track trip.id) {
-                                        <th class="tt-trip-col">
-                                            <div class="tt-trip-headsign" [title]="trip.headsign">
-                                                {{ trip.headsign || '—' }}
-                                            </div>
-                                            @if (trip.firstDeparture) {
-                                                <div class="tt-trip-time">{{ trip.firstDeparture.substring(0, 5) }}</div>
-                                            }
-                                        </th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (stop of timetableStops; track stop.id) {
-                                    <tr>
-                                        <td class="tt-stop-col">
-                                            <a
-                                                [routerLink]="['/stops', stop.id, routeDetails!.type]"
-                                                class="tt-stop-name text-decoration-none"
-                                                [title]="stop.name"
-                                            >
-                                                {{ stop.name }}
-                                            </a>
-                                        </td>
-                                        @for (trip of timetableTrips; track trip.id) {
-                                            <td
-                                                class="tt-cell"
-                                                [class.tt-cell-empty]="getCell(stop.id, trip.id) === '\u2014'"
-                                            >
-                                                {{ getCell(stop.id, trip.id) }}
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        }
     }
 </div>

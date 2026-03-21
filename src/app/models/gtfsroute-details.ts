@@ -6,6 +6,8 @@ import { GTFSRouteTimetableRow } from './gtfsroute-timetable-row';
 export interface GTFSRouteDetails extends GTFSRoute {
     stopCount: number;
     tripCount: number;
+    firstRun: string | null;
+    lastRun: string | null;
     shapes: GTFSShape[];
     stops: GTFSSearchStop[];
     timetable: GTFSRouteTimetableRow[];

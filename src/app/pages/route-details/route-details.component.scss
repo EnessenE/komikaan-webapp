@@ -79,8 +79,8 @@
 // ── Timetable ────────────────────────────────────────────────
 .timetable-section {
     background: #fff;
-    border-top: 1px solid #e2e8f0;
-    padding: 2.5rem 0 3rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 2rem 0 2rem;
 }
 
 .timetable-scroll {
@@ -194,4 +194,14 @@ tbody tr:nth-child(even) .tt-stop-col {
 tbody tr:hover .tt-cell,
 tbody tr:hover .tt-stop-col {
     background-color: #eff6ff !important;
+}
+
+.tt-date-input {
+    min-width: 8.5rem;
+}
+
+.tt-loading {
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
 }
