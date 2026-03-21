@@ -153,6 +153,25 @@
     background: #f8fafc;
 }
 
+.tt-trip-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    padding: 0.15rem 0.1rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+}
+
 .tt-trip-headsign {
     font-size: 0.65rem;
     font-weight: 700;
@@ -183,6 +202,25 @@
     &.tt-cell-empty {
         color: #cbd5e1;
         font-size: 0.7rem;
+    }
+}
+
+.tt-cell-link {
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+    border-radius: 0.35rem;
+    padding: 0.05rem 0.25rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
     }
 }
 

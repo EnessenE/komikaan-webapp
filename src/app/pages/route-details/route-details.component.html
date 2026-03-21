@@ -132,12 +132,18 @@
                                     <th class="tt-stop-col tt-head-stop">Stop</th>
                                     @for (trip of timetableTrips; track trip.id) {
                                         <th class="tt-trip-col">
-                                            <div class="tt-trip-headsign" [title]="trip.headsign">
-                                                {{ trip.headsign || '—' }}
-                                            </div>
-                                            @if (trip.firstDeparture) {
-                                                <div class="tt-trip-time">{{ trip.firstDeparture.substring(0, 5) }}</div>
-                                            }
+                                            <a
+                                                [routerLink]="['/trip', trip.id]"
+                                                class="tt-trip-link"
+                                                [title]="trip.headsign || 'Open trip'"
+                                            >
+                                                <div class="tt-trip-headsign" [title]="trip.headsign">
+                                                    {{ trip.headsign || '—' }}
+                                                </div>
+                                                @if (trip.firstDeparture) {
+                                                    <div class="tt-trip-time">{{ trip.firstDeparture.substring(0, 5) }}</div>
+                                                }
+                                            </a>
                                         </th>
                                     }
                                 </tr>
@@ -159,7 +165,17 @@
                                                 class="tt-cell"
                                                 [class.tt-cell-empty]="getCell(stop.id, trip.id) === '\u2014'"
                                             >
-                                                {{ getCell(stop.id, trip.id) }}
+                                                @if (getCell(stop.id, trip.id) !== '\u2014') {
+                                                    <a
+                                                        [routerLink]="['/trip', trip.id]"
+                                                        class="tt-cell-link"
+                                                        [title]="'Open trip ' + trip.id"
+                                                    >
+                                                        {{ getCell(stop.id, trip.id) }}
+                                                    </a>
+                                                } @else {
+                                                    {{ getCell(stop.id, trip.id) }}
+                                                }
                                             </td>
                                         }
                                     </tr>
