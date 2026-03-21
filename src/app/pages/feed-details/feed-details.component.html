@@ -65,8 +65,21 @@
                     <tbody>
                         @for (route of routes; track route; let index = $index) {
                             <tr>
-                                <th scope="row">{{ route.shortName }}</th>
-                                <td>{{ route.longName }}</td>
+                                <th scope="row">
+                                    <a
+                                        [routerLink]="['/routes', route.dataOrigin, route.id]"
+                                        class="text-decoration-none"
+                                    >
+                                        {{ route.shortName }}
+                                    </a>
+                                </th>
+                                <td>
+                                    <a
+                                        [routerLink]="['/routes', route.dataOrigin, route.id]"
+                                        class="text-decoration-none"
+                                    >
+                                        {{ route.longName }}
+                                    </a></td>
                                 <td>{{ route.type }}</td>
                                 <td>{{ route.agency }}</td>
                                 <td>{{ route.description }}</td>

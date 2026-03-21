@@ -6,6 +6,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
     
     // Size settings
     min-width: 45px;
@@ -22,13 +23,44 @@
     letter-spacing: 0.5px;
     
     // Interactive
-    cursor: help;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    border: 1px solid rgba(0,0,0,0.1);
+    cursor: default;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    border: 1px solid rgba(0,0,0,0.14);
+    position: relative;
+    overflow: hidden;
 
     &:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
         z-index: 2;
     }
+}
+
+.route-link {
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 3px solid rgba(59, 130, 246, 0.45);
+        outline-offset: 2px;
+    }
+
+    &:hover {
+        filter: saturate(1.05) brightness(1.02);
+    }
+}
+
+.route-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    max-width: 100%;
+}
+
+.route-text {
+    white-space: nowrap;
+}
+
+.route-icon {
+    font-size: 0.8rem;
+    opacity: 0.85;
 }

@@ -229,11 +229,74 @@ export class TripComponent implements OnInit, OnDestroy {
     this.map?.invalidateSize();
   }
 
+  hasMultipleTimeZones(): boolean {
+    const stops = this.trip?.stops ?? [];
+    const zones = new Set(
+      stops
+        .map((stop) => this.normalizeTimeZone(stop.timeZone))
+        .filter((zone): zone is string => !!zone),
+    );
+    return zones.size > 1;
+  }
+
+  hasTimeZoneChange(index: number): boolean {
+    const stops = this.trip?.stops ?? [];
+    if (index <= 0 || index >= stops.length) return false;
+
+    return this.normalizeTimeZone(stops[index - 1].timeZone) !== this.normalizeTimeZone(stops[index].timeZone);
+  }
+
+  getTimeZoneLabel(stop: GTFSTripStop | undefined): string {
+    const timeZone = this.normalizeTimeZone(stop?.timeZone);
+    if (!timeZone) return 'Local time';
+
+    try {
+      const parts = new Intl.DateTimeFormat(undefined, {
+        timeZone,
+        timeZoneName: 'short',
+      }).formatToParts(this.getReferenceDate(stop));
+
+      const label = parts.find((part) => part.type === 'timeZoneName')?.value;
+      return label || timeZone;
+    } catch {
+      return timeZone;
+    }
+  }
+
+  getTimeZoneDescription(stop: GTFSTripStop | undefined): string {
+    const timeZone = this.normalizeTimeZone(stop?.timeZone);
+    const label = this.getTimeZoneLabel(stop);
+
+    if (!timeZone) return label;
+    return label === timeZone ? timeZone : `${label} · ${timeZone}`;
+  }
+
+  getTimeZoneChangeDescription(index: number): string {
+    if (!this.trip?.stops || index <= 0 || index >= this.trip.stops.length) return 'Timezone change';
+
+    return `${this.getTimeZoneDescription(this.trip.stops[index - 1])} → ${this.getTimeZoneDescription(this.trip.stops[index])}`;
+  }
+
   isStopPassed(stop: GTFSTripStop): boolean {
     const timeVal = stop.actualDepartureTime || stop.plannedDepartureTime;
     if (!timeVal) return false;
     const stopDate = new Date(timeVal);
     const now = new Date();
     return stopDate.getTime() < (now.getTime() - 120000);
+  }
+
+  private normalizeTimeZone(timeZone: string | null | undefined): string | null {
+    const normalized = timeZone?.trim();
+    return normalized ? normalized : null;
+  }
+
+  private getReferenceDate(stop: GTFSTripStop | undefined): Date {
+    const reference = stop?.actualDepartureTime
+      ?? stop?.plannedDepartureTime
+      ?? stop?.actualArrivalTime
+      ?? stop?.plannedArrivalTime;
+
+    const parsed = reference ? new Date(reference) : new Date();
+    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
   }
 }

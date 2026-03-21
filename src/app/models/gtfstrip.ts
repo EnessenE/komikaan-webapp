@@ -21,11 +21,12 @@ export interface GTFSTripStop {
     plannedDepartureTime?: Date | null;
     actualArrivalTime: Date;
     actualDepartureTime?: Date | null;
+    timeZone?: string | null;
 }
 
 export interface GTFSTrip {
     id: string;
-    routeid: string;
+    routeId: string;
     serviceId: string;
     headsign: string;
     shortname: string;

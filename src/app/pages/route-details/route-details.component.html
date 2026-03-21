@@ -1,0 +1,260 @@
+<div class="container-fluid app-container p-0">
+    @if (loading) {
+        <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-5">
+            <app-loading></app-loading>
+            <p class="text-muted mt-3">Loading route details...</p>
+        </div>
+    }
+
+    @if (error) {
+        <div class="container-xl py-4">
+            <app-error [httpErrorResponse]="error"></app-error>
+        </div>
+    }
+
+    @if (!loading && routeDetails) {
+        <header class="bg-white shadow-sm border-bottom">
+            <div class="container-xl py-4">
+                <div class="d-flex flex-column flex-lg-row justify-content-between gap-4 align-items-start">
+                    <div>
+                        <div class="mb-3">
+                            <app-route [route]="routeDetails" [navigable]="false"></app-route>
+                        </div>
+
+                        <h1 class="display-6 fw-bold mb-2 text-dark">
+                            {{ routeDetails.longName || routeDetails.shortName }}
+                        </h1>
+
+                        <div class="d-flex flex-wrap gap-2 text-muted small mb-3">
+                            <span class="badge bg-light text-dark border">Feed {{ routeDetails.dataOrigin }}</span>
+                            <span class="badge bg-light text-dark border">Agency {{ routeDetails.agency || 'Unknown' }}</span>
+                            <span class="badge bg-light text-dark border">Type {{ routeDetails.type }}</span>
+                        </div>
+
+                        @if (routeDetails.description) {
+                            <p class="text-muted mb-0 route-description">
+                                {{ routeDetails.description }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card shadow-sm">
+                            <div class="stat-label">Stops</div>
+                            <div class="stat-value">{{ routeDetails.stopCount }}</div>
+                        </div>
+                        <div class="stat-card shadow-sm">
+                            <div class="stat-label">Trips</div>
+                            <div class="stat-value">{{ routeDetails.tripCount }}</div>
+                        </div>
+                        <div class="stat-card shadow-sm">
+                            <div class="stat-label">Updated</div>
+                            <div class="stat-value small-value">{{ routeDetails.lastUpdated | date: 'dd/MM/yyyy HH:mm' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a
+                        [routerLink]="['/feed', routeDetails.dataOrigin]"
+                        class="btn btn-outline-primary btn-sm"
+                    >
+                        View feed
+                    </a>
+
+                    @if (routeDetails.url) {
+                        <a
+                            [href]="routeDetails.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn btn-outline-secondary btn-sm"
+                        >
+                            Operator link
+                        </a>
+                    }
+                </div>
+            </div>
+        </header>
+
+        <!-- Timetable — full width, above map/stops -->
+        <section class="timetable-section">
+            <div class="container-fluid px-4 px-lg-5">
+                <!-- Toolbar: title, date range info, date picker -->
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+                    <div>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <h2 class="h4 fw-bold mb-0">Timetable</h2>
+                            @if (timetableStops.length > 0) {
+                                <span class="badge bg-light text-dark border">
+                                    {{ timetableTrips.length }} trips &middot; {{ timetableStops.length }} stops
+                                </span>
+                            }
+                        </div>
+                        @if (routeDetails.firstRun || routeDetails.lastRun) {
+                            <p class="text-muted small mb-0 mt-1">
+                                @if (routeDetails.firstRun) {
+                                    <span>First run: <strong>{{ routeDetails.firstRun | date: 'dd MMM yyyy' : 'UTC' }}</strong></span>
+                                }
+                                @if (routeDetails.firstRun && routeDetails.lastRun) {
+                                    <span class="mx-2">&middot;</span>
+                                }
+                                @if (routeDetails.lastRun) {
+                                    <span>Last run: <strong>{{ routeDetails.lastRun | date: 'dd MMM yyyy' : 'UTC' }}</strong></span>
+                                }
+                            </p>
+                        }
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        @if (timetableLoading) {
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        }
+                        <label class="form-label mb-0 text-muted small fw-bold" for="ttDate">Date</label>
+                        <input
+                            id="ttDate"
+                            type="date"
+                            class="form-control form-control-sm tt-date-input"
+                            [value]="selectedDate"
+                            [min]="minDate"
+                            [max]="maxDate"
+                            (input)="onDateChange($any($event.target).value)"
+                        />
+                    </div>
+                </div>
+
+                @if (timetableStops.length > 0 && timetableTrips.length > 0) {
+                    <div class="timetable-scroll" [class.tt-loading]="timetableLoading">
+                        <table class="timetable-table">
+                            <thead>
+                                <tr>
+                                    <th class="tt-stop-col tt-head-stop">Stop</th>
+                                    @for (trip of timetableTrips; track trip.id) {
+                                        <th class="tt-trip-col">
+                                            <a
+                                                [routerLink]="['/trip', trip.id]"
+                                                class="tt-trip-link"
+                                                [title]="trip.headsign || 'Open trip'"
+                                            >
+                                                <div class="tt-trip-headsign" [title]="trip.headsign">
+                                                    {{ trip.headsign || '—' }}
+                                                </div>
+                                                @if (trip.firstDeparture) {
+                                                    <div class="tt-trip-time">{{ trip.firstDeparture.substring(0, 5) }}</div>
+                                                }
+                                            </a>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (stop of timetableStops; track stop.id) {
+                                    <tr>
+                                        <td class="tt-stop-col">
+                                            <a
+                                                [routerLink]="['/stops', stop.id, routeDetails!.type]"
+                                                class="tt-stop-name text-decoration-none"
+                                                [title]="stop.name"
+                                            >
+                                                {{ stop.name }}
+                                            </a>
+                                        </td>
+                                        @for (trip of timetableTrips; track trip.id) {
+                                            <td
+                                                class="tt-cell"
+                                                [class.tt-cell-empty]="getCell(stop.id, trip.id) === '\u2014'"
+                                            >
+                                                @if (getCell(stop.id, trip.id) !== '\u2014') {
+                                                    <a
+                                                        [routerLink]="['/trip', trip.id]"
+                                                        class="tt-cell-link"
+                                                        [title]="'Open trip ' + trip.id"
+                                                    >
+                                                        {{ getCell(stop.id, trip.id) }}
+                                                    </a>
+                                                } @else {
+                                                    {{ getCell(stop.id, trip.id) }}
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                } @else if (!timetableLoading) {
+                    <p class="text-muted small py-3">
+                        <i class="bi bi-calendar-x me-1"></i>
+                        No trips found for this date. Try selecting another date.
+                    </p>
+                }
+            </div>
+        </section>
+
+        <main class="container-fluid px-0 route-main">
+            <div class="row g-0">
+                <div class="col-lg-7 col-xl-8 map-column order-1 order-lg-last">
+                    <div class="sticky-map-wrapper">
+                        <div
+                            class="leaflet-map"
+                            leaflet
+                            [leafletOptions]="options"
+                            [leafletLayers]="layers"
+                            [leafletLayersControl]="layersControl"
+                            (leafletMapReady)="onMapReady($event)"
+                            (window:resize)="onResize()"
+                        ></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-xl-4 bg-white border-end timeline-column order-2 order-lg-first">
+                    <div class="p-3 p-lg-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div>
+                                <h2 class="h4 fw-bold mb-1">Stops on this route</h2>
+                                <p class="text-muted mb-0">Browse the merged stops currently associated with this line.</p>
+                            </div>
+                            <span class="text-muted small">{{ routeDetails.stops.length }} loaded</span>
+                        </div>
+
+                        <div class="list-group shadow-sm">
+                            @for (stop of routeDetails.stops; track stop.id + '-' + stop.stopType) {
+                                <a
+                                    [routerLink]="['/stops', stop.id, stop.stopType]"
+                                    class="list-group-item list-group-item-action px-4 py-3"
+                                >
+                                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ stop.name }}</div>
+                                            <div class="text-muted small">
+                                                {{ stop.stopType }}
+                                                @if (stop.description) {
+                                                    <span>· {{ stop.description }}</span>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="text-muted small d-flex align-items-center gap-3">
+                                            @if (stop.zone) {
+                                                <span>Zone {{ stop.zone }}</span>
+                                            }
+                                            <span class="d-inline-flex align-items-center gap-1">
+                                                Open stop
+                                                <i class="bi bi-chevron-right"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            } @empty {
+                                <div class="list-group-item px-4 py-4 text-center text-muted">
+                                    No stops found for this route.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    }
+</div>
