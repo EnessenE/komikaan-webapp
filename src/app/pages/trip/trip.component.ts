@@ -151,10 +151,10 @@ export class TripComponent implements OnInit, OnDestroy {
             }),
           });
 
-          stopMarker.bindPopup(`
-            <strong>${stop.name}</strong><br>
-            <a href="/stops/${stop.id}/${stop.stopType}">View Stop</a>
-          `);
+            stopMarker.bindPopup(`
+              <strong>${stop.name}</strong><br>
+              <a href="/stops/${encodeURIComponent(stop.id)}/${encodeURIComponent(stop.stopType)}">View Stop</a>
+            `);
           
           this.markerLayers.addLayer(stopMarker);
         }
@@ -298,5 +298,23 @@ export class TripComponent implements OnInit, OnDestroy {
 
     const parsed = reference ? new Date(reference) : new Date();
     return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  }
+
+  getStatusBadgeClass(status: string): string {
+    const normalizedStatus = (status || '').toLowerCase();
+    switch (normalizedStatus) {
+      case 'in_transit':
+        return 'bg-info';
+      case 'stopped_at':
+        return 'bg-warning text-dark';
+      case 'scheduled':
+        return 'bg-secondary';
+      case 'completed':
+        return 'bg-success';
+      case 'canceled':
+        return 'bg-danger';
+      default:
+        return 'bg-secondary';
+    }
   }
 }

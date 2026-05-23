@@ -208,3 +208,79 @@ $bg-light: #f8f9fa;
 }
 
 .z-20 { z-index: 20; }
+
+// --- TRIP SUMMARY CARD ---
+
+.trip-summary-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    
+    .summary-stat {
+        padding: 1rem 0.5rem;
+        
+        .stat-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+    }
+}
+
+// Occupancy Bar
+.occupancy-bar {
+    width: 100%;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.occupancy-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 3px;
+    
+    &.occupancy-low {
+        background-color: #28a745;
+    }
+    
+    &.occupancy-medium {
+        background-color: #ffc107;
+    }
+    
+    &.occupancy-high {
+        background-color: #dc3545;
+    }
+}
+
+.live-vehicle-panel {
+    background: #f0fdf4;
+    border-color: #bbf7d0 !important;
+}
+
+@media (max-width: 768px) {
+    .trip-summary-card {
+        .summary-stat {
+            padding: 0.75rem 0.25rem;
+            
+            .stat-label {
+                font-size: 0.7rem;
+            }
+            
+            .stat-value {
+                min-height: 50px;
+                font-size: 0.9rem;
+            }
+        }
+    }
+}

@@ -9,6 +9,9 @@ import { AgenciesComponent } from './pages/agencies/agencies.component';
 import { CoverageComponent } from './pages/coverage/coverage.component';
 import { FeedAlertsComponent } from './app/pages/feed-alerts/feed-alerts.component';
 import { RouteDetailsComponent } from './pages/route-details/route-details.component';
+import { MapComponent } from './pages/map/map.component';
+import { TrainStationsComponent } from './pages/train-stations/train-stations.component';
+import { DelaysComponent } from './pages/delays/delays.component';
 
 export const routes: Routes = [
     {
@@ -46,6 +49,18 @@ export const routes: Routes = [
     {
         path: 'coverage',
         component: CoverageComponent,
+    },
+    {
+        path: 'map',
+        component: MapComponent,
+    },
+    {
+        path: 'train-stations',
+        component: TrainStationsComponent,
+    },
+    {
+        path: 'delays',
+        component: DelaysComponent,
     },
     {
         path: '',

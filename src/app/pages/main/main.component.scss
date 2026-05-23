@@ -70,6 +70,24 @@ $z-index-map: 1;
   }
 }
 
+.quick-links {
+  border: none;
+  border-radius: 12px;
+
+  .quick-link {
+    color: #334155;
+    font-weight: 500;
+    padding: 0.35rem 0.25rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: #eef2ff;
+      color: $primary-color;
+    }
+  }
+}
+
 // 4. List Results
 .list-group-item {
   border: none;

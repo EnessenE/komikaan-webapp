@@ -161,7 +161,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
             stop.adjustedCoordinates.forEach((coordinate) => {
                 var stopLayer = circle([coordinate.latitude, coordinate.longitude], { radius: 25 });
                 var popup = new Popup();
-                popup.setContent('<a href="/stops/' + stop.id + '/' + stop.stopType + '">' + stop.name + '</a>');
+                popup.setContent('<a href="/stops/' + encodeURIComponent(stop.id) + '/' + encodeURIComponent(stop.stopType) + '">' + stop.name + '</a>');
                 stopLayer.bindPopup(popup);
                 this.clusterGroup.addLayer(stopLayer);
             });
@@ -181,7 +181,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
                 var popup = new Popup();
                 var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;
                 if (vehicle.tripId != undefined) {
-                    popupText += `Trip: <a href='/trip/${vehicle.tripId}'> ${vehicle.tripId}</a>`;
+                    popupText += `Trip: <a href='/trip/${encodeURIComponent(vehicle.tripId)}'> ${vehicle.tripId}</a>`;
                 } else {
                     popupText += `Trip: no trip configured`;
                 }

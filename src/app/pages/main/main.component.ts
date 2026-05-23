@@ -202,7 +202,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
         const popupContent = `<div class="map-popup">
             <strong>${stop.name}</strong><br>
-            <a href="/stops/${stop.id}/${stop.stopType}" class="btn-link">View Departures</a>
+          <a href="/stops/${encodeURIComponent(stop.id)}/${encodeURIComponent(stop.stopType)}" class="btn-link">View Departures</a>
         </div>`;
         
         stopCircle.bindPopup(popupContent);
@@ -221,7 +221,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
       let popupText = `<strong>Vehicle: ${vehicle.id}</strong><br>Seen: ${vehicle.measurementTime}<br>`;
       popupText += vehicle.tripId
-        ? `<a href="/trip/${vehicle.tripId}">View Trip ${vehicle.tripId}</a>`
+        ? `<a href="/trip/${encodeURIComponent(vehicle.tripId)}">View Trip ${vehicle.tripId}</a>`
         : `<span>No trip configured</span>`;
 
       vehicleCircle.bindPopup(popupText);

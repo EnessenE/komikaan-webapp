@@ -16,6 +16,9 @@ import { NearbyData } from '../models/nearby-data';
 import { Alert } from '../models/gtfsalert';
 import { GTFSAgency } from '../models/gtfsagency';
 import { CoverageData } from '../models/coverage-data';
+import { TopDelayedStop } from '../models/top-delayed-stop';
+import { TrainStationPerformance } from '../models/train-station-performance';
+import { MapViewportData } from '../models/map-viewport-data';
 
 @Injectable({
     providedIn: 'root',
@@ -39,29 +42,37 @@ export class ApiService {
         return this.http.get<Array<Feed>>(environment.apiServer + '/v1/feeds');
     }
 
+    GetFeedNames(): Observable<Array<string>> {
+        return this.http.get<Array<string>>(environment.apiServer + '/v1/feeds/names');
+    }
+
+    GetRealtimeFeedNames(): Observable<Array<string>> {
+        return this.http.get<Array<string>>(environment.apiServer + '/v1/feeds/realtime-names');
+    }
+
     GetFeedStops(feed: string): Observable<Array<GTFSSearchStop>> {
-        return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/feeds/' + feed + '/stops');
+        return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/stops');
     }
 
     GetFeedShapes(feed: string): Observable<Array<GTFSShape>> {
-        return this.http.get<Array<GTFSShape>>(environment.apiServer + '/v1/feeds/' + feed + '/shapes');
+        return this.http.get<Array<GTFSShape>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/shapes');
     }
 
     GetFeedRoutes(feed: string): Observable<Array<GTFSRoute>> {
-        return this.http.get<Array<GTFSRoute>>(environment.apiServer + '/v1/feeds/' + feed + '/routes');
+        return this.http.get<Array<GTFSRoute>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/routes');
     }
 
     GetAgencies(feed: string): Observable<Array<GTFSAgency>> {
-        return this.http.get<Array<GTFSAgency>>(environment.apiServer + '/v1/feeds/' + feed + '/agencies');
+        return this.http.get<Array<GTFSAgency>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/agencies');
     }
 
     // Add this new method for alerts
     GetFeedAlerts(feed: string): Observable<Array<Alert>> {
-        return this.http.get<Array<Alert>>(environment.apiServer + '/v1/feeds/' + feed + '/alerts');
+        return this.http.get<Array<Alert>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/alerts');
     }
 
     GetFeedAlertsWithPagination(feed: string, limit?: number, offset?: number): Observable<Array<Alert>> {
-        let url = environment.apiServer + '/v1/feeds/' + feed + '/alerts';
+        let url = environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/alerts';
         const params: string[] = [];
         
         if (limit !== undefined) {
@@ -78,8 +89,80 @@ export class ApiService {
         return this.http.get<Array<Alert>>(url);
     }
 
+    GetTopDelayedStops(limit = 25, dataOrigin?: string): Observable<Array<TopDelayedStop>> {
+        let url = environment.apiServer + '/v1/feeds/delays/top?limit=' + limit;
+        if (dataOrigin) {
+            url += '&dataOrigin=' + encodeURIComponent(dataOrigin);
+        }
+        return this.http.get<Array<TopDelayedStop>>(url);
+    }
+
+    GetTrainStationPerformance(
+        minLatitude?: number,
+        maxLatitude?: number,
+        minLongitude?: number,
+        maxLongitude?: number,
+        limit = 800,
+    ): Observable<Array<TrainStationPerformance>> {
+        let url = environment.apiServer + '/v1/stops/train-stations';
+        if (
+            minLatitude !== undefined
+            && maxLatitude !== undefined
+            && minLongitude !== undefined
+            && maxLongitude !== undefined
+        ) {
+            url += '?minLatitude=' + minLatitude
+                + '&maxLatitude=' + maxLatitude
+                + '&minLongitude=' + minLongitude
+                + '&maxLongitude=' + maxLongitude
+                + '&limit=' + limit;
+        }
+
+        return this.http.get<Array<TrainStationPerformance>>(url);
+    }
+
+    GetRoutesByShape(dataOrigin: string, shapeId: string): Observable<Array<GTFSRoute>> {
+        return this.http.get<Array<GTFSRoute>>(
+            environment.apiServer
+            + '/v1/map/shape-routes?dataOrigin=' + encodeURIComponent(dataOrigin)
+            + '&shapeId=' + encodeURIComponent(shapeId),
+        );
+    }
+
+    GetRoutesNearPoint(latitude: number, longitude: number, bboxDegrees: number): Observable<Array<GTFSRoute>> {
+        return this.http.get<Array<GTFSRoute>>(
+            environment.apiServer
+            + '/v1/map/routes-near-point?latitude=' + latitude
+            + '&longitude=' + longitude
+            + '&bboxDegrees=' + bboxDegrees,
+        );
+    }
+
+    GetMapViewportData(
+        minLatitude: number,
+        maxLatitude: number,
+        minLongitude: number,
+        maxLongitude: number,
+        zoom: number,
+        shapeLimit = 200,
+        stopLimit = 5000,
+        fullShapes = false,
+    ): Observable<MapViewportData> {
+        return this.http.get<MapViewportData>(
+            environment.apiServer
+            + '/v1/map/viewport?minLatitude=' + minLatitude
+            + '&maxLatitude=' + maxLatitude
+            + '&minLongitude=' + minLongitude
+            + '&maxLongitude=' + maxLongitude
+            + '&zoom=' + zoom
+            + '&shapeLimit=' + shapeLimit
+            + '&stopLimit=' + stopLimit
+            + '&fullShapes=' + fullShapes,
+        );
+    }
+
     GetFeedPositions(feed: string): Observable<Array<VehiclePosition>> {
-        return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + feed + '/positions');
+        return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/positions');
     }
 
     GetStop(stopId: string, stopType: string): Observable<GTFSStop> {

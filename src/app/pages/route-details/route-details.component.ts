@@ -145,7 +145,14 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
                 fillOpacity: 0.85,
                 weight: 2,
             });
-            stopMarker.bindPopup(`<strong>${stop.name}</strong><br>${stop.stopType}`);
+            stopMarker.bindPopup(`
+                <div class="stop-popup">
+                    <strong>${stop.name}</strong><br/>
+                    <small class="text-muted">${stop.stopType}</small><br/>
+                    <a href="/stops/${encodeURIComponent(stop.id)}/${encodeURIComponent(stop.stopType)}" class="btn btn-sm btn-primary mt-2">View Departures</a>
+                </div>
+            `);
+
             this.markerLayers.addLayer(stopMarker);
         });
 

@@ -1,0 +1,53 @@
+<div class="container-fluid app-container p-0">
+    @if (error) {
+        <div class="container-xl py-4">
+            <app-error [httpErrorResponse]="error"></app-error>
+        </div>
+    }
+
+    @if (!error) {
+        <header class="bg-white shadow-sm border-bottom">
+            <div class="container-xl py-4">
+                <h1 class="display-6 fw-bold mb-3">Train Stations</h1>
+                <p class="text-muted mb-3">View all railway stations and their on-time performance. Colors indicate performance: <span class="badge bg-success">Good (80%+)</span> <span class="badge bg-warning text-dark">Warning (60-80%)</span> <span class="badge bg-danger">Poor (&lt;60%)</span></p>
+                <div class="small text-muted d-flex flex-wrap gap-3 align-items-center">
+                    <span>Map data is loaded for your current viewport only.</span>
+                    <span>Visible stations: <strong>{{ stationsList.length }}</strong></span>
+                    @if (loading) {
+                        <span class="badge bg-secondary d-flex align-items-center gap-2">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading&hellip;
+                        </span>
+                    }
+                    @if (lastUpdated && !loading) {
+                        <span>Last update: <strong>{{ lastUpdated | date: 'HH:mm:ss' }}</strong></span>
+                    }
+                </div>
+            </div>
+        </header>
+
+        <div class="row g-0 h-100">
+            <!-- Map -->
+            <div class="col-12">
+                <div class="map-container">
+                    @if (loading) {
+                        <div class="loading-overlay d-flex flex-column align-items-center justify-content-center">
+                            <app-loading></app-loading>
+                            <p class="text-muted mt-2 mb-0">Loading visible stations...</p>
+                        </div>
+                    }
+
+                    <div
+                        id="map"
+                        class="map"
+                        leaflet
+                        [leafletOptions]="options"
+                        [leafletLayers]="layers"
+                        [leafletLayersControl]="layersControl"
+                        (leafletMapReady)="onMapReady($event)"
+                    ></div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,270 @@
+<div class="container-fluid app-container p-0">
+    @if (loading) {
+        <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-5">
+            <app-loading></app-loading>
+            <p class="text-muted mt-3">Loading filters...</p>
+        </div>
+    }
+
+    @if (error) {
+        <div class="container-xl py-4">
+            <app-error [httpErrorResponse]="error"></app-error>
+        </div>
+    }
+
+    @if (!loading && !error) {
+        <header class="bg-white shadow-sm border-bottom">
+            <div class="container-xl py-4">
+                <h1 class="display-6 fw-bold mb-3">Delays & Cancellations</h1>
+                <p class="text-muted mb-0">View active, upcoming, and past service disruptions across the network.</p>
+            </div>
+        </header>
+
+        <div class="container-xl py-5">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="filters-panel card border-0 shadow-sm sticky-top">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="h5 fw-bold mb-0">Filters</h2>
+                                @if (hasActiveFilters) {
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()">Clear</button>
+                                }
+                            </div>
+
+                            <div class="d-flex flex-column gap-3">
+                                @if (realtimeFeedNames.length > 1) {
+                                <div>
+                                    <label for="feedSelect" class="form-label fw-bold">Feed</label>
+                                    <select id="feedSelect" class="form-select" [(ngModel)]="selectedFeed" (change)="onFeedChange()">
+                                        <option value="all">All feeds</option>
+                                        @for (feed of realtimeFeedNames; track feed) {
+                                            <option [value]="feed">{{ feed }}</option>
+                                        }
+                                    </select>
+                                </div>
+                                }
+
+                                <div>
+                                    <label for="sortBy" class="form-label fw-bold">Sort By</label>
+                                    <select id="sortBy" class="form-select" [(ngModel)]="sortBy" (change)="onSortChange()">
+                                        <option value="severity">Severity (High to Low)</option>
+                                        <option value="recent">Recent First</option>
+                                        <option value="effect">Effect Type</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="severityFilter" class="form-label fw-bold">Severity</label>
+                                    <select id="severityFilter" class="form-select" [(ngModel)]="severityFilter" (change)="onSeverityFilterChange()">
+                                        <option [value]="undefined">All Severities</option>
+                                        @for (severity of getUniqueSeverities(); track severity) {
+                                            <option [value]="severity">{{ severity }}</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="effectFilter" class="form-label fw-bold">Effect</label>
+                                    <select id="effectFilter" class="form-select" [(ngModel)]="effectFilter" (change)="onEffectFilterChange()">
+                                        <option [value]="undefined">All Effects</option>
+                                        @for (effect of getUniqueEffects(); track effect) {
+                                            <option [value]="effect">{{ effect }}</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="filter-impact mt-4 p-3 rounded">
+                                <div class="small text-muted mb-1">Filter impact</div>
+                                <div class="fw-semibold">Showing {{ filteredAlerts.length }} of {{ alerts.length }} alerts</div>
+
+                                @if (activeFilterLabels.length > 0) {
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        @for (label of activeFilterLabels; track label) {
+                                            <span class="badge bg-primary-subtle text-primary-emphasis border">{{ label }}</span>
+                                        }
+                                    </div>
+                                } @else {
+                                    <div class="small text-muted mt-2">No active filters. Showing full dataset.</div>
+                                }
+                            </div>
+
+                            <p class="small text-muted mt-3 mb-0">
+                                <strong>Delayed updates</strong> means the number of delayed realtime stop updates observed in the latest 100 updates for that station.
+                            </p>
+                        </div>
+                    </div>
+
+                    <section class="mt-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <h3 class="h5 fw-bold mb-0">Alerts</h3>
+                            @if (loadingAlerts) {
+                                <span class="badge bg-secondary">Loading...</span>
+                            } @else {
+                                <span class="badge bg-dark">{{ filteredAlerts.length }}</span>
+                            }
+                        </div>
+
+                        @if (loadingAlerts) {
+                            <div class="alert alert-light border d-flex align-items-center gap-2 mb-0">
+                                <app-loading></app-loading>
+                                <span>Loading alerts for current filters...</span>
+                            </div>
+                        } @else if (filteredAlerts.length === 0) {
+                            <div class="alert alert-info mb-0">
+                                <strong>No alerts found</strong> matching your filters.
+                            </div>
+                        } @else {
+                            @if (getActiveAlerts().length > 0) {
+                                <section class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <h3 class="h5 fw-bold mb-0">🔴 Active Disruptions</h3>
+                                        <span class="badge bg-danger">{{ getActiveAlerts().length }}</span>
+                                    </div>
+                                    <div class="row g-3">
+                                        @for (alert of getActiveAlerts(); track alert.headerText) {
+                                            <div class="col-12">
+                                                <div class="alert-card border rounded p-4 h-100">
+                                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                                        <h5 class="fw-bold mb-0">{{ alert.headerText }}</h5>
+                                                        <span [ngClass]="'badge ' + getSeverityBadgeClass(alert.severityLevel)">{{ alert.severityLevel }}</span>
+                                                    </div>
+                                                    <p class="text-muted mb-3">{{ alert.descriptionText }}</p>
+                                                    <div class="d-flex flex-wrap gap-2 mb-3">
+                                                        <span [ngClass]="'badge ' + getEffectBadgeClass(alert.effect)">{{ alert.effect || 'Unknown' }}</span>
+                                                        <span class="badge bg-light text-dark border">{{ alert.feedName }}</span>
+                                                    </div>
+                                                    <div class="alert-times small text-muted">
+                                                        <div class="mb-1"><strong>Active:</strong> {{ formatDate(alert.startTime) }}</div>
+                                                        @if (alert.endTime) {
+                                                            <div><strong>Until:</strong> {{ formatDate(alert.endTime) }}</div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </section>
+                            }
+
+                            @if (getUpcomingAlerts().length > 0) {
+                                <section class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <h3 class="h5 fw-bold mb-0">⏰ Upcoming Disruptions</h3>
+                                        <span class="badge bg-warning text-dark">{{ getUpcomingAlerts().length }}</span>
+                                    </div>
+                                    <div class="row g-3">
+                                        @for (alert of getUpcomingAlerts(); track alert.headerText) {
+                                            <div class="col-12">
+                                                <div class="alert-card border rounded p-4 h-100 opacity-75">
+                                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                                        <h5 class="fw-bold mb-0">{{ alert.headerText }}</h5>
+                                                        <span [ngClass]="'badge ' + getSeverityBadgeClass(alert.severityLevel)">{{ alert.severityLevel }}</span>
+                                                    </div>
+                                                    <p class="text-muted mb-3">{{ alert.descriptionText }}</p>
+                                                    <div class="d-flex flex-wrap gap-2 mb-3">
+                                                        <span [ngClass]="'badge ' + getEffectBadgeClass(alert.effect)">{{ alert.effect || 'Unknown' }}</span>
+                                                        <span class="badge bg-light text-dark border">{{ alert.feedName }}</span>
+                                                    </div>
+                                                    <div class="alert-times small text-muted">
+                                                        <div class="mb-1"><strong>Starts:</strong> {{ formatDate(alert.startTime) }}</div>
+                                                        @if (alert.endTime) {
+                                                            <div><strong>Until:</strong> {{ formatDate(alert.endTime) }}</div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </section>
+                            }
+
+                            @if (getPastAlerts().length > 0) {
+                                <section>
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <h3 class="h5 fw-bold mb-0">✓ Past Disruptions</h3>
+                                        <span class="badge bg-secondary">{{ getPastAlerts().length }}</span>
+                                    </div>
+                                    <div class="row g-3">
+                                        @for (alert of getPastAlerts(); track alert.headerText) {
+                                            <div class="col-12">
+                                                <div class="alert-card border rounded p-4 h-100 opacity-50">
+                                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                                        <h5 class="fw-bold mb-0">{{ alert.headerText }}</h5>
+                                                        <span [ngClass]="'badge ' + getSeverityBadgeClass(alert.severityLevel)">{{ alert.severityLevel }}</span>
+                                                    </div>
+                                                    <p class="text-muted mb-3">{{ alert.descriptionText }}</p>
+                                                    <div class="d-flex flex-wrap gap-2 mb-3">
+                                                        <span [ngClass]="'badge ' + getEffectBadgeClass(alert.effect)">{{ alert.effect || 'Unknown' }}</span>
+                                                        <span class="badge bg-light text-dark border">{{ alert.feedName }}</span>
+                                                    </div>
+                                                    <div class="alert-times small text-muted">
+                                                        <div class="mb-1"><strong>Was active:</strong> {{ formatDate(alert.startTime) }} to {{ formatDate(alert.endTime) }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </section>
+                            }
+                        }
+                    </section>
+                </div>
+
+                <div class="col-lg-6">
+                    <section class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <h3 class="h5 fw-bold mb-0">Top Delays & Cancellations</h3>
+                            @if (loadingTopDelays) {
+                                <span class="badge bg-secondary">Loading...</span>
+                            } @else {
+                                <span class="badge bg-dark">{{ topDelayedStops.length }}</span>
+                            }
+                        </div>
+
+                        @if (loadingTopDelays) {
+                            <div class="alert alert-light border d-flex align-items-center gap-2 mb-0">
+                                <app-loading></app-loading>
+                                <span>Loading top delayed stops...</span>
+                            </div>
+                        } @else if (topDelayedStops.length === 0) {
+                            <div class="alert alert-info mb-0">No top delayed stops available for current filters.</div>
+                        } @else {
+                            <div class="table-responsive border rounded shadow-sm bg-white">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Stop</th>
+                                            <th>Feed</th>
+                                            <th class="text-end">Avg Delay</th>
+                                            <th class="text-end">Max Delay</th>
+                                            <th class="text-end">Delayed Updates</th>
+                                            <th class="text-end">Cancellations</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (stop of topDelayedStops; track stop.primaryStopId + '-' + stop.stopId) {
+                                            <tr>
+                                                <td>
+                                                    <a [routerLink]="['/stops', stop.primaryStopId, getStopTypeName(stop.stopType)]" class="fw-semibold text-decoration-none">
+                                                        {{ stop.stopName }}
+                                                    </a>
+                                                </td>
+                                                <td><span class="badge bg-light text-dark border">{{ stop.dataOrigin }}</span></td>
+                                                <td class="text-end">{{ formatDelaySeconds(stop.averageDelay) }}</td>
+                                                <td class="text-end">{{ formatDelaySeconds(stop.maxDelay) }}</td>
+                                                <td class="text-end">{{ stop.delayCount }}</td>
+                                                <td class="text-end"><span class="badge bg-danger-subtle text-danger-emphasis border">{{ stop.cancellationCount }}</span></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </section>
+                </div>
+            </div>
+        </div>
+    }
+</div>
