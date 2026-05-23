@@ -247,7 +247,7 @@
                                         @for (stop of topDelayedStops; track stop.primaryStopId + '-' + stop.stopId) {
                                             <tr>
                                                 <td>
-                                                    <a [routerLink]="['/stops', stop.primaryStopId, getStopTypeName(stop.stopType)]" class="fw-semibold text-decoration-none">
+                                                    <a [routerLink]="['/stops', stop.primaryStopId, stop.stopType]" class="fw-semibold text-decoration-none">
                                                         {{ stop.stopName }}
                                                     </a>
                                                 </td>
