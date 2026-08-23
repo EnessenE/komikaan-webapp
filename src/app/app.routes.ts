@@ -12,6 +12,7 @@ import { RouteDetailsComponent } from './pages/route-details/route-details.compo
 import { MapComponent } from './pages/map/map.component';
 import { TrainStationsComponent } from './pages/train-stations/train-stations.component';
 import { DelaysComponent } from './pages/delays/delays.component';
+import { MorealphaComponent } from './app/pages/morealpha/morealpha.component';
 
 export const routes: Routes = [
     {
@@ -61,6 +62,10 @@ export const routes: Routes = [
     {
         path: 'delays',
         component: DelaysComponent,
+    },
+    {
+        path: 'morealpha',
+        component: MorealphaComponent,
     },
     {
         path: '',
