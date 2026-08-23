@@ -238,7 +238,7 @@ export class MainComponent implements OnInit, OnDestroy {
           shadowUrl: 'assets/marker-shadow.png',
         }),
       });
-      locMarker.bindPopup('You are here');
+      locMarker.bindPopup('You are near here according to your device location.');
       this.markerLayers.addLayer(locMarker);
     }
 
