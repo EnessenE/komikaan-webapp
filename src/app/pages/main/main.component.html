@@ -10,7 +10,7 @@
 
   <aside class="sidebar-panel">
     <div class="sidebar-header">
-      <p class="text-muted">Find departures & track vehicles nearby.</p>
+      <p class="text-muted">A website that allows you lookup departure times. Merging GTFS feeds from all over the world to show you relatively accurate data.</p>
     </div>
 
     <!-- Search Section -->
@@ -26,7 +26,7 @@
             id="stopSearch"
             type="search"
             class="form-control border-start-0 ps-0"
-            placeholder="E.g. Amsterdam Centraal"
+            placeholder="E.g. Utrecht Centraal"
             [value]="originStop?.name || ''"
             (input)="onSearchInputChange($event)"
             autocomplete="off"
