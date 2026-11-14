@@ -22,6 +22,8 @@ interface AlertWithFeed extends Alert {
 
 type SortBy = 'severity' | 'recent' | 'effect';
 
+type StopSortBy = 'avgDelay' | 'maxDelay' | 'cancellations' | 'delayed' | 'name';
+
 @Component({
     changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-delays',
@@ -47,6 +49,7 @@ export class DelaysComponent implements OnInit, OnDestroy {
     sortBy: SortBy = 'severity';
     severityFilter: string | undefined;
     effectFilter: string | undefined;
+    stopSortBy: StopSortBy = 'avgDelay';
 
     private feedsSub: Subscription | undefined;
     private alertsSub: Subscription | undefined;
@@ -302,6 +305,35 @@ export class DelaysComponent implements OnInit, OnDestroy {
         if (seconds === null || seconds === undefined) return 'N/A';
         const minutes = Math.round(seconds / 60);
         return minutes + ' min';
+    }
+
+    get sortedTopDelayedStops(): TopDelayedStop[] {
+        const sorted = [...this.topDelayedStops];
+        switch (this.stopSortBy) {
+            case 'maxDelay':
+                sorted.sort((a, b) => (b.maxDelay ?? -1) - (a.maxDelay ?? -1));
+                break;
+            case 'cancellations':
+                sorted.sort((a, b) => b.cancellationCount - a.cancellationCount);
+                break;
+            case 'delayed':
+                sorted.sort((a, b) => b.delayCount - a.delayCount);
+                break;
+            case 'name':
+                sorted.sort((a, b) => a.stopName.localeCompare(b.stopName));
+                break;
+            default:
+                sorted.sort((a, b) => (b.averageDelay ?? -1) - (a.averageDelay ?? -1));
+        }
+        return sorted;
+    }
+
+    getAvgDelayClass(stop: TopDelayedStop): string {
+        const seconds = stop.averageDelay;
+        if (seconds === null || seconds === undefined) return '';
+        if (seconds >= 600) return 'text-danger fw-bold';
+        if (seconds >= 300) return 'text-warning-emphasis fw-semibold';
+        return '';
     }
 
     get hasActiveFilters(): boolean {

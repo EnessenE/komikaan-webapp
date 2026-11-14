@@ -214,13 +214,20 @@
 
                 <div class="col-lg-6">
                     <section class="mb-4">
-                        <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
                             <h3 class="h5 fw-bold mb-0">Top Delays & Cancellations</h3>
                             @if (loadingTopDelays) {
                                 <span class="badge bg-secondary">Loading...</span>
                             } @else {
                                 <span class="badge bg-dark">{{ topDelayedStops.length }}</span>
                             }
+                            <select class="form-select form-select-sm w-auto ms-auto" [(ngModel)]="stopSortBy" aria-label="Sort delayed stops">
+                                <option value="avgDelay">Sort: Avg delay</option>
+                                <option value="maxDelay">Sort: Max delay</option>
+                                <option value="cancellations">Sort: Cancellations</option>
+                                <option value="delayed">Sort: Delayed updates</option>
+                                <option value="name">Sort: Stop name</option>
+                            </select>
                         </div>
 
                         @if (loadingTopDelays) {
@@ -236,23 +243,27 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th>Stop</th>
+                                            <th>Type</th>
                                             <th>Feed</th>
                                             <th class="text-end">Avg Delay</th>
+                                            <th class="text-end">Min</th>
                                             <th class="text-end">Max Delay</th>
                                             <th class="text-end">Delayed Updates</th>
                                             <th class="text-end">Cancellations</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @for (stop of topDelayedStops; track stop.primaryStopId + '-' + stop.stopId) {
+                                        @for (stop of sortedTopDelayedStops; track stop.primaryStopId + '-' + stop.stopId) {
                                             <tr>
                                                 <td>
                                                     <a [routerLink]="['/stops', stop.primaryStopId, stop.stopType]" class="fw-semibold text-decoration-none">
                                                         {{ stop.stopName }}
                                                     </a>
                                                 </td>
+                                                <td><span class="badge bg-secondary-subtle text-secondary-emphasis border">{{ getStopTypeName(stop.stopType) }}</span></td>
                                                 <td><span class="badge bg-light text-dark border">{{ stop.dataOrigin }}</span></td>
-                                                <td class="text-end">{{ formatDelaySeconds(stop.averageDelay) }}</td>
+                                                <td class="text-end" [ngClass]="getAvgDelayClass(stop)">{{ formatDelaySeconds(stop.averageDelay) }}</td>
+                                                <td class="text-end">{{ formatDelaySeconds(stop.minDelay) }}</td>
                                                 <td class="text-end">{{ formatDelaySeconds(stop.maxDelay) }}</td>
                                                 <td class="text-end">{{ stop.delayCount }}</td>
                                                 <td class="text-end"><span class="badge bg-danger-subtle text-danger-emphasis border">{{ stop.cancellationCount }}</span></td>
