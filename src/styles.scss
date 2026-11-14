@@ -1,17 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
-
-/* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
-
-/* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
-
-@import 'leaflet/dist/leaflet.css';
-
-@import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-@import 'leaflet.markercluster/dist/MarkerCluster.css';
-
-@import 'bootstrap-icons/font/bootstrap-icons.min.css';
+/* You can add global styles to this file. */
+/* Library styles (bootstrap, bootstrap-icons, leaflet, markercluster) are loaded once via angular.json "styles". */
 
 .cancellation {
     color: red;
