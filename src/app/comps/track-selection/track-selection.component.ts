@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input  } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-track-selection',
     imports: [],
     templateUrl: './track-selection.component.html',

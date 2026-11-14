@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit  } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Add Router
 import { ApiService } from '../../../services/api.service';
 import { Alert } from '../../../models/gtfsalert';
@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { combineLatest } from 'rxjs'; // For cleaner subscriptions
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-feed-alerts',
   standalone: true, // Assuming standalone based on your imports
   imports: [CommonModule, ErrorComponent, RouterLink],

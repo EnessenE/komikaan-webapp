@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewInit, Component, Input, OnInit  } from '@angular/core';
 import { TravelAdvice } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -22,6 +22,7 @@ import {
 import { LeafletModule, LeafletControlLayersConfig } from '@bluehalo/ngx-leaflet';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-travel-advice-expanded',
     imports: [DatePipe, NgbTooltipModule, TrackSelectionComponent, TimeSelectionComponent, LeafletModule],
     templateUrl: './travel-advice-expanded.component.html',

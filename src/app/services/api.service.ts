@@ -31,7 +31,7 @@ export class ApiService {
             text = 'Amsterdam';
         }
 
-        return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/stops/search?filter=' + text);
+        return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/stops/search?filter=' + encodeURIComponent(text));
     }
 
     NearbyStops(location: { lat: number; lng: number }): Observable<NearbyData> {

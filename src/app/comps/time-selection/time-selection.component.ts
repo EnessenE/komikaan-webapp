@@ -1,7 +1,8 @@
 import { DatePipe } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input  } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-time-selection',
     imports: [DatePipe],
     templateUrl: './time-selection.component.html',

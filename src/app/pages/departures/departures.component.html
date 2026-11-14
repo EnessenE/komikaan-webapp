@@ -28,11 +28,11 @@
                         <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                             <span
                                 class="badge rounded-pill d-flex align-items-center gap-2 px-3 py-2"
-                                [class.bg-primary]="stop.stopType?.includes('Bus')"
-                                [class.bg-success]="stop.stopType?.includes('Tram')"
-                                [class.bg-warning]="stop.stopType?.includes('Metro')"
-                                [class.text-dark]="stop.stopType?.includes('Metro')"
-                                [class.bg-info]="stop.stopType?.includes('Rail') || stop.stopType?.includes('Train')"
+                                [class.bg-primary]="stop.stopType.includes('Bus')"
+                                [class.bg-success]="stop.stopType.includes('Tram')"
+                                [class.bg-warning]="stop.stopType.includes('Metro')"
+                                [class.text-dark]="stop.stopType.includes('Metro')"
+                                [class.bg-info]="stop.stopType.includes('Rail') || stop.stopType.includes('Train')"
                                 [class.bg-secondary]="!stop.stopType"
                             >
                                 <i class="bi {{ getStopTypeIcon(stop.stopType) }}"></i>
@@ -65,7 +65,7 @@
 
                         <!-- 3. ACTIONS ROW (Buttons) -->
                         <div class="d-flex flex-wrap gap-3 border-top pt-3">
-                            @if (stop.routes?.length) {
+                            @if (stop.routes.length) {
                                 <button
                                     class="btn btn-sm btn-outline-primary fw-bold d-flex align-items-center gap-2"
                                     (click)="isRoutesCollapsed = !isRoutesCollapsed"
@@ -73,7 +73,7 @@
                                     [class.active]="!isRoutesCollapsed"
                                 >
                                     <i class="bi bi-signpost-split"></i>
-                                    {{ isRoutesCollapsed ? 'View' : 'Hide' }} {{ stop.routes?.length }} Routes
+                                    {{ isRoutesCollapsed ? 'View' : 'Hide' }} {{ stop.routes.length }} Routes
                                     <i
                                         class="bi"
                                         [class.bi-chevron-down]="isRoutesCollapsed"

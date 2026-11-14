@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -30,6 +30,7 @@ import { TrackSelectionComponent } from '../../comps/track-selection/track-selec
 import { LoadingComponent } from '../../comps/loading/loading.component';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-trip',
   standalone: true,
   imports: [

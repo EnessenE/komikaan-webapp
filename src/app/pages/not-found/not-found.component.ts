@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component  } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-not-found',
     imports: [],
     templateUrl: './not-found.component.html',

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit  } from '@angular/core';
 import { GTFSAgency } from '../../models/gtfsagency';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -6,6 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { DatePipe } from '@angular/common';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-agencies',
     imports: [DatePipe, RouterModule],
     templateUrl: './agencies.component.html',

@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterContentInit, Component, Input, OnInit, TemplateRef, ViewChild, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, AfterContentInit, Component, Input, OnInit, TemplateRef, ViewChild, inject, input  } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-error',
     imports: [],
     templateUrl: './error.component.html',

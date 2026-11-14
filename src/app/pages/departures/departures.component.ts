@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -21,6 +21,7 @@ import { RouteComponent } from '../../comps/route/route.component';
 import { Alert } from '../../models/gtfsalert';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-departures',
     standalone: true,
     imports: [CommonModule, RouterLink, LeafletModule, NgbCollapseModule, NgbTooltipModule, TimeOnlySelectionComponent, TrackSelectionComponent, LoadingComponent, ErrorComponent, RouteComponent],
@@ -165,7 +166,6 @@ export class DeparturesComponent implements OnInit, OnDestroy {
     }
 
     getStopTypeColor(type: string | "a"): string {
-        console.log('Getting color for type:', type);
         const t = type?.toString()?.toLowerCase() || '';
         if (t.includes('bus')) return 'text-primary';
         if (t.includes('tram')) return 'text-success';

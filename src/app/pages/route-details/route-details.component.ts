@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -28,6 +28,7 @@ export interface TimetableTrip { id: string; headsign: string; firstDeparture: s
 type TimetableLookup = Record<string, Record<string, string | null>>;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-route-details',
     standalone: true,
     imports: [CommonModule, RouterLink, LeafletModule, LoadingComponent, ErrorComponent, RouteComponent],
