@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -27,6 +27,7 @@ import { ErrorComponent } from '../../comps/error/error.component';
 import { gtfsTypeLabel, GTFS_TYPE_ORDER } from '../../utils/gtfs-type.utils';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-map',
     standalone: true,
     imports: [CommonModule, LeafletModule, ErrorComponent],

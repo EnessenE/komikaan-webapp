@@ -6,15 +6,15 @@
                 <p>
                     Stops:
                     @if (stops?.length) {
-                        {{ stops?.length }}
+                        {{ stops.length }}
                     } @else {
                         <app-loading></app-loading>
                     }
                 </p>
                 <p>
                     Routes:
-                    @if (routes?.length) {
-                        {{ routes?.length }}
+                    @if (routes && routes.length > 0) {
+                        {{ routes.length }}
                     } @else {
                         <app-loading></app-loading>
                     }
@@ -22,8 +22,8 @@
             }
             <p>
                 Realtime vehicles:
-                @if (vehiclePositions?.length || vehiclePositions != null) {
-                    {{ vehiclePositions?.length }}
+                @if (vehiclePositions) {
+                    {{ vehiclePositions.length }}
                 } @else {
                     <app-loading></app-loading>
                 }
@@ -107,8 +107,8 @@
                     <tbody>
                         @for (alert of alerts; track alert.id; let index = $index) {
                             <tr>
-                                <td [innerHTML]="alert.headerText"></td> <!-- Use innerHTML if text contains HTML -->
-                                <td [innerHTML]="alert.descriptionText"></td>
+                                <td>{{ alert.headerText }}</td>
+                                <td>{{ alert.descriptionText }}</td>
                                 <td>{{ alert.cause }}</td>
                                 <td>{{ alert.effect }}</td>
                                 <td>{{ alert.severityLevel }}</td>

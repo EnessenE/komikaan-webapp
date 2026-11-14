@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Import CommonModule for pipes/directives
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -34,6 +34,7 @@ import { NearbyData } from '../../models/nearby-data';
 import { Title } from '@angular/platform-browser';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-main',
   standalone: true,
   imports: [

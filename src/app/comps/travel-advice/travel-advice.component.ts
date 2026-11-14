@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, input  } from '@angular/core';
 import { TravelAdvice } from '../../models/journey-result';
 import { DatePipe } from '@angular/common';
 import { NgbAccordionModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -6,6 +6,7 @@ import { TravelAdviceRouteComponent } from '../travel-advice-route/travel-advice
 import { TravelAdviceExpandedComponent } from '../travel-advice-expanded/travel-advice-expanded.component';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-travel-advice',
     imports: [
         DatePipe,
@@ -38,19 +39,16 @@ export class TravelAdviceComponent implements OnInit{
             currentPins = JSON.parse(pinnedDataRaw);
         }
         if (wasItPinned) {
-            console.log('unpinning');
             const adviceCopy = structuredClone(travelAdvice);
             adviceCopy.oldData = false;
             adviceCopy.pinned = true;
             //TODO: not use this.
             currentPins.forEach(element => {
-                console.log(element.pinned + ' - '+ element.oldData)
                 element.oldData = false;
             });
             var currentIndex = currentPins.findIndex(
                 (pinnedAdvice) => JSON.stringify(pinnedAdvice) === JSON.stringify(adviceCopy),
             );
-            console.log(currentIndex);
             if (currentIndex >= 0) {
                 currentPins.splice(currentIndex, 1);
             } else {
@@ -58,7 +56,6 @@ export class TravelAdviceComponent implements OnInit{
             }
             travelAdvice.pinned = false;
         } else {
-            console.log('pinning');
             travelAdvice.pinned = true;
             currentPins.push(travelAdvice);
         }

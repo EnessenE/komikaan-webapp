@@ -1,4 +1,4 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { InMemoryScrollingFeature, InMemoryScrollingOptions, provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -14,5 +14,5 @@ const inMemoryScrollingFeature: InMemoryScrollingFeature =
   withInMemoryScrolling(scrollConfig);
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHttpClient(), provideRouter(routes, inMemoryScrollingFeature), provideAnimationsAsync()],
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideHttpClient(), provideRouter(routes, inMemoryScrollingFeature), provideAnimationsAsync()],
 };

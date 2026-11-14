@@ -5,6 +5,9 @@
             <p>Loading feed data...</p>
         </div>
     }
+    @if (error) {
+        <div class="alert alert-danger">Failed to load feeds: {{ error.message || error }}</div>
+    }
     <div [hidden]="!dataSource">
         <table
             mat-table
@@ -42,7 +45,7 @@
                     mat-cell
                     *matCellDef="let element"
                 >
-                      <span [innerHTML]="element.credits"></span>
+                      <span>{{ element.credits | stripHtml }}</span>
 
                 </td>
             </ng-container>
@@ -311,5 +314,6 @@
                 *matRowDef="let row; columns: displayedColumns"
             ></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[25, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
 </div>

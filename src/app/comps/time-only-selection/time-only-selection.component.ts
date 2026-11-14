@@ -1,7 +1,8 @@
 import { formatDate } from '@angular/common';
-import { Component, Inject, Input, LOCALE_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID  } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-time-only-selection',
     templateUrl: './time-only-selection.component.html',
     styleUrl: './time-only-selection.component.scss'

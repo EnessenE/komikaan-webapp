@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -23,6 +23,7 @@ interface AlertWithFeed extends Alert {
 type SortBy = 'severity' | 'recent' | 'effect';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-delays',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterLink, LoadingComponent, ErrorComponent],

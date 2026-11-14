@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit  } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
@@ -27,6 +27,7 @@ import { interval, Subscription } from 'rxjs';
 import { Alert } from '../../models/gtfsalert';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-feed-details',
     imports: [LeafletModule, LeafletMarkerClusterModule, LoadingComponent, RouterModule, CommonModule],
     templateUrl: './feed-details.component.html',
@@ -129,8 +130,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
                     }
                 });
             }
-            console.log('Realtime only: ' + this.onlyRealTime);
-        });
+                    });
 
         this.loading = true;
 
@@ -140,8 +140,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     }
 
     private getFeedPositions(fitToBounds: boolean) {
-        console.log('Getting feed positions');
-        this.loading = true;
+                this.loading = true;
         this.apiService.GetFeedPositions(this.selectedFeed).subscribe({
             next: (data) => {
                 this.vehiclePositions = data;
@@ -167,10 +166,8 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
             });
         });
         this.invalidateMap();
-        console.log('Fitting bounds to markerLayers...');
-        this.map.fitBounds(this.clusterGroup.getBounds());
-        console.log('bounds');
-    }
+                this.map.fitBounds(this.clusterGroup.getBounds());
+            }
 
     addVehiclesToMap(vehicles: VehiclePosition[], fitToBounds: boolean) {
         this.vehiclesLayer?.clearLayers();
@@ -189,15 +186,13 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
                 vehicleLayer.bindPopup(popup);
                 this.vehiclesLayer.addLayer(vehicleLayer);
             } else {
-                console.log('Vehicle with bad coordinates: ' + vehicle.id);
-            }
+                            }
         });
         this.clusterGroup.removeLayer(this.vehiclesLayer);
         // Timeout due to timing bug on the initalization for an unknown reason.
         if (fitToBounds) {
             this.invalidateMap();
-            console.log('Fitting bounds to markerLayers...');
-            this.map.fitBounds(this.vehiclesLayer.getBounds());
+                        this.map.fitBounds(this.vehiclesLayer.getBounds());
         }
     }
 

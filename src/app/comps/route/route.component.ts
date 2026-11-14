@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { GTFSRoute } from '../../models/gtfsroute';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-route',
   standalone: true,
   imports: [CommonModule, RouterLink, NgbTooltipModule],

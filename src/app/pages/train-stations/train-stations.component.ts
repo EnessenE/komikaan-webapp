@@ -1,6 +1,6 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, OnDestroy  } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
@@ -23,9 +23,10 @@ import { ErrorComponent } from '../../comps/error/error.component';
 import { gtfsTypeLabel } from '../../utils/gtfs-type.utils';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
     selector: 'app-train-stations',
     standalone: true,
-    imports: [CommonModule, RouterLink, LeafletModule, LoadingComponent, ErrorComponent],
+    imports: [CommonModule, LeafletModule, LoadingComponent, ErrorComponent],
     templateUrl: './train-stations.component.html',
     styleUrl: './train-stations.component.scss',
 })
@@ -163,6 +164,7 @@ export class TrainStationsComponent implements OnInit, OnDestroy {
         const radius = this.getMarkerRadius(this.map.getZoom());
 
         for (const stationData of this.stationsList) {
+            if (!isFinite(stationData.latitude) || !isFinite(stationData.longitude)) continue;
             const stationLatLng = latLng(stationData.latitude, stationData.longitude);
             
             // Color based on on-time percentage; grey = no live data

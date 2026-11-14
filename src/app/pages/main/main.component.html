@@ -68,7 +68,7 @@
       @if (foundStops && foundStops.length > 0) {
         <h6 class="text-uppercase text-muted small fw-bold mb-2">Results</h6>
         <div class="list-group shadow-sm">
-          @for (stop of foundStops; track stop.id) {
+          @for (stop of foundStops; track $index) {
             <a [routerLink]="['/stops', stop.id, stop.stopType]" 
                class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
                <div>

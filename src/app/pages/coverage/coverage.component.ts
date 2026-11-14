@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit  } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import L from 'leaflet';
 import { Subscription } from 'rxjs';
@@ -10,6 +10,7 @@ import { ErrorComponent } from '../../comps/error/error.component';
 import { CoverageData } from '../../models/coverage-data';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-coverage',
   standalone: true,
   imports: [CommonModule, LeafletModule, ErrorComponent, RouterModule],
