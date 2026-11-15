@@ -196,6 +196,13 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
         return (h < 4 ? h + 24 : h) * 3600 + parseInt(t.substring(3, 5), 10) * 60 + parseInt(t.substring(6, 8), 10);
     }
 
+    // Display HH:mm; post-midnight times are shown as 24h+ like printed timetables
+    fmtTime(t: string | null | undefined): string {
+        if (!t) return '—';
+        const h = parseInt(t.substring(0, 2), 10);
+        return h < 4 ? (h + 24) + t.substring(2, 5) : t.substring(0, 5);
+    }
+
     get minDate(): string { return this.routeDetails?.firstRun ?? ''; }
     get maxDate(): string { return this.routeDetails?.lastRun ?? ''; }
 

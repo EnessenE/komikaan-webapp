@@ -189,10 +189,19 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
         }
     }
 
-    getCell(stopId: string, tripId: string): string {
-        const t = this.timetableLookup[stopId]?.[tripId];
+    // Display HH:mm; post-midnight times (before 04:00) are shown as 24h+/25h+ like printed
+    // timetables, matching the service-day sort order.
+    fmtTime(t: string | null | undefined): string {
         if (!t) return '—';
+        const h = parseInt(t.substring(0, 2), 10);
+        if (h < 4) {
+            return (h + 24) + t.substring(2, 5);
+        }
         return t.substring(0, 5);
+    }
+
+    getCell(stopId: string, tripId: string): string {
+        return this.fmtTime(this.timetableLookup[stopId]?.[tripId]);
     }
 
     get minDate(): string { return this.routeDetails?.firstRun ?? ''; }

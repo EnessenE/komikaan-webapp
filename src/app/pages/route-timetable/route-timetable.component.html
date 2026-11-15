@@ -99,7 +99,7 @@
                                             <a [routerLink]="['/trip', trip.id]" class="tt-trip-link" [title]="trip.headsign || 'Open trip'">
                                                 <div class="tt-trip-headsign" [title]="trip.headsign">{{ trip.headsign || '—' }}</div>
                                                 @if (trip.firstDeparture) {
-                                                    <div class="tt-trip-time">{{ trip.firstDeparture.substring(0, 5) }}</div>
+                                                    <div class="tt-trip-time">{{ fmtTime(trip.firstDeparture) }}</div>
                                                 }
                                             </a>
                                         </th>

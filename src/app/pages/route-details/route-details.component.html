@@ -96,7 +96,7 @@
                                 <div class="d-flex flex-wrap gap-1 mt-2">
                                     @for (dep of nextDepartures; track dep.tripId) {
                                         <a [routerLink]="['/trip', dep.tripId]" class="badge bg-light text-dark border text-decoration-none" [title]="dep.headsign">
-                                            {{ dep.time ? dep.time.substring(0, 5) : '—' }} {{ dep.headsign }}
+                                            {{ fmtTime(dep.time) }} {{ dep.headsign }}
                                         </a>
                                     }
                                 </div>
