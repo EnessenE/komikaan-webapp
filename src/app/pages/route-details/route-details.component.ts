@@ -22,10 +22,7 @@ import { LoadingComponent } from '../../comps/loading/loading.component';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { RouteComponent } from '../../comps/route/route.component';
 
-export interface TimetableStop { id: string; name: string; sequence: number; }
-export interface TimetableTrip { id: string; headsign: string; firstDeparture: string | null; }
-
-type TimetableLookup = Record<string, Record<string, string | null>>;
+export interface NextDeparture { tripId: string; headsign: string; time: string | null; directionId: number | null; }
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Default,
@@ -45,12 +42,8 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
     routeLineLayer: FeatureGroup = featureGroup();
     stopLineLayer: FeatureGroup = featureGroup();
 
-    // Timetable pivot data
-    timetableStops: TimetableStop[] = [];
-    timetableTrips: TimetableTrip[] = [];
-    timetableLookup: TimetableLookup = {};
-    timetableLoading = false;
-    selectedDate = new Date().toISOString().split('T')[0];
+    // Compact "next departures" summary; the full pivot timetable lives on its own page
+    nextDepartures: NextDeparture[] = [];
 
     options = {
         zoom: 12,
@@ -105,9 +98,9 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
                     console.error('[RouteDetails] drawMapFeatures failed:', e);
                 }
                 try {
-                    this.buildTimetable();
+                    this.buildNextDepartures();
                 } catch (e) {
-                    console.error('[RouteDetails] buildTimetable failed:', e);
+                    console.error('[RouteDetails] buildNextDepartures failed:', e);
                 }
             },
             error: (error: HttpErrorResponse) => {
@@ -173,78 +166,45 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
         this.updateMapBounds();
     }
 
-    private buildTimetable(): void {
+    private buildNextDepartures(): void {
         const rows = this.routeDetails?.timetable ?? [];
-
-        // Unique stops, deduplicated by id, sorted by sequence
-        const stopLookup: Record<string, TimetableStop> = {};
+        if (rows.length === 0) {
+            this.nextDepartures = [];
+            return;
+        }
+        const firstStopId = [...new Set(rows.map((r) => r.stopId))]
+            .map((id) => ({ id, seq: Math.min(...rows.filter((r) => r.stopId === id).map((r) => r.stopSequence)) }))
+            .sort((a, b) => a.seq - b.seq)[0]?.id;
+        const trips: Record<string, NextDeparture> = {};
         for (const row of rows) {
-            if (!stopLookup[row.stopId]) {
-                stopLookup[row.stopId] = { id: row.stopId, name: row.stopName, sequence: row.stopSequence };
+            if (!trips[row.tripId]) {
+                trips[row.tripId] = { tripId: row.tripId, headsign: row.tripHeadsign, time: null, directionId: row.directionId ?? null };
+            }
+            if (row.stopId === firstStopId && !trips[row.tripId].time) {
+                trips[row.tripId].time = row.departureTime ?? null;
             }
         }
-        this.timetableStops = Object.values(stopLookup).sort((a, b) => a.sequence - b.sequence);
-
-        // Unique trips, keyed by id
-        const tripLookup: Record<string, TimetableTrip> = {};
-        for (const row of rows) {
-            if (!tripLookup[row.tripId]) {
-                tripLookup[row.tripId] = { id: row.tripId, headsign: row.tripHeadsign, firstDeparture: null };
-            }
-        }
-        // Attach first stop's departure time so we can sort trips chronologically
-        if (this.timetableStops.length > 0) {
-            const firstStopId = this.timetableStops[0].id;
-            for (const row of rows) {
-                if (row.stopId === firstStopId) {
-                    const trip = tripLookup[row.tripId];
-                    if (trip && !trip.firstDeparture) trip.firstDeparture = row.departureTime ?? null;
-                }
-            }
-        }
-        this.timetableTrips = Object.values(tripLookup).sort((a, b) => {
-            if (!a.firstDeparture) return 1;
-            if (!b.firstDeparture) return -1;
-            return a.firstDeparture.localeCompare(b.firstDeparture);
-        });
-
-        // Build O(1) lookup: stopId → tripId → formatted time
-        this.timetableLookup = {};
-        for (const row of rows) {
-            if (!this.timetableLookup[row.stopId]) {
-                this.timetableLookup[row.stopId] = {};
-            }
-            this.timetableLookup[row.stopId][row.tripId] = row.departureTime ?? null;
-        }
+        this.nextDepartures = Object.values(trips)
+            .sort((a, b) => this.serviceTimeKey(a.time) - this.serviceTimeKey(b.time))
+            .slice(0, 8);
     }
 
-    getCell(stopId: string, tripId: string): string {
-        const t = this.timetableLookup[stopId]?.[tripId];
+    // Service-day sort key: times before 04:00 belong to the previous night (00:04 -> 24:04)
+    private serviceTimeKey(t: string | null): number {
+        if (!t) return Number.MAX_SAFE_INTEGER;
+        const h = parseInt(t.substring(0, 2), 10);
+        return (h < 4 ? h + 24 : h) * 3600 + parseInt(t.substring(3, 5), 10) * 60 + parseInt(t.substring(6, 8), 10);
+    }
+
+    // Display HH:mm; post-midnight times are shown as 24h+ like printed timetables
+    fmtTime(t: string | null | undefined): string {
         if (!t) return '—';
-        return t.substring(0, 5); // "HH:mm:ss" → "HH:mm"
+        const h = parseInt(t.substring(0, 2), 10);
+        return h < 4 ? (h + 24) + t.substring(2, 5) : t.substring(0, 5);
     }
 
     get minDate(): string { return this.routeDetails?.firstRun ?? ''; }
     get maxDate(): string { return this.routeDetails?.lastRun ?? ''; }
-
-    onDateChange(date: string): void {
-        if (!date || !this.routeDetails) return;
-        this.selectedDate = date;
-        const routeKey = this.routeDetails.id || this.routeDetails.shortName;
-        this.timetableLoading = true;
-        this.apiService.GetTimetable(this.routeDetails.dataOrigin, routeKey, date).subscribe({
-            next: (rows) => {
-                if (this.routeDetails) this.routeDetails = { ...this.routeDetails, timetable: rows };
-                try { this.buildTimetable(); } catch (e) { console.error(e); }
-                this.timetableLoading = false;
-            },
-            error: () => {
-                if (this.routeDetails) this.routeDetails = { ...this.routeDetails, timetable: [] };
-                try { this.buildTimetable(); } catch (e) { /* empty */ }
-                this.timetableLoading = false;
-            },
-        });
-    }
 
     onMapReady(map: LeafletMap): void {
         this.map = map;
