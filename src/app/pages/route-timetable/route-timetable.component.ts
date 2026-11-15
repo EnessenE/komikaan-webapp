@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -46,6 +46,7 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,
+        private readonly router: Router,
         private readonly apiService: ApiService,
         private readonly titleService: Title,
     ) {}
@@ -73,10 +74,16 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
                 this.titleService.setTitle('Timetable · ' + (data.shortName || data.longName || data.id));
                 this.allRows = data.timetable ?? [];
                 this.buildDirections();
-                // Optional deep-link: ?direction=0 / ?direction=1 / ?direction=null
+                // Deep-links: ?direction=0/1 and ?date=yyyy-MM-dd
                 const dirParam = this.activatedRoute.snapshot.queryParamMap.get('direction');
                 if (dirParam !== null && this.directions.some((d) => String(d.directionId ?? 'null') === dirParam)) {
                     this.selectedDirection = dirParam === 'null' ? null : Number(dirParam);
+                }
+                const dateParam = this.activatedRoute.snapshot.queryParamMap.get('date');
+                if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+                    this.selectedDate = dateParam;
+                    this.fetchTimetable(dateParam);
+                    return;
                 }
                 this.applyDirection();
             },
@@ -123,6 +130,15 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
     selectDirection(directionId: number | null): void {
         this.selectedDirection = directionId;
         this.applyDirection();
+        this.updateUrl({ direction: directionId == null ? 'null' : String(directionId) });
+    }
+
+    private updateUrl(params: Record<string, string>): void {
+        this.router.navigate([], {
+            relativeTo: this.activatedRoute,
+            queryParams: params,
+            queryParamsHandling: 'merge',
+        });
     }
 
     private applyDirection(): void {
@@ -210,6 +226,12 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
     onDateChange(date: string): void {
         if (!date || !this.routeDetails) return;
         this.selectedDate = date;
+        this.updateUrl({ date });
+        this.fetchTimetable(date);
+    }
+
+    private fetchTimetable(date: string): void {
+        if (!this.routeDetails) return;
         const routeKey = this.routeDetails.id || this.routeDetails.shortName;
         this.timetableLoading = true;
         this.apiService.GetTimetable(this.routeDetails.dataOrigin, routeKey, date).subscribe({
