@@ -12,7 +12,7 @@ import { LoadingComponent } from '../../comps/loading/loading.component';
 import { ErrorComponent } from '../../comps/error/error.component';
 import { RouteComponent } from '../../comps/route/route.component';
 
-interface TimetableStop { id: string; name: string; sequence: number; }
+interface TimetableStop { id: string; name: string; position: number; minSequence: number; }
 interface TimetableTrip { id: string; headsign: string; firstDeparture: string | null; directionId: number | null; }
 interface DirectionGroup { directionId: number | null; label: string; tripCount: number; }
 
@@ -155,24 +155,47 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
         return (h < 4 ? h + 24 : h) * 3600 + parseInt(t.substring(3, 5), 10) * 60 + parseInt(t.substring(6, 8), 10);
     }
 
+    private median(values: number[]): number {
+        if (values.length === 0) return Number.MAX_SAFE_INTEGER;
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+    }
+
     private buildPivot(rows: GTFSRouteTimetableRow[]): void {
-        // Stop order is derived chronologically from the selected direction's own trips:
-        // a stop's position = its average departure time over those trips. The API's
-        // stop_sequence is the global canonical order and is the same for both directions,
-        // so it cannot be used to orient a single direction.
-        const stopTimes: Record<string, { name: string; total: number; count: number }> = {};
+        // Stop order = each stop's median relative position within the selected direction's
+        // own trips (a trip's stops ordered by departure time). Position-based rather than
+        // time-based, so stops served by only some trips still land where they physically
+        // occur; and rather than stop_sequence-based, since that is a canonical route-level
+        // order shared by both directions and feeds emit sentinel values (999999) for stops
+        // that sit mid-route.
+        const tripsById = new Map<string, GTFSRouteTimetableRow[]>();
         for (const row of rows) {
-            if (!stopTimes[row.stopId]) {
-                stopTimes[row.stopId] = { name: row.stopName, total: 0, count: 0 };
-            }
-            if (row.departureTime) {
-                stopTimes[row.stopId].total += this.serviceTimeKey(row.departureTime);
-                stopTimes[row.stopId].count++;
+            const trip = tripsById.get(row.tripId);
+            if (trip) {
+                trip.push(row);
+            } else {
+                tripsById.set(row.tripId, [row]);
             }
         }
-        this.timetableStops = Object.entries(stopTimes)
-            .map(([id, v]) => ({ id, name: v.name, sequence: v.count > 0 ? v.total / v.count : Number.MAX_SAFE_INTEGER }))
-            .sort((a, b) => a.sequence - b.sequence);
+        const stopPositions: Record<string, { name: string; minSeq: number; positions: number[] }> = {};
+        for (const trip of tripsById.values()) {
+            const ordered = [...trip].sort((a, b) =>
+                this.serviceTimeKey(a.departureTime ?? '00:00:00') - this.serviceTimeKey(b.departureTime ?? '00:00:00') ||
+                a.stopSequence - b.stopSequence);
+            const denom = Math.max(1, ordered.length - 1);
+            ordered.forEach((row, index) => {
+                if (!stopPositions[row.stopId]) {
+                    stopPositions[row.stopId] = { name: row.stopName, minSeq: row.stopSequence, positions: [] };
+                }
+                const stat = stopPositions[row.stopId];
+                stat.minSeq = Math.min(stat.minSeq, row.stopSequence);
+                stat.positions.push(index / denom);
+            });
+        }
+        this.timetableStops = Object.entries(stopPositions)
+            .map(([id, v]) => ({ id, name: v.name, position: this.median(v.positions), minSequence: v.minSeq }))
+            .sort((a, b) => a.position - b.position || a.minSequence - b.minSequence);
 
         const tripLookup: Record<string, TimetableTrip> = {};
         for (const row of rows) {
