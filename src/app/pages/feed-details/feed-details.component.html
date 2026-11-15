@@ -81,7 +81,16 @@
         <div class="row g-3">
             <div class="col-lg-7">
                 <div class="card panel-card">
-                    <div class="card-header fw-semibold">Routes ({{ routes?.length ?? 0 }})</div>
+                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <span class="fw-semibold">Routes ({{ filteredRoutes.length }}@if (routeFilter) { of {{ routes?.length ?? 0 }}})</span>
+                        <input
+                            type="search"
+                            class="form-control form-control-sm route-filter"
+                            placeholder="Filter by name, agency or type..."
+                            [(ngModel)]="routeFilter"
+                            (ngModelChange)="onRouteFilterChange()"
+                        />
+                    </div>
                     <div class="panel-body">
                         <table class="table table-striped table-hover mb-0">
                             <thead>
@@ -90,12 +99,10 @@
                                     <th scope="col">Long name</th>
                                     <th scope="col">Type</th>
                                     <th scope="col">Agency</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Url</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (route of routes; track route) {
+                                @for (route of pagedRoutes; track route) {
                                     <tr>
                                         <th scope="row">
                                             <a [routerLink]="['/routes', route.dataOrigin, route.id]" class="text-decoration-none">
@@ -109,34 +116,30 @@
                                         </td>
                                         <td>{{ route.type }}</td>
                                         <td>{{ route.agency }}</td>
-                                        <td>{{ route.description }}</td>
-                                        <td>
-                                            @if (route.url) {
-                                                <a [href]="route.url" target="_blank">Link</a>
-                                            } @else {
-                                                N/A
-                                            }
-                                        </td>
                                     </tr>
                                 } @empty {
                                     <tr>
-                                        <td colspan="6">No routes loaded for this feed.</td>
+                                        <td colspan="4">No routes match this filter.</td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
                     </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <button class="btn btn-sm btn-outline-secondary" [disabled]="routePage === 0" (click)="prevRoutePage()">Previous</button>
+                        <span class="text-muted small">Page {{ routePage + 1 }} / {{ routePageCount }}</span>
+                        <button class="btn btn-sm btn-outline-secondary" [disabled]="routePage >= routePageCount - 1" (click)="nextRoutePage()">Next</button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-5">
                 <div class="card panel-card">
-                    <div class="card-header fw-semibold">Alerts ({{ alerts?.length ?? 0 }})</div>
+                    <div class="card-header fw-semibold">Alerts ({{ alerts?.length ?? 0 }} most recent)</div>
                     <div class="panel-body">
                         <table class="table table-striped table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th scope="col">Header</th>
-                                    <th scope="col">Description</th>
                                     <th scope="col">Cause</th>
                                     <th scope="col">Effect</th>
                                     <th scope="col">Severity</th>
@@ -146,8 +149,7 @@
                             <tbody>
                                 @for (alert of alerts; track alert.id) {
                                     <tr>
-                                        <td>{{ alert.headerText }}</td>
-                                        <td>{{ alert.descriptionText }}</td>
+                                        <td [title]="alert.descriptionText">{{ alert.headerText }}</td>
                                         <td>{{ alert.cause }}</td>
                                         <td>{{ alert.effect }}</td>
                                         <td>{{ alert.severityLevel }}</td>
@@ -161,7 +163,7 @@
                                     </tr>
                                 } @empty {
                                     <tr>
-                                        <td colspan="6">No alerts available for this feed.</td>
+                                        <td colspan="5">No alerts available for this feed.</td>
                                     </tr>
                                 }
                             </tbody>
