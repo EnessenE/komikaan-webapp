@@ -14,7 +14,7 @@ import { RouteComponent } from '../../comps/route/route.component';
 
 interface TimetableStop { id: string; name: string; position: number; minSequence: number; }
 interface TimetableTrip { id: string; headsign: string; firstDeparture: string | null; directionId: number | null; }
-interface DirectionGroup { directionId: number | null; label: string; tripCount: number; }
+interface DirectionGroup { key: string; directionId: number | null; orientation: string | null; label: string; tripCount: number; }
 
 type TimetableLookup = Record<string, Record<string, string | null>>;
 
@@ -36,7 +36,9 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
 
     allRows: GTFSRouteTimetableRow[] = [];
     directions: DirectionGroup[] = [];
-    selectedDirection: number | null | undefined = undefined; // undefined = not chosen yet
+    selectedKey: string | undefined = undefined; // undefined = not chosen yet
+
+    private readonly tripGroup = new Map<string, string>();
 
     timetableStops: TimetableStop[] = [];
     timetableTrips: TimetableTrip[] = [];
@@ -74,10 +76,10 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
                 this.titleService.setTitle('Timetable · ' + (data.shortName || data.longName || data.id));
                 this.allRows = data.timetable ?? [];
                 this.buildDirections();
-                // Deep-links: ?direction=0/1 and ?date=yyyy-MM-dd
+                // Deep-links: ?direction=<group key, e.g. 0, 1, null-fwd> and ?date=yyyy-MM-dd
                 const dirParam = this.activatedRoute.snapshot.queryParamMap.get('direction');
-                if (dirParam !== null && this.directions.some((d) => String(d.directionId ?? 'null') === dirParam)) {
-                    this.selectedDirection = dirParam === 'null' ? null : Number(dirParam);
+                if (dirParam !== null && this.directions.some((d) => d.key === dirParam)) {
+                    this.selectedKey = dirParam;
                 }
                 const dateParam = this.activatedRoute.snapshot.queryParamMap.get('date');
                 if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
@@ -96,28 +98,58 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
     }
 
     private buildDirections(): void {
-        const groups = new Map<string, { directionId: number | null; headsigns: Map<string, number>; tripIds: Set<string> }>();
+        // Feeds may omit trips.direction_id (GTFS marks it optional); those trips all land in
+        // one "unknown" bucket that mixes both physical directions, which makes a single pivot
+        // meaningless. Split that bucket by each trip's physical orientation (does departure
+        // time increase with stop_sequence?) so every tab is a coherent one-way timetable.
+        const tripsById = new Map<string, GTFSRouteTimetableRow[]>();
         for (const row of this.allRows) {
-            const key = row.directionId == null ? 'null' : String(row.directionId);
+            const trip = tripsById.get(row.tripId);
+            if (trip) {
+                trip.push(row);
+            } else {
+                tripsById.set(row.tripId, [row]);
+            }
+        }
+        this.tripGroup.clear();
+        const groups = new Map<string, { key: string; directionId: number | null; orientation: string | null; headsigns: Map<string, number>; tripIds: Set<string> }>();
+        for (const [tripId, trip] of tripsById) {
+            const ordered = [...trip].sort((a, b) => a.stopSequence - b.stopSequence);
+            const first = ordered[0];
+            const last = ordered[ordered.length - 1];
+            const orientation = ordered.length >= 2 && first.departureTime && last.departureTime &&
+                this.serviceTimeKey(first.departureTime) > this.serviceTimeKey(last.departureTime)
+                ? 'rev' : 'fwd';
+            const directionId = trip[0].directionId ?? null;
+            const key = directionId == null ? `null-${orientation}` : String(directionId);
+            this.tripGroup.set(tripId, key);
             if (!groups.has(key)) {
-                groups.set(key, { directionId: row.directionId ?? null, headsigns: new Map(), tripIds: new Set() });
+                groups.set(key, {
+                    key,
+                    directionId,
+                    orientation: directionId == null ? orientation : null,
+                    headsigns: new Map(),
+                    tripIds: new Set(),
+                });
             }
             const g = groups.get(key)!;
-            g.tripIds.add(row.tripId);
-            if (row.tripHeadsign) {
-                g.headsigns.set(row.tripHeadsign, (g.headsigns.get(row.tripHeadsign) ?? 0) + 1);
+            g.tripIds.add(tripId);
+            if (trip[0].tripHeadsign) {
+                g.headsigns.set(trip[0].tripHeadsign, (g.headsigns.get(trip[0].tripHeadsign) ?? 0) + 1);
             }
         }
         this.directions = [...groups.values()]
             .map((g) => ({
+                key: g.key,
                 directionId: g.directionId,
+                orientation: g.orientation,
                 label: this.directionLabel(g.directionId, g.headsigns),
                 tripCount: g.tripIds.size,
             }))
-            .sort((a, b) => (a.directionId ?? 99) - (b.directionId ?? 99));
+            .sort((a, b) => (a.directionId ?? 99) - (b.directionId ?? 99) || a.key.localeCompare(b.key));
 
-        if (this.selectedDirection === undefined && this.directions.length > 0) {
-            this.selectedDirection = this.directions[0].directionId;
+        if (this.selectedKey === undefined && this.directions.length > 0) {
+            this.selectedKey = this.directions[0].key;
         }
     }
 
@@ -127,10 +159,10 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
         return headsign ? `${dir} · ${headsign}` : dir;
     }
 
-    selectDirection(directionId: number | null): void {
-        this.selectedDirection = directionId;
+    selectDirection(key: string): void {
+        this.selectedKey = key;
         this.applyDirection();
-        this.updateUrl({ direction: directionId == null ? 'null' : String(directionId) });
+        this.updateUrl({ direction: key });
     }
 
     private updateUrl(params: Record<string, string>): void {
@@ -142,9 +174,9 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
     }
 
     private applyDirection(): void {
-        const rows = this.selectedDirection === undefined
+        const rows = this.selectedKey === undefined
             ? this.allRows
-            : this.allRows.filter((r) => (r.directionId ?? null) === this.selectedDirection);
+            : this.allRows.filter((r) => this.tripGroup.get(r.tripId) === this.selectedKey);
         this.buildPivot(rows);
     }
 

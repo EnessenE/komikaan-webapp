@@ -41,13 +41,13 @@
                         <!-- Direction tabs: one timetable per direction instead of both mixed together -->
                         @if (directions.length > 0) {
                             <div class="btn-group direction-tabs" role="tablist">
-                                @for (dir of directions; track dir.directionId ?? 'null') {
+                                @for (dir of directions; track dir.key) {
                                     <button
                                         type="button"
                                         class="btn btn-sm"
-                                        [class.btn-primary]="selectedDirection === dir.directionId"
-                                        [class.btn-outline-primary]="selectedDirection !== dir.directionId"
-                                        (click)="selectDirection(dir.directionId)"
+                                        [class.btn-primary]="selectedKey === dir.key"
+                                        [class.btn-outline-primary]="selectedKey !== dir.key"
+                                        (click)="selectDirection(dir.key)"
                                     >
                                         {{ dir.label }} ({{ dir.tripCount }})
                                     </button>
