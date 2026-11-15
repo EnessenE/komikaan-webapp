@@ -185,8 +185,15 @@ export class RouteDetailsComponent implements OnInit, OnDestroy {
             }
         }
         this.nextDepartures = Object.values(trips)
-            .sort((a, b) => (a.time ?? '99').localeCompare(b.time ?? '99'))
+            .sort((a, b) => this.serviceTimeKey(a.time) - this.serviceTimeKey(b.time))
             .slice(0, 8);
+    }
+
+    // Service-day sort key: times before 04:00 belong to the previous night (00:04 -> 24:04)
+    private serviceTimeKey(t: string | null): number {
+        if (!t) return Number.MAX_SAFE_INTEGER;
+        const h = parseInt(t.substring(0, 2), 10);
+        return (h < 4 ? h + 24 : h) * 3600 + parseInt(t.substring(3, 5), 10) * 60 + parseInt(t.substring(6, 8), 10);
     }
 
     get minDate(): string { return this.routeDetails?.firstRun ?? ''; }

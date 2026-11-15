@@ -73,6 +73,11 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
                 this.titleService.setTitle('Timetable · ' + (data.shortName || data.longName || data.id));
                 this.allRows = data.timetable ?? [];
                 this.buildDirections();
+                // Optional deep-link: ?direction=0 / ?direction=1 / ?direction=null
+                const dirParam = this.activatedRoute.snapshot.queryParamMap.get('direction');
+                if (dirParam !== null && this.directions.some((d) => String(d.directionId ?? 'null') === dirParam)) {
+                    this.selectedDirection = dirParam === 'null' ? null : Number(dirParam);
+                }
                 this.applyDirection();
             },
             error: (error: HttpErrorResponse) => {
@@ -127,14 +132,31 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
         this.buildPivot(rows);
     }
 
+    // Service-day sort key: times before 04:00 belong to the previous night and are
+    // listed after 23:xx, like printed timetables (00:04 -> 24:04).
+    private serviceTimeKey(t: string): number {
+        const h = parseInt(t.substring(0, 2), 10);
+        return (h < 4 ? h + 24 : h) * 3600 + parseInt(t.substring(3, 5), 10) * 60 + parseInt(t.substring(6, 8), 10);
+    }
+
     private buildPivot(rows: GTFSRouteTimetableRow[]): void {
-        const stopLookup: Record<string, TimetableStop> = {};
+        // Stop order is derived chronologically from the selected direction's own trips:
+        // a stop's position = its average departure time over those trips. The API's
+        // stop_sequence is the global canonical order and is the same for both directions,
+        // so it cannot be used to orient a single direction.
+        const stopTimes: Record<string, { name: string; total: number; count: number }> = {};
         for (const row of rows) {
-            if (!stopLookup[row.stopId]) {
-                stopLookup[row.stopId] = { id: row.stopId, name: row.stopName, sequence: row.stopSequence };
+            if (!stopTimes[row.stopId]) {
+                stopTimes[row.stopId] = { name: row.stopName, total: 0, count: 0 };
+            }
+            if (row.departureTime) {
+                stopTimes[row.stopId].total += this.serviceTimeKey(row.departureTime);
+                stopTimes[row.stopId].count++;
             }
         }
-        this.timetableStops = Object.values(stopLookup).sort((a, b) => a.sequence - b.sequence);
+        this.timetableStops = Object.entries(stopTimes)
+            .map(([id, v]) => ({ id, name: v.name, sequence: v.count > 0 ? v.total / v.count : Number.MAX_SAFE_INTEGER }))
+            .sort((a, b) => a.sequence - b.sequence);
 
         const tripLookup: Record<string, TimetableTrip> = {};
         for (const row of rows) {
@@ -142,6 +164,7 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
                 tripLookup[row.tripId] = { id: row.tripId, headsign: row.tripHeadsign, firstDeparture: null, directionId: row.directionId ?? null };
             }
         }
+        // Trips are ordered earliest -> latest by their departure at this direction's first stop
         if (this.timetableStops.length > 0) {
             const firstStopId = this.timetableStops[0].id;
             for (const row of rows) {
@@ -154,7 +177,7 @@ export class RouteTimetableComponent implements OnInit, OnDestroy {
         this.timetableTrips = Object.values(tripLookup).sort((a, b) => {
             if (!a.firstDeparture) return 1;
             if (!b.firstDeparture) return -1;
-            return a.firstDeparture.localeCompare(b.firstDeparture);
+            return this.serviceTimeKey(a.firstDeparture) - this.serviceTimeKey(b.firstDeparture);
         });
 
         this.timetableLookup = {};
