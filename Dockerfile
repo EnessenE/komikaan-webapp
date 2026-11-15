@@ -1,7 +1,7 @@
 # Stage 1: Compile and Build angular codebase
 
 # Use official node image as the base image
-FROM node:20 AS build
+FROM node:24 AS build
 
 # Set the working directory
 WORKDIR /usr/local/app/
@@ -12,8 +12,8 @@ COPY ./ /usr/local/app/
 # Install all the dependencies
 RUN npm install
 
-# Generate the build of the application
-RUN npm run build --prod
+# Generate the build of the application (production is the default configuration)
+RUN npm run build -- --configuration production
 
 # Stage 2: Serve app with nginx server
 
@@ -21,7 +21,6 @@ RUN npm run build --prod
 FROM nginx:mainline
 
 RUN rm -rvf /usr/share/nginx/html
-RUN dir -s
 # Copy the build output to replace the default nginx contents.
 COPY --from=build /usr/local/app/dist/komikaan/browser /usr/share/nginx/html
 COPY /nginx.docker.conf  /etc/nginx/conf.d/default.conf
