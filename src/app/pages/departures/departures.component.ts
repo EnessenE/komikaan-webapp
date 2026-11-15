@@ -155,6 +155,11 @@ export class DeparturesComponent implements OnInit, OnDestroy {
 
     // --- UI Helpers ---
 
+    // stopType can arrive as a number when the value is not a named enum member; stringify before using string methods
+    get stopTypeText(): string {
+        return this.stop?.stopType?.toString() ?? '';
+    }
+
     getStopTypeIcon(type: string | undefined): string {
         const t = type?.toString()?.toLowerCase() || '';
         if (t.includes('bus')) return 'bi-bus-front';
