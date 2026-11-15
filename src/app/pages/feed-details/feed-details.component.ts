@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit  } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { ApiService } from '../../services/api.service';
+import { ApiService, ViewportBounds } from '../../services/api.service';
 import { GTFSRoute } from '../../models/gtfsroute';
 import { GTFSSearchStop } from '../../models/gtfssearchstop';
 import { VehiclePosition } from '../../models/vehicle-position';
@@ -23,8 +23,14 @@ import {
 } from 'leaflet';
 import { LoadingComponent } from '../../comps/loading/loading.component';
 import { CommonModule } from '@angular/common';
-import { interval, Subscription } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { Alert } from '../../models/gtfsalert';
+
+const STOP_LIMIT = 8000;
+const POSITION_LIMIT = 2000;
+const POSITION_REFRESH_MS = 10000;
+const MOVE_DEBOUNCE_MS = 400;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Default,
@@ -35,10 +41,12 @@ import { Alert } from '../../models/gtfsalert';
 })
 export class FeedDetailsComponent implements OnInit, OnDestroy {
     private intervalSubscription: Subscription | undefined;
+    private viewportSubscription: Subscription | undefined;
+    private viewportRequests = new Subject<void>();
 
     loading: boolean = false;
+    stopsLoading: boolean = false;
     selectedFeed: string = 'Unknown';
-    realtimeLayerId: number = -1;
     routes: GTFSRoute[] | undefined;
     stops: GTFSSearchStop[] | undefined;
     vehiclePositions: VehiclePosition[] | undefined;
@@ -54,10 +62,6 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         overlays: {},
     };
 
-    mapFitToBounds!: LatLngBounds;
-
-    markerClusterOptions: MarkerClusterGroupOptions = {};
-
     clusterGroup: MarkerClusterGroup = new MarkerClusterGroup({
         spiderfyOnMaxZoom: false,
         showCoverageOnHover: true,
@@ -69,11 +73,13 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     });
 
     options = {
-        zoom: 13,
+        zoom: 7,
         center: latLng(52.0907, 5.1214),
     };
 
     layers: Layer[];
+
+    private hasFittedToData: boolean = false;
 
     constructor(
         private apiService: ApiService,
@@ -84,9 +90,8 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     }
 
     private startPositionLoop() {
-        this.intervalSubscription = interval(10000).subscribe(() => {
-            // We don't want to fit to bounds after the first init as the user can positions it to whatever they care about
-            this.getFeedPositions(false);
+        this.intervalSubscription = interval(POSITION_REFRESH_MS).subscribe(() => {
+            this.loadPositionsInView();
         });
     }
 
@@ -95,58 +100,95 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         this.route.params.subscribe((params) => {
             this.selectedFeed = params['id'];
             this.titleService.setTitle('Feed ' + this.selectedFeed);
-            this.getFeedPositions(true);
+            this.hasFittedToData = false;
 
             var realtimeData = this.route.snapshot.queryParamMap.get('realtime');
             if (realtimeData != null) {
                 this.onlyRealTime = Boolean(JSON.parse(realtimeData));
             }
-            this.startPositionLoop();
 
             if (!this.onlyRealTime) {
                 this.apiService.GetFeedRoutes(this.selectedFeed).subscribe({
                     next: (data) => {
                         this.routes = data;
-                        this.loading = false;
                     },
                 });
-                this.apiService.GetFeedStops(this.selectedFeed).subscribe({
-                    next: (data) => {
-                        this.stops = data;
-                        this.addStopsToMap(data);
-                        this.loading = false;
-                    },
-                });
-                // Add this block to fetch alerts
                 this.apiService.GetFeedAlerts(this.selectedFeed).subscribe({
                     next: (data) => {
                         this.alerts = data;
-                        this.loading = false; // Set loading to false after all data is fetched
                     },
                     error: (err) => {
                         console.error('Error fetching feed alerts:', err);
-                        this.alerts = []; // Set to empty array on error to avoid undefined issues in template
-                        this.loading = false;
-                    }
+                        this.alerts = [];
+                    },
                 });
             }
-                    });
+
+            this.startPositionLoop();
+        });
 
         this.loading = true;
 
         this.vehiclesLayer = featureGroup();
 
         this.layers.push(this.markerLayers, this.vehiclesLayer, this.clusterGroup);
+
+        // Reload the stops when the user pans/zooms the map (debounced)
+        this.viewportSubscription = this.viewportRequests.pipe(debounceTime(MOVE_DEBOUNCE_MS)).subscribe(() => {
+            this.loadStopsInView();
+        });
     }
 
-    private getFeedPositions(fitToBounds: boolean) {
-                this.loading = true;
-        this.apiService.GetFeedPositions(this.selectedFeed).subscribe({
+    onMapReady(map: Map) {
+        this.map = map;
+        this.invalidateMap();
+        this.map.on('moveend', () => this.viewportRequests.next());
+        // Initial load: only what is inside the current viewport
+        this.loadStopsInView();
+        this.loadPositionsInView();
+    }
+
+    private currentViewport(): ViewportBounds | undefined {
+        if (!this.map) {
+            return undefined;
+        }
+        const bounds = this.map.getBounds();
+        return {
+            minLat: bounds.getSouth(),
+            maxLat: bounds.getNorth(),
+            minLon: bounds.getWest(),
+            maxLon: bounds.getEast(),
+        };
+    }
+
+    private loadStopsInView() {
+        if (this.onlyRealTime) {
+            return;
+        }
+        this.stopsLoading = true;
+        this.apiService.GetFeedStops(this.selectedFeed, this.currentViewport(), STOP_LIMIT).subscribe({
+            next: (data) => {
+                this.stops = data;
+                this.replaceStopsOnMap(data);
+                this.stopsLoading = false;
+                this.fitToDataOnce();
+            },
+            error: (err) => {
+                console.error('Error fetching feed stops:', err);
+                this.stopsLoading = false;
+            },
+        });
+    }
+
+    private loadPositionsInView() {
+        this.loading = true;
+        this.apiService.GetFeedPositions(this.selectedFeed, this.currentViewport(), POSITION_LIMIT).subscribe({
             next: (data) => {
                 this.vehiclePositions = data;
-                this.addVehiclesToMap(data, fitToBounds);
+                this.addVehiclesToMap(data);
                 this.loading = false;
                 this.lastLoad = new Date();
+                this.fitToDataOnce();
             },
             error: (err) => {
                 console.error('Error fetching feed positions:', err);
@@ -155,21 +197,46 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
         });
     }
 
-    addStopsToMap(stops: GTFSSearchStop[]) {
+    private fitToDataOnce() {
+        if (this.hasFittedToData || !this.map) {
+            return;
+        }
+        const bounds = this.combinedDataBounds();
+        if (bounds && bounds.isValid()) {
+            this.hasFittedToData = true;
+            this.map.fitBounds(bounds, { padding: [30, 30] });
+        }
+    }
+
+    private combinedDataBounds(): LatLngBounds | undefined {
+        const groups: FeatureGroup[] = [];
+        if (this.clusterGroup.getLayers().length > 0) {
+            groups.push(this.clusterGroup as unknown as FeatureGroup);
+        }
+        if (this.vehiclesLayer && this.vehiclesLayer.getLayers().length > 0) {
+            groups.push(this.vehiclesLayer);
+        }
+        if (groups.length === 0) {
+            return undefined;
+        }
+        return featureGroup(groups).getBounds();
+    }
+
+    private replaceStopsOnMap(stops: GTFSSearchStop[]) {
+        this.clusterGroup.clearLayers();
         stops.forEach((stop) => {
             stop.adjustedCoordinates.forEach((coordinate) => {
                 var stopLayer = circle([coordinate.latitude, coordinate.longitude], { radius: 25 });
                 var popup = new Popup();
-                popup.setContent('<a href="/stops/' + encodeURIComponent(stop.id) + '/' + encodeURIComponent(stop.stopType) + '">' + stop.name + '</a>');
+                popup.setContent('<a href=\"/stops/' + encodeURIComponent(stop.id) + '/' + encodeURIComponent(stop.stopType) + '\">' + stop.name + '</a>');
                 stopLayer.bindPopup(popup);
                 this.clusterGroup.addLayer(stopLayer);
             });
         });
         this.invalidateMap();
-                this.map.fitBounds(this.clusterGroup.getBounds());
-            }
+    }
 
-    addVehiclesToMap(vehicles: VehiclePosition[], fitToBounds: boolean) {
+    addVehiclesToMap(vehicles: VehiclePosition[]) {
         this.vehiclesLayer?.clearLayers();
         vehicles.forEach((vehicle) => {
             if (vehicle.longitude && vehicle.latitude) {
@@ -189,20 +256,9 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
                 popup.setContent(popupText);
                 vehicleLayer.bindPopup(popup);
                 this.vehiclesLayer.addLayer(vehicleLayer);
-            } else {
-                            }
+            }
         });
         this.clusterGroup.removeLayer(this.vehiclesLayer);
-        // Timeout due to timing bug on the initalization for an unknown reason.
-        if (fitToBounds) {
-            this.invalidateMap();
-                        this.map.fitBounds(this.vehiclesLayer.getBounds());
-        }
-    }
-
-    onMapReady(map: Map) {
-        this.map = map;
-        this.invalidateMap();
     }
 
     invalidateMap(): void {
@@ -214,8 +270,7 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        if (this.intervalSubscription) {
-            this.intervalSubscription.unsubscribe();
-        }
+        this.intervalSubscription?.unsubscribe();
+        this.viewportSubscription?.unsubscribe();
     }
 }

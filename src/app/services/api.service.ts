@@ -20,6 +20,13 @@ import { TopDelayedStop } from '../models/top-delayed-stop';
 import { TrainStationPerformance } from '../models/train-station-performance';
 import { MapViewportData } from '../models/map-viewport-data';
 
+export interface ViewportBounds {
+    minLat: number;
+    maxLat: number;
+    minLon: number;
+    maxLon: number;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -50,8 +57,8 @@ export class ApiService {
         return this.http.get<Array<string>>(environment.apiServer + '/v1/feeds/realtime-names');
     }
 
-    GetFeedStops(feed: string): Observable<Array<GTFSSearchStop>> {
-        return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/stops');
+    GetFeedStops(feed: string, viewport?: ViewportBounds, limit = 8000): Observable<Array<GTFSSearchStop>> {
+        return this.http.get<Array<GTFSSearchStop>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/stops' + this.viewportParams(viewport, limit));
     }
 
     GetFeedShapes(feed: string): Observable<Array<GTFSShape>> {
@@ -161,8 +168,19 @@ export class ApiService {
         );
     }
 
-    GetFeedPositions(feed: string): Observable<Array<VehiclePosition>> {
-        return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/positions');
+    GetFeedPositions(feed: string, viewport?: ViewportBounds, limit = 2000): Observable<Array<VehiclePosition>> {
+        return this.http.get<Array<VehiclePosition>>(environment.apiServer + '/v1/feeds/' + encodeURIComponent(feed) + '/positions' + this.viewportParams(viewport, limit));
+    }
+
+    private viewportParams(viewport: ViewportBounds | undefined, limit: number): string {
+        if (!viewport) {
+            return '';
+        }
+        return '?minLatitude=' + viewport.minLat
+            + '&maxLatitude=' + viewport.maxLat
+            + '&minLongitude=' + viewport.minLon
+            + '&maxLongitude=' + viewport.maxLon
+            + '&limit=' + limit;
     }
 
     GetStop(stopId: string, stopType: string): Observable<GTFSStop> {
