@@ -143,6 +143,7 @@ export class TripComponent implements OnInit, OnDestroy {
           }
 
           const stopMarker = marker([stop.latitude, stop.longitude], {
+            opacity: this.isPassThrough(stop) ? 0.4 : 1,
             icon: icon({
               iconUrl: 'assets/marker-icon.png',
               shadowUrl: 'assets/marker-shadow.png',
@@ -152,10 +153,14 @@ export class TripComponent implements OnInit, OnDestroy {
             }),
           });
 
-            stopMarker.bindPopup(`
-              <strong>${stop.name}</strong><br>
-              <a href="/stops/${encodeURIComponent(stop.id)}/${encodeURIComponent(stop.stopType)}">View Stop</a>
-            `);
+            if (this.isPassThrough(stop)) {
+              stopMarker.bindPopup(`<strong>${stop.name}</strong><br><em>Passes through, no stop</em>`);
+            } else {
+              stopMarker.bindPopup(`
+                <strong>${stop.name}</strong><br>
+                <a href="/stops/${encodeURIComponent(stop.id)}/${encodeURIComponent(stop.stopType)}">View Stop</a>
+              `);
+            }
           
           this.markerLayers.addLayer(stopMarker);
         }
@@ -289,6 +294,12 @@ export class TripComponent implements OnInit, OnDestroy {
   private normalizeTimeZone(timeZone: string | null | undefined): string | null {
     const normalized = timeZone?.trim();
     return normalized ? normalized : null;
+  }
+
+  // Pass-through point: no pickup AND no drop-off (e.g. a border crossing). Shown
+  // muted in the timeline instead of as a regular stop.
+  isPassThrough(stop: GTFSTripStop): boolean {
+    return stop.pickupType === 1 && stop.dropOffType === 1;
   }
 
   private getReferenceDate(stop: GTFSTripStop | undefined): Date {
