@@ -9,6 +9,7 @@ import { AgenciesComponent } from './pages/agencies/agencies.component';
 import { CoverageComponent } from './pages/coverage/coverage.component';
 import { FeedAlertsComponent } from './app/pages/feed-alerts/feed-alerts.component';
 import { RouteDetailsComponent } from './pages/route-details/route-details.component';
+import { RouteTimetableComponent } from './pages/route-timetable/route-timetable.component';
 import { MapComponent } from './pages/map/map.component';
 import { TrainStationsComponent } from './pages/train-stations/train-stations.component';
 import { DelaysComponent } from './pages/delays/delays.component';
@@ -30,6 +31,10 @@ export const routes: Routes = [
     {
         path: 'routes/:dataOrigin/:id',
         component: RouteDetailsComponent,
+    },
+    {
+        path: 'routes/:dataOrigin/:id/timetable',
+        component: RouteTimetableComponent,
     },
     {
         path: 'feed/:id',

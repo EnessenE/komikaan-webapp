@@ -1,0 +1,139 @@
+<div class="container-fluid app-container p-0">
+    @if (loading) {
+        <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-5">
+            <app-loading></app-loading>
+            <p class="text-muted mt-3">Loading timetable...</p>
+        </div>
+    }
+
+    @if (error) {
+        <div class="container-xl py-4">
+            <app-error [httpErrorResponse]="error"></app-error>
+        </div>
+    }
+
+    @if (!loading && routeDetails) {
+        <header class="bg-white shadow-sm border-bottom">
+            <div class="container-xl py-4">
+                <div class="mb-3">
+                    <app-route [route]="routeDetails" [navigable]="false"></app-route>
+                </div>
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div>
+                        <h1 class="h4 fw-bold mb-1">Timetable — {{ routeDetails.longName || routeDetails.shortName }}</h1>
+                        <div class="d-flex flex-wrap gap-2 text-muted small">
+                            <span class="badge bg-light text-dark border">Feed {{ routeDetails.dataOrigin }}</span>
+                            <span class="badge bg-light text-dark border">Agency {{ routeDetails.agency || 'Unknown' }}</span>
+                            <span class="badge bg-light text-dark border">{{ routeDetails.tripCount }} trips &middot; {{ routeDetails.stopCount }} stops</span>
+                        </div>
+                    </div>
+                    <a [routerLink]="['/routes', routeDetails.dataOrigin, routeDetails.id]" class="btn btn-outline-secondary btn-sm">
+                        Back to route
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <section class="timetable-section">
+            <div class="container-fluid px-4 px-lg-5">
+                <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+                    <div>
+                        <!-- Direction tabs: one timetable per direction instead of both mixed together -->
+                        @if (directions.length > 0) {
+                            <div class="btn-group direction-tabs" role="tablist">
+                                @for (dir of directions; track dir.directionId ?? 'null') {
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm"
+                                        [class.btn-primary]="selectedDirection === dir.directionId"
+                                        [class.btn-outline-primary]="selectedDirection !== dir.directionId"
+                                        (click)="selectDirection(dir.directionId)"
+                                    >
+                                        {{ dir.label }} ({{ dir.tripCount }})
+                                    </button>
+                                }
+                            </div>
+                        }
+                        @if (routeDetails.firstRun || routeDetails.lastRun) {
+                            <p class="text-muted small mb-0 mt-2">
+                                @if (routeDetails.firstRun) {
+                                    <span>First run: <strong>{{ routeDetails.firstRun | date: 'dd MMM yyyy' : 'UTC' }}</strong></span>
+                                }
+                                @if (routeDetails.firstRun && routeDetails.lastRun) {
+                                    <span class="mx-2">&middot;</span>
+                                }
+                                @if (routeDetails.lastRun) {
+                                    <span>Last run: <strong>{{ routeDetails.lastRun | date: 'dd MMM yyyy' : 'UTC' }}</strong></span>
+                                }
+                            </p>
+                        }
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        @if (timetableLoading) {
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        }
+                        <label class="form-label mb-0 text-muted small fw-bold" for="ttDate">Date</label>
+                        <input
+                            id="ttDate"
+                            type="date"
+                            class="form-control form-control-sm tt-date-input"
+                            [value]="selectedDate"
+                            [min]="minDate"
+                            [max]="maxDate"
+                            (input)="onDateChange($any($event.target).value)"
+                        />
+                    </div>
+                </div>
+
+                @if (timetableStops.length > 0 && timetableTrips.length > 0) {
+                    <div class="timetable-scroll" [class.tt-loading]="timetableLoading">
+                        <table class="timetable-table">
+                            <thead>
+                                <tr>
+                                    <th class="tt-stop-col tt-head-stop">Stop</th>
+                                    @for (trip of timetableTrips; track trip.id) {
+                                        <th class="tt-trip-col">
+                                            <a [routerLink]="['/trip', trip.id]" class="tt-trip-link" [title]="trip.headsign || 'Open trip'">
+                                                <div class="tt-trip-headsign" [title]="trip.headsign">{{ trip.headsign || '—' }}</div>
+                                                @if (trip.firstDeparture) {
+                                                    <div class="tt-trip-time">{{ trip.firstDeparture.substring(0, 5) }}</div>
+                                                }
+                                            </a>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (stop of timetableStops; track stop.id) {
+                                    <tr>
+                                        <td class="tt-stop-col">
+                                            <a [routerLink]="['/stops', stop.id, routeDetails!.type]" class="tt-stop-name text-decoration-none" [title]="stop.name">
+                                                {{ stop.name }}
+                                            </a>
+                                        </td>
+                                        @for (trip of timetableTrips; track trip.id) {
+                                            <td class="tt-cell" [class.tt-cell-empty]="getCell(stop.id, trip.id) === '—'">
+                                                @if (getCell(stop.id, trip.id) !== '—') {
+                                                    <a [routerLink]="['/trip', trip.id]" class="tt-cell-link" [title]="'Open trip ' + trip.id">
+                                                        {{ getCell(stop.id, trip.id) }}
+                                                    </a>
+                                                } @else {
+                                                    {{ getCell(stop.id, trip.id) }}
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                } @else if (!timetableLoading) {
+                    <p class="text-muted small py-3">No trips found for this date. Try selecting another date.</p>
+                }
+            </div>
+        </section>
+    }
+</div>
