@@ -28,12 +28,12 @@
                         <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                             <span
                                 class="badge rounded-pill d-flex align-items-center gap-2 px-3 py-2"
-                                [class.bg-primary]="stop.stopType.includes('Bus')"
-                                [class.bg-success]="stop.stopType.includes('Tram')"
-                                [class.bg-warning]="stop.stopType.includes('Metro')"
-                                [class.text-dark]="stop.stopType.includes('Metro')"
-                                [class.bg-info]="stop.stopType.includes('Rail') || stop.stopType.includes('Train')"
-                                [class.bg-secondary]="!stop.stopType"
+                                [class.bg-primary]="stopTypeText.includes('Bus')"
+                                [class.bg-success]="stopTypeText.includes('Tram')"
+                                [class.bg-warning]="stopTypeText.includes('Metro')"
+                                [class.text-dark]="stopTypeText.includes('Metro')"
+                                [class.bg-info]="stopTypeText.includes('Rail') || stopTypeText.includes('Train')"
+                                [class.bg-secondary]="!stopTypeText"
                             >
                                 <i class="bi {{ getStopTypeIcon(stop.stopType) }}"></i>
                                 <span class="text-uppercase tracking-wider">
