@@ -177,6 +177,10 @@ export class FeedDetailsComponent implements OnInit, OnDestroy {
 
                 var popup = new Popup();
                 var popupText = `Known as: ${vehicle.id} </br> Measured at: ${vehicle.measurementTime} </br>`;
+                var vehicleName = vehicle.vehicleLabel ?? vehicle.vehicleLicensePlate ?? vehicle.vehicleId;
+                if (vehicleName != undefined) {
+                    popupText += `Vehicle: ${vehicleName} </br>`;
+                }
                 if (vehicle.tripId != undefined) {
                     popupText += `Trip: <a href='/trip/${encodeURIComponent(vehicle.tripId)}'> ${vehicle.tripId}</a>`;
                 } else {

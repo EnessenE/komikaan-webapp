@@ -10,4 +10,7 @@ export interface VehiclePosition {
     congestionLevel: string;
     occupancyStatus: string;
     occupancyPercentage?: number;
+    vehicleId?: string;
+    vehicleLabel?: string;
+    vehicleLicensePlate?: string;
 }
