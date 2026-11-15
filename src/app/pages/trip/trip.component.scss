@@ -171,6 +171,29 @@ $bg-light: #f8f9fa;
         }
     }
 
+    // --- Pass-through points (no pickup/drop-off, e.g. border crossings) ---
+    // Rendered muted in the background: grayed dots/line, flat card, no link styling.
+    &.pass-through {
+        opacity: 0.55;
+
+        .graphic-col {
+            .dot { border-color: $passed-color; background-color: $passed-color; }
+            .line { background-color: $passed-color; }
+            .small-dot { background-color: $passed-color; }
+        }
+
+        .info-col .stop-card {
+            box-shadow: none !important;
+            background-color: transparent;
+
+            &:hover {
+                transform: none;
+                background-color: transparent;
+                border: none !important;
+            }
+        }
+    }
+
     // --- Passed State Logic ---
     &.passed {
         // Gray out the times

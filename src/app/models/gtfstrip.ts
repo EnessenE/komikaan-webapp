@@ -11,7 +11,9 @@ export interface GTFSTripStop {
     canceled: boolean;
     stopScheduleRelationship?: string | null;
     tripScheduleRelationship?: string | null;
-    
+    pickupType?: number | null;
+    dropOffType?: number | null;
+
     longitude: number;
     latitude: number;
 
